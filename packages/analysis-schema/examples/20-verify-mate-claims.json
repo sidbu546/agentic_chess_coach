@@ -1,0 +1,74 @@
+{
+  "name": "verify-mate-claims",
+  "method": "POST",
+  "path": "/v1/verify",
+  "description": "Engine-backed claims in the Scholar's mate position.",
+  "request": {
+    "position": {
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "f1c4",
+        "b8c6",
+        "d1h5",
+        "g8f6"
+      ]
+    },
+    "limits": {
+      "depth": 16
+    },
+    "claims": [
+      {
+        "id": "m1",
+        "type": "mate_in",
+        "moves": 1,
+        "winner": "white"
+      },
+      {
+        "id": "m2",
+        "type": "best_move",
+        "move": "h5f7"
+      },
+      {
+        "id": "m3",
+        "type": "better_than",
+        "move": "d2d3",
+        "than": "h5f7"
+      },
+      {
+        "id": "m4",
+        "type": "legal_line",
+        "moves": [
+          "h5f7",
+          "e8e7"
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "results": [
+      {
+        "id": "m1",
+        "verdict": "supported",
+        "reason": "engine score: mate 1"
+      },
+      {
+        "id": "m2",
+        "verdict": "supported",
+        "reason": "best 10000 cp, h5f7 10000 cp (mover's view)"
+      },
+      {
+        "id": "m3",
+        "verdict": "refuted",
+        "reason": "d2d3: -677 cp, h5f7: 10000 cp (mover's view)"
+      },
+      {
+        "id": "m4",
+        "verdict": "refuted",
+        "reason": "move 2 (e8e7) is illegal"
+      }
+    ]
+  }
+}

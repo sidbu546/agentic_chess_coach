@@ -1,0 +1,16 @@
+{
+  "name": "health",
+  "method": "GET",
+  "path": "/v1/health",
+  "description": "Service status.",
+  "request": null,
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "status": "ok",
+    "engine": {
+      "name": "Stockfish",
+      "version": "17.1"
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "name": "verify-pin-claims",
+  "method": "POST",
+  "path": "/v1/verify",
+  "description": "Claims an LLM might make about the Nimzo position, some true and some false.",
+  "request": {
+    "position": {
+      "moves": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e6",
+        "b1c3",
+        "f8b4"
+      ]
+    },
+    "claims": [
+      {
+        "id": "c1",
+        "type": "pinned",
+        "square": "c3",
+        "absolute": true
+      },
+      {
+        "id": "c2",
+        "type": "legal_move",
+        "move": "c3e4"
+      },
+      {
+        "id": "c3",
+        "type": "attacks",
+        "from": "b4",
+        "to": "c3"
+      },
+      {
+        "id": "c4",
+        "type": "piece_on",
+        "square": "b4",
+        "piece_type": "knight",
+        "color": "black"
+      },
+      {
+        "id": "c5",
+        "type": "hanging",
+        "square": "c3"
+      },
+      {
+        "id": "c6",
+        "type": "in_check",
+        "color": "white"
+      }
+    ]
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "results": [
+      {
+        "id": "c1",
+        "verdict": "supported",
+        "reason": "c3 is pinned",
+        "facts": [
+          {
+            "kind": "pin",
+            "pinned": {
+              "square": "c3",
+              "type": "knight",
+              "color": "white"
+            },
+            "pinner": {
+              "square": "b4",
+              "type": "bishop",
+              "color": "black"
+            },
+            "shielded": {
+              "square": "e1",
+              "type": "king",
+              "color": "white"
+            },
+            "absolute": true,
+            "ray": [
+              "b4",
+              "c3",
+              "d2",
+              "e1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "c2",
+        "verdict": "refuted",
+        "reason": "c3e4 is not legal",
+        "facts": [
+          {
+            "kind": "pin",
+            "pinned": {
+              "square": "c3",
+              "type": "knight",
+              "color": "white"
+            },
+            "pinner": {
+              "square": "b4",
+              "type": "bishop",
+              "color": "black"
+            },
+            "shielded": {
+              "square": "e1",
+              "type": "king",
+              "color": "white"
+            },
+            "absolute": true,
+            "ray": [
+              "b4",
+              "c3",
+              "d2",
+              "e1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "c3",
+        "verdict": "supported",
+        "reason": "b4 attacks c3"
+      },
+      {
+        "id": "c4",
+        "verdict": "refuted",
+        "reason": "b4 holds: black bishop"
+      },
+      {
+        "id": "c5",
+        "verdict": "refuted",
+        "reason": "c3 is not hanging"
+      },
+      {
+        "id": "c6",
+        "verdict": "refuted",
+        "reason": "white is not in check"
+      }
+    ]
+  }
+}

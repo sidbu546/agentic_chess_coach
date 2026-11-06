@@ -1,0 +1,19 @@
+{
+  "name": "error-invalid-fen",
+  "method": "POST",
+  "path": "/v1/position",
+  "description": "A FEN that cannot be parsed.",
+  "request": {
+    "position": {
+      "start_fen": "not a fen",
+      "moves": []
+    }
+  },
+  "status": 422,
+  "response": {
+    "error": {
+      "code": "invalid_fen",
+      "message": "Invalid start_fen: expected 'w' or 'b' for turn part of fen: 'not a fen'"
+    }
+  }
+}

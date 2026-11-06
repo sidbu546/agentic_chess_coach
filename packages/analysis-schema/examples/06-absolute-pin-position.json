@@ -1,0 +1,1083 @@
+{
+  "name": "absolute-pin-position",
+  "method": "POST",
+  "path": "/v1/position",
+  "description": "Nimzo-Indian: Bb4 pins Nc3 to the king. With include.pieces the knight shows geometric attacks but no legal moves.",
+  "request": {
+    "position": {
+      "moves": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e6",
+        "b1c3",
+        "f8b4"
+      ]
+    },
+    "include": {
+      "pieces": true
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4",
+      "side_to_move": "white",
+      "fullmove_number": 4,
+      "halfmove_clock": 2,
+      "ply": 6
+    },
+    "status": {
+      "state": "ongoing",
+      "is_game_over": false,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "legal_moves": [
+      {
+        "uci": "a1b1",
+        "san": "Rb1"
+      },
+      {
+        "uci": "a2a3",
+        "san": "a3"
+      },
+      {
+        "uci": "a2a4",
+        "san": "a4"
+      },
+      {
+        "uci": "b2b3",
+        "san": "b3"
+      },
+      {
+        "uci": "c1d2",
+        "san": "Bd2"
+      },
+      {
+        "uci": "c1e3",
+        "san": "Be3"
+      },
+      {
+        "uci": "c1f4",
+        "san": "Bf4"
+      },
+      {
+        "uci": "c1g5",
+        "san": "Bg5"
+      },
+      {
+        "uci": "c1h6",
+        "san": "Bh6"
+      },
+      {
+        "uci": "c4c5",
+        "san": "c5"
+      },
+      {
+        "uci": "d1a4",
+        "san": "Qa4"
+      },
+      {
+        "uci": "d1b3",
+        "san": "Qb3"
+      },
+      {
+        "uci": "d1c2",
+        "san": "Qc2"
+      },
+      {
+        "uci": "d1d2",
+        "san": "Qd2"
+      },
+      {
+        "uci": "d1d3",
+        "san": "Qd3"
+      },
+      {
+        "uci": "d4d5",
+        "san": "d5"
+      },
+      {
+        "uci": "e1d2",
+        "san": "Kd2"
+      },
+      {
+        "uci": "e2e3",
+        "san": "e3"
+      },
+      {
+        "uci": "e2e4",
+        "san": "e4"
+      },
+      {
+        "uci": "f2f3",
+        "san": "f3"
+      },
+      {
+        "uci": "f2f4",
+        "san": "f4"
+      },
+      {
+        "uci": "g1f3",
+        "san": "Nf3"
+      },
+      {
+        "uci": "g1h3",
+        "san": "Nh3"
+      },
+      {
+        "uci": "g2g3",
+        "san": "g3"
+      },
+      {
+        "uci": "g2g4",
+        "san": "g4"
+      },
+      {
+        "uci": "h2h3",
+        "san": "h3"
+      },
+      {
+        "uci": "h2h4",
+        "san": "h4"
+      }
+    ],
+    "material": {
+      "white": {
+        "pawn": 8,
+        "knight": 2,
+        "bishop": 2,
+        "rook": 2,
+        "queen": 1
+      },
+      "black": {
+        "pawn": 8,
+        "knight": 2,
+        "bishop": 2,
+        "rook": 2,
+        "queen": 1
+      },
+      "balance_cp": 0
+    },
+    "facts": [
+      {
+        "kind": "pin",
+        "pinned": {
+          "square": "c3",
+          "type": "knight",
+          "color": "white"
+        },
+        "pinner": {
+          "square": "b4",
+          "type": "bishop",
+          "color": "black"
+        },
+        "shielded": {
+          "square": "e1",
+          "type": "king",
+          "color": "white"
+        },
+        "absolute": true,
+        "ray": [
+          "b4",
+          "c3",
+          "d2",
+          "e1"
+        ]
+      }
+    ],
+    "pieces": [
+      {
+        "piece": {
+          "square": "a1",
+          "type": "rook",
+          "color": "white"
+        },
+        "attacks": [
+          "b1",
+          "c1",
+          "a2"
+        ],
+        "legal_moves": [
+          {
+            "uci": "a1b1",
+            "san": "Rb1"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "c1",
+          "type": "bishop",
+          "color": "white"
+        },
+        "attacks": [
+          "b2",
+          "d2",
+          "e3",
+          "f4",
+          "g5",
+          "h6"
+        ],
+        "legal_moves": [
+          {
+            "uci": "c1d2",
+            "san": "Bd2"
+          },
+          {
+            "uci": "c1e3",
+            "san": "Be3"
+          },
+          {
+            "uci": "c1f4",
+            "san": "Bf4"
+          },
+          {
+            "uci": "c1g5",
+            "san": "Bg5"
+          },
+          {
+            "uci": "c1h6",
+            "san": "Bh6"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "a1",
+            "type": "rook",
+            "color": "white"
+          },
+          {
+            "square": "d1",
+            "type": "queen",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "d1",
+          "type": "queen",
+          "color": "white"
+        },
+        "attacks": [
+          "c1",
+          "e1",
+          "c2",
+          "d2",
+          "e2",
+          "b3",
+          "d3",
+          "a4",
+          "d4"
+        ],
+        "legal_moves": [
+          {
+            "uci": "d1a4",
+            "san": "Qa4"
+          },
+          {
+            "uci": "d1b3",
+            "san": "Qb3"
+          },
+          {
+            "uci": "d1c2",
+            "san": "Qc2"
+          },
+          {
+            "uci": "d1d2",
+            "san": "Qd2"
+          },
+          {
+            "uci": "d1d3",
+            "san": "Qd3"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "e1",
+            "type": "king",
+            "color": "white"
+          },
+          {
+            "square": "c3",
+            "type": "knight",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "e1",
+          "type": "king",
+          "color": "white"
+        },
+        "attacks": [
+          "d1",
+          "f1",
+          "d2",
+          "e2",
+          "f2"
+        ],
+        "legal_moves": [
+          {
+            "uci": "e1d2",
+            "san": "Kd2"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "d1",
+            "type": "queen",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "f1",
+          "type": "bishop",
+          "color": "white"
+        },
+        "attacks": [
+          "e2",
+          "g2"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "e1",
+            "type": "king",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "g1",
+          "type": "knight",
+          "color": "white"
+        },
+        "attacks": [
+          "e2",
+          "f3",
+          "h3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "g1f3",
+            "san": "Nf3"
+          },
+          {
+            "uci": "g1h3",
+            "san": "Nh3"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "h1",
+            "type": "rook",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "h1",
+          "type": "rook",
+          "color": "white"
+        },
+        "attacks": [
+          "g1",
+          "h2"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "a2",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "b3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "a2a3",
+            "san": "a3"
+          },
+          {
+            "uci": "a2a4",
+            "san": "a4"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "a1",
+            "type": "rook",
+            "color": "white"
+          },
+          {
+            "square": "c3",
+            "type": "knight",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "b2",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "a3",
+          "c3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "b2b3",
+            "san": "b3"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "c1",
+            "type": "bishop",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "e2",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "d3",
+          "f3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "e2e3",
+            "san": "e3"
+          },
+          {
+            "uci": "e2e4",
+            "san": "e4"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "d1",
+            "type": "queen",
+            "color": "white"
+          },
+          {
+            "square": "e1",
+            "type": "king",
+            "color": "white"
+          },
+          {
+            "square": "f1",
+            "type": "bishop",
+            "color": "white"
+          },
+          {
+            "square": "g1",
+            "type": "knight",
+            "color": "white"
+          },
+          {
+            "square": "c3",
+            "type": "knight",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "f2",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "e3",
+          "g3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "f2f3",
+            "san": "f3"
+          },
+          {
+            "uci": "f2f4",
+            "san": "f4"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "e1",
+            "type": "king",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "g2",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "f3",
+          "h3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "g2g3",
+            "san": "g3"
+          },
+          {
+            "uci": "g2g4",
+            "san": "g4"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "f1",
+            "type": "bishop",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "h2",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "g3"
+        ],
+        "legal_moves": [
+          {
+            "uci": "h2h3",
+            "san": "h3"
+          },
+          {
+            "uci": "h2h4",
+            "san": "h4"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "h1",
+            "type": "rook",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "c3",
+          "type": "knight",
+          "color": "white"
+        },
+        "attacks": [
+          "b1",
+          "d1",
+          "a2",
+          "e2",
+          "a4",
+          "e4",
+          "b5",
+          "d5"
+        ],
+        "legal_moves": [],
+        "attacked_by": [
+          {
+            "square": "b4",
+            "type": "bishop",
+            "color": "black"
+          }
+        ],
+        "defended_by": [
+          {
+            "square": "b2",
+            "type": "pawn",
+            "color": "white"
+          }
+        ],
+        "pin": {
+          "pinner": {
+            "square": "b4",
+            "type": "bishop",
+            "color": "black"
+          },
+          "shielded": {
+            "square": "e1",
+            "type": "king",
+            "color": "white"
+          },
+          "absolute": true
+        }
+      },
+      {
+        "piece": {
+          "square": "b4",
+          "type": "bishop",
+          "color": "black"
+        },
+        "attacks": [
+          "a3",
+          "c3",
+          "a5",
+          "c5",
+          "d6",
+          "e7",
+          "f8"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "c4",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "b5",
+          "d5"
+        ],
+        "legal_moves": [
+          {
+            "uci": "c4c5",
+            "san": "c5"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "d4",
+          "type": "pawn",
+          "color": "white"
+        },
+        "attacks": [
+          "c5",
+          "e5"
+        ],
+        "legal_moves": [
+          {
+            "uci": "d4d5",
+            "san": "d5"
+          }
+        ],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "d1",
+            "type": "queen",
+            "color": "white"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "e6",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "d5",
+          "f5"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "d7",
+            "type": "pawn",
+            "color": "black"
+          },
+          {
+            "square": "f7",
+            "type": "pawn",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "f6",
+          "type": "knight",
+          "color": "black"
+        },
+        "attacks": [
+          "e4",
+          "g4",
+          "d5",
+          "h5",
+          "d7",
+          "h7",
+          "e8",
+          "g8"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "g7",
+            "type": "pawn",
+            "color": "black"
+          },
+          {
+            "square": "d8",
+            "type": "queen",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "a7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "b6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "a8",
+            "type": "rook",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "b7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "a6",
+          "c6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "c8",
+            "type": "bishop",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "c7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "b6",
+          "d6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "d8",
+            "type": "queen",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "d7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "c6",
+          "e6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "f6",
+            "type": "knight",
+            "color": "black"
+          },
+          {
+            "square": "b8",
+            "type": "knight",
+            "color": "black"
+          },
+          {
+            "square": "c8",
+            "type": "bishop",
+            "color": "black"
+          },
+          {
+            "square": "d8",
+            "type": "queen",
+            "color": "black"
+          },
+          {
+            "square": "e8",
+            "type": "king",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "f7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "e6",
+          "g6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "e8",
+            "type": "king",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "g7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "f6",
+          "h6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "h7",
+          "type": "pawn",
+          "color": "black"
+        },
+        "attacks": [
+          "g6"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "f6",
+            "type": "knight",
+            "color": "black"
+          },
+          {
+            "square": "h8",
+            "type": "rook",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "a8",
+          "type": "rook",
+          "color": "black"
+        },
+        "attacks": [
+          "a7",
+          "b8"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "b8",
+          "type": "knight",
+          "color": "black"
+        },
+        "attacks": [
+          "a6",
+          "c6",
+          "d7"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "a8",
+            "type": "rook",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "c8",
+          "type": "bishop",
+          "color": "black"
+        },
+        "attacks": [
+          "b7",
+          "d7"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "d8",
+            "type": "queen",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "d8",
+          "type": "queen",
+          "color": "black"
+        },
+        "attacks": [
+          "f6",
+          "c7",
+          "d7",
+          "e7",
+          "c8",
+          "e8"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "e8",
+            "type": "king",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "e8",
+          "type": "king",
+          "color": "black"
+        },
+        "attacks": [
+          "d7",
+          "e7",
+          "f7",
+          "d8",
+          "f8"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [
+          {
+            "square": "f6",
+            "type": "knight",
+            "color": "black"
+          },
+          {
+            "square": "d8",
+            "type": "queen",
+            "color": "black"
+          },
+          {
+            "square": "h8",
+            "type": "rook",
+            "color": "black"
+          }
+        ],
+        "pin": null
+      },
+      {
+        "piece": {
+          "square": "h8",
+          "type": "rook",
+          "color": "black"
+        },
+        "attacks": [
+          "h7",
+          "e8",
+          "f8",
+          "g8"
+        ],
+        "legal_moves": [],
+        "attacked_by": [],
+        "defended_by": [],
+        "pin": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+chess>=1.10
+jsonschema>=4.21
+referencing>=0.35
+PyYAML>=6.0
+pytest>=8.0
+# only needed to regenerate types/python: datamodel-code-generator

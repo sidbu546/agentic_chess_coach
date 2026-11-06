@@ -1,0 +1,42 @@
+{
+  "name": "start-play-e4",
+  "method": "POST",
+  "path": "/v1/move",
+  "description": "Playing 1.e4 returns the new PositionRef to send next.",
+  "request": {
+    "position": {
+      "moves": []
+    },
+    "move": "e2e4"
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "legal": true,
+    "move": {
+      "uci": "e2e4",
+      "san": "e4"
+    },
+    "next": {
+      "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "moves": [
+        "e2e4"
+      ]
+    },
+    "position": {
+      "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+      "side_to_move": "black",
+      "fullmove_number": 1,
+      "halfmove_clock": 0,
+      "ply": 1
+    },
+    "status": {
+      "state": "ongoing",
+      "is_game_over": false,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "reason": null
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "name": "start-position",
+  "method": "POST",
+  "path": "/v1/position",
+  "description": "The initial position: 20 legal moves, equal material, no facts.",
+  "request": {
+    "position": {
+      "moves": []
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "side_to_move": "white",
+      "fullmove_number": 1,
+      "halfmove_clock": 0,
+      "ply": 0
+    },
+    "status": {
+      "state": "ongoing",
+      "is_game_over": false,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "legal_moves": [
+      {
+        "uci": "a2a3",
+        "san": "a3"
+      },
+      {
+        "uci": "a2a4",
+        "san": "a4"
+      },
+      {
+        "uci": "b1a3",
+        "san": "Na3"
+      },
+      {
+        "uci": "b1c3",
+        "san": "Nc3"
+      },
+      {
+        "uci": "b2b3",
+        "san": "b3"
+      },
+      {
+        "uci": "b2b4",
+        "san": "b4"
+      },
+      {
+        "uci": "c2c3",
+        "san": "c3"
+      },
+      {
+        "uci": "c2c4",
+        "san": "c4"
+      },
+      {
+        "uci": "d2d3",
+        "san": "d3"
+      },
+      {
+        "uci": "d2d4",
+        "san": "d4"
+      },
+      {
+        "uci": "e2e3",
+        "san": "e3"
+      },
+      {
+        "uci": "e2e4",
+        "san": "e4"
+      },
+      {
+        "uci": "f2f3",
+        "san": "f3"
+      },
+      {
+        "uci": "f2f4",
+        "san": "f4"
+      },
+      {
+        "uci": "g1f3",
+        "san": "Nf3"
+      },
+      {
+        "uci": "g1h3",
+        "san": "Nh3"
+      },
+      {
+        "uci": "g2g3",
+        "san": "g3"
+      },
+      {
+        "uci": "g2g4",
+        "san": "g4"
+      },
+      {
+        "uci": "h2h3",
+        "san": "h3"
+      },
+      {
+        "uci": "h2h4",
+        "san": "h4"
+      }
+    ],
+    "material": {
+      "white": {
+        "pawn": 8,
+        "knight": 2,
+        "bishop": 2,
+        "rook": 2,
+        "queen": 1
+      },
+      "black": {
+        "pawn": 8,
+        "knight": 2,
+        "bishop": 2,
+        "rook": 2,
+        "queen": 1
+      },
+      "balance_cp": 0
+    },
+    "facts": []
+  }
+}

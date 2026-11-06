@@ -1,0 +1,205 @@
+{
+  "name": "mate-in-one-analyze",
+  "method": "POST",
+  "path": "/v1/analyze",
+  "description": "Scholar's mate set-up: the engine reports mate in 1 (score type mate).",
+  "request": {
+    "position": {
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "f1c4",
+        "b8c6",
+        "d1h5",
+        "g8f6"
+      ]
+    },
+    "limits": {
+      "depth": 16,
+      "multipv": 3
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+      "side_to_move": "white",
+      "fullmove_number": 4,
+      "halfmove_clock": 4,
+      "ply": 6
+    },
+    "status": {
+      "state": "ongoing",
+      "is_game_over": false,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "analysis": {
+      "engine": {
+        "name": "Stockfish",
+        "version": "17.1"
+      },
+      "depth": 16,
+      "nodes": 36254,
+      "time_ms": 58,
+      "multipv": 3,
+      "candidates": [
+        {
+          "rank": 1,
+          "move": {
+            "uci": "h5f7",
+            "san": "Qxf7#"
+          },
+          "score": {
+            "type": "mate",
+            "value": 1,
+            "pov": "white"
+          },
+          "pv": [
+            {
+              "uci": "h5f7",
+              "san": "Qxf7#"
+            }
+          ],
+          "depth": 16
+        },
+        {
+          "rank": 2,
+          "move": {
+            "uci": "h5h4",
+            "san": "Qh4"
+          },
+          "score": {
+            "type": "cp",
+            "value": -125,
+            "pov": "white"
+          },
+          "pv": [
+            {
+              "uci": "h5h4",
+              "san": "Qh4"
+            },
+            {
+              "uci": "c6d4",
+              "san": "Nd4"
+            },
+            {
+              "uci": "c4b3",
+              "san": "Bb3"
+            },
+            {
+              "uci": "d7d5",
+              "san": "d5"
+            },
+            {
+              "uci": "g1f3",
+              "san": "Nf3"
+            },
+            {
+              "uci": "d4b3",
+              "san": "Nxb3"
+            },
+            {
+              "uci": "a2b3",
+              "san": "axb3"
+            },
+            {
+              "uci": "d5e4",
+              "san": "dxe4"
+            },
+            {
+              "uci": "f3e5",
+              "san": "Nxe5"
+            },
+            {
+              "uci": "f8e7",
+              "san": "Be7"
+            },
+            {
+              "uci": "h4f4",
+              "san": "Qf4"
+            }
+          ],
+          "depth": 16
+        },
+        {
+          "rank": 3,
+          "move": {
+            "uci": "h5d1",
+            "san": "Qd1"
+          },
+          "score": {
+            "type": "cp",
+            "value": -203,
+            "pov": "white"
+          },
+          "pv": [
+            {
+              "uci": "h5d1",
+              "san": "Qd1"
+            },
+            {
+              "uci": "f6e4",
+              "san": "Nxe4"
+            },
+            {
+              "uci": "b1c3",
+              "san": "Nc3"
+            },
+            {
+              "uci": "e4f6",
+              "san": "Nf6"
+            },
+            {
+              "uci": "d2d3",
+              "san": "d3"
+            },
+            {
+              "uci": "d7d5",
+              "san": "d5"
+            },
+            {
+              "uci": "c4b3",
+              "san": "Bb3"
+            },
+            {
+              "uci": "c8g4",
+              "san": "Bg4"
+            },
+            {
+              "uci": "g1f3",
+              "san": "Nf3"
+            },
+            {
+              "uci": "d5d4",
+              "san": "d4"
+            },
+            {
+              "uci": "c3e4",
+              "san": "Ne4"
+            },
+            {
+              "uci": "f6e4",
+              "san": "Nxe4"
+            },
+            {
+              "uci": "d3e4",
+              "san": "dxe4"
+            },
+            {
+              "uci": "f7f6",
+              "san": "f6"
+            },
+            {
+              "uci": "a2a3",
+              "san": "a3"
+            }
+          ],
+          "depth": 16
+        }
+      ]
+    }
+  }
+}

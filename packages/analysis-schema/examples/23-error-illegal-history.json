@@ -1,0 +1,26 @@
+{
+  "name": "error-illegal-history",
+  "method": "POST",
+  "path": "/v1/analyze",
+  "description": "The third move in the history is illegal.",
+  "request": {
+    "position": {
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "e4e5"
+      ]
+    }
+  },
+  "status": 422,
+  "response": {
+    "error": {
+      "code": "illegal_move_in_history",
+      "message": "Move 3 (e4e5) is not legal in its position",
+      "details": {
+        "index": 2,
+        "move": "e4e5"
+      }
+    }
+  }
+}

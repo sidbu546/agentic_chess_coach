@@ -1,0 +1,463 @@
+{
+  "name": "compare-italian",
+  "method": "POST",
+  "path": "/v1/compare",
+  "description": "Compare Ng5 (attacks f7), d3 (quiet) and Bxf7+ (gives up the bishop) against the engine's best move.",
+  "request": {
+    "position": {
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "f1c4",
+        "g8f6"
+      ]
+    },
+    "moves": [
+      "f3g5",
+      "d2d3",
+      "c4f7"
+    ],
+    "limits": {
+      "depth": 16,
+      "multipv": 3
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+      "side_to_move": "white",
+      "fullmove_number": 4,
+      "halfmove_clock": 4,
+      "ply": 6
+    },
+    "best": {
+      "rank": 1,
+      "move": {
+        "uci": "d2d3",
+        "san": "d3"
+      },
+      "score": {
+        "type": "cp",
+        "value": 44,
+        "pov": "white"
+      },
+      "pv": [
+        {
+          "uci": "d2d3",
+          "san": "d3"
+        },
+        {
+          "uci": "f8e7",
+          "san": "Be7"
+        },
+        {
+          "uci": "a2a4",
+          "san": "a4"
+        },
+        {
+          "uci": "d7d5",
+          "san": "d5"
+        },
+        {
+          "uci": "e4d5",
+          "san": "exd5"
+        },
+        {
+          "uci": "f6d5",
+          "san": "Nxd5"
+        },
+        {
+          "uci": "e1g1",
+          "san": "O-O"
+        },
+        {
+          "uci": "d5b6",
+          "san": "Nb6"
+        },
+        {
+          "uci": "c4b3",
+          "san": "Bb3"
+        },
+        {
+          "uci": "e8g8",
+          "san": "O-O"
+        },
+        {
+          "uci": "h2h3",
+          "san": "h3"
+        },
+        {
+          "uci": "b6d7",
+          "san": "Nd7"
+        }
+      ],
+      "depth": 16
+    },
+    "lines": [
+      {
+        "move": {
+          "uci": "f3g5",
+          "san": "Ng5"
+        },
+        "score": {
+          "type": "cp",
+          "value": 3,
+          "pov": "white"
+        },
+        "pv": [
+          {
+            "uci": "f3g5",
+            "san": "Ng5"
+          },
+          {
+            "uci": "d7d5",
+            "san": "d5"
+          },
+          {
+            "uci": "e4d5",
+            "san": "exd5"
+          },
+          {
+            "uci": "c6a5",
+            "san": "Na5"
+          },
+          {
+            "uci": "c4b5",
+            "san": "Bb5+"
+          },
+          {
+            "uci": "c7c6",
+            "san": "c6"
+          },
+          {
+            "uci": "d5c6",
+            "san": "dxc6"
+          },
+          {
+            "uci": "b7c6",
+            "san": "bxc6"
+          },
+          {
+            "uci": "b5d3",
+            "san": "Bd3"
+          },
+          {
+            "uci": "f6d5",
+            "san": "Nd5"
+          },
+          {
+            "uci": "h2h4",
+            "san": "h4"
+          },
+          {
+            "uci": "d5f4",
+            "san": "Nf4"
+          },
+          {
+            "uci": "d3f1",
+            "san": "Bf1"
+          },
+          {
+            "uci": "f4d5",
+            "san": "Nd5"
+          },
+          {
+            "uci": "d1h5",
+            "san": "Qh5"
+          },
+          {
+            "uci": "g7g6",
+            "san": "g6"
+          },
+          {
+            "uci": "h5e2",
+            "san": "Qe2"
+          },
+          {
+            "uci": "f8g7",
+            "san": "Bg7"
+          }
+        ],
+        "loss_cp": 41,
+        "is_best": false,
+        "differences": [
+          {
+            "kind": "fact_created",
+            "at_ply": 1,
+            "fact": {
+              "kind": "xray",
+              "attacker": {
+                "square": "d8",
+                "type": "queen",
+                "color": "black"
+              },
+              "blocker": {
+                "square": "f6",
+                "type": "knight",
+                "color": "black"
+              },
+              "target": {
+                "square": "g5",
+                "type": "knight",
+                "color": "white"
+              }
+            }
+          },
+          {
+            "kind": "fact_removed",
+            "at_ply": 1,
+            "fact": {
+              "kind": "hanging",
+              "piece": {
+                "square": "e4",
+                "type": "pawn",
+                "color": "white"
+              },
+              "attackers": [
+                {
+                  "square": "f6",
+                  "type": "knight",
+                  "color": "black"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "material",
+            "balance_cp_before": 0,
+            "balance_cp_after": 100,
+            "after_plies": 18
+          }
+        ]
+      },
+      {
+        "move": {
+          "uci": "d2d3",
+          "san": "d3"
+        },
+        "score": {
+          "type": "cp",
+          "value": 44,
+          "pov": "white"
+        },
+        "pv": [
+          {
+            "uci": "d2d3",
+            "san": "d3"
+          },
+          {
+            "uci": "f8e7",
+            "san": "Be7"
+          },
+          {
+            "uci": "a2a4",
+            "san": "a4"
+          },
+          {
+            "uci": "d7d5",
+            "san": "d5"
+          },
+          {
+            "uci": "e4d5",
+            "san": "exd5"
+          },
+          {
+            "uci": "f6d5",
+            "san": "Nxd5"
+          },
+          {
+            "uci": "e1g1",
+            "san": "O-O"
+          },
+          {
+            "uci": "d5b6",
+            "san": "Nb6"
+          },
+          {
+            "uci": "c4b3",
+            "san": "Bb3"
+          },
+          {
+            "uci": "e8g8",
+            "san": "O-O"
+          },
+          {
+            "uci": "h2h3",
+            "san": "h3"
+          },
+          {
+            "uci": "b6d7",
+            "san": "Nd7"
+          }
+        ],
+        "loss_cp": 0,
+        "is_best": true,
+        "differences": [
+          {
+            "kind": "fact_removed",
+            "at_ply": 1,
+            "fact": {
+              "kind": "hanging",
+              "piece": {
+                "square": "e4",
+                "type": "pawn",
+                "color": "white"
+              },
+              "attackers": [
+                {
+                  "square": "f6",
+                  "type": "knight",
+                  "color": "black"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "move": {
+          "uci": "c4f7",
+          "san": "Bxf7+"
+        },
+        "score": {
+          "type": "cp",
+          "value": -368,
+          "pov": "white"
+        },
+        "pv": [
+          {
+            "uci": "c4f7",
+            "san": "Bxf7+"
+          },
+          {
+            "uci": "e8f7",
+            "san": "Kxf7"
+          },
+          {
+            "uci": "d2d4",
+            "san": "d4"
+          },
+          {
+            "uci": "d7d5",
+            "san": "d5"
+          },
+          {
+            "uci": "f3e5",
+            "san": "Nxe5+"
+          },
+          {
+            "uci": "c6e5",
+            "san": "Nxe5"
+          },
+          {
+            "uci": "d4e5",
+            "san": "dxe5"
+          },
+          {
+            "uci": "f6e4",
+            "san": "Nxe4"
+          },
+          {
+            "uci": "e1g1",
+            "san": "O-O"
+          },
+          {
+            "uci": "c7c6",
+            "san": "c6"
+          },
+          {
+            "uci": "c2c4",
+            "san": "c4"
+          },
+          {
+            "uci": "f7g8",
+            "san": "Kg8"
+          },
+          {
+            "uci": "c4d5",
+            "san": "cxd5"
+          },
+          {
+            "uci": "d8d5",
+            "san": "Qxd5"
+          },
+          {
+            "uci": "f2f3",
+            "san": "f3"
+          },
+          {
+            "uci": "d5d1",
+            "san": "Qxd1"
+          },
+          {
+            "uci": "f1d1",
+            "san": "Rxd1"
+          },
+          {
+            "uci": "e4c5",
+            "san": "Nc5"
+          }
+        ],
+        "loss_cp": 412,
+        "is_best": false,
+        "differences": [
+          {
+            "kind": "fact_created",
+            "at_ply": 1,
+            "fact": {
+              "kind": "hanging",
+              "piece": {
+                "square": "f7",
+                "type": "bishop",
+                "color": "white"
+              },
+              "attackers": [
+                {
+                  "square": "e8",
+                  "type": "king",
+                  "color": "black"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "fact_created",
+            "at_ply": 1,
+            "fact": {
+              "kind": "check",
+              "checker": {
+                "square": "f7",
+                "type": "bishop",
+                "color": "white"
+              },
+              "king": {
+                "square": "e8",
+                "type": "king",
+                "color": "black"
+              }
+            }
+          },
+          {
+            "kind": "fact_created",
+            "at_ply": 1,
+            "fact": {
+              "kind": "semi_open_file",
+              "file": "f",
+              "open_for": "black"
+            }
+          },
+          {
+            "kind": "material",
+            "balance_cp_before": 0,
+            "balance_cp_after": -200,
+            "after_plies": 18
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "unparseable-move",
+  "method": "POST",
+  "path": "/v1/move",
+  "description": "Garbage input is a 200 with reason unparseable_move, not an HTTP error.",
+  "request": {
+    "position": {
+      "moves": []
+    },
+    "move": "Zz9",
+    "notation": "san"
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "legal": false,
+    "move": null,
+    "next": null,
+    "position": null,
+    "status": null,
+    "reason": {
+      "code": "unparseable_move",
+      "message": "'Zz9' is not a legal move here."
+    }
+  }
+}

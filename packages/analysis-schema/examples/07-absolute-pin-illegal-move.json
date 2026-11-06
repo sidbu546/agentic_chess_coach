@@ -1,0 +1,59 @@
+{
+  "name": "absolute-pin-illegal-move",
+  "method": "POST",
+  "path": "/v1/move",
+  "description": "Moving the pinned knight is illegal; the response carries the pin that explains why.",
+  "request": {
+    "position": {
+      "moves": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e6",
+        "b1c3",
+        "f8b4"
+      ]
+    },
+    "move": "c3e4"
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "legal": false,
+    "move": null,
+    "next": null,
+    "position": null,
+    "status": null,
+    "reason": {
+      "code": "illegal_move",
+      "message": "c3e4 is not legal in this position.",
+      "facts": [
+        {
+          "kind": "pin",
+          "pinned": {
+            "square": "c3",
+            "type": "knight",
+            "color": "white"
+          },
+          "pinner": {
+            "square": "b4",
+            "type": "bishop",
+            "color": "black"
+          },
+          "shielded": {
+            "square": "e1",
+            "type": "king",
+            "color": "white"
+          },
+          "absolute": true,
+          "ray": [
+            "b4",
+            "c3",
+            "d2",
+            "e1"
+          ]
+        }
+      ]
+    }
+  }
+}

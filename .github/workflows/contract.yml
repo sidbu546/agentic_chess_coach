@@ -1,0 +1,22 @@
+name: contract
+on:
+  push:
+  pull_request:
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/analysis-schema
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: Spec and examples
+        run: pytest tests/ -q
+      - name: Mock server passes the contract
+        run: |
+          python mock/server.py --port 8064 &
+          sleep 2
+          CONTRACT_BASE_URL=http://127.0.0.1:8064 pytest tests/ -q

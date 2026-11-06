@@ -1,0 +1,82 @@
+{
+  "name": "stalemate-position",
+  "method": "POST",
+  "path": "/v1/position",
+  "description": "Black to move has no legal moves and is not in check.",
+  "request": {
+    "position": {
+      "moves": [],
+      "start_fen": "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1"
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1",
+      "side_to_move": "black",
+      "fullmove_number": 1,
+      "halfmove_clock": 0,
+      "ply": 0
+    },
+    "status": {
+      "state": "stalemate",
+      "is_game_over": true,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "legal_moves": [],
+    "material": {
+      "white": {
+        "pawn": 0,
+        "knight": 0,
+        "bishop": 0,
+        "rook": 0,
+        "queen": 1
+      },
+      "black": {
+        "pawn": 0,
+        "knight": 0,
+        "bishop": 0,
+        "rook": 0,
+        "queen": 0
+      },
+      "balance_cp": 900
+    },
+    "facts": [
+      {
+        "kind": "open_file",
+        "file": "a"
+      },
+      {
+        "kind": "open_file",
+        "file": "b"
+      },
+      {
+        "kind": "open_file",
+        "file": "c"
+      },
+      {
+        "kind": "open_file",
+        "file": "d"
+      },
+      {
+        "kind": "open_file",
+        "file": "e"
+      },
+      {
+        "kind": "open_file",
+        "file": "f"
+      },
+      {
+        "kind": "open_file",
+        "file": "g"
+      },
+      {
+        "kind": "open_file",
+        "file": "h"
+      }
+    ]
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "name": "game-with-variation",
+  "method": "POST",
+  "path": "/v1/game",
+  "description": "A PGN with a side variation and a comment, parsed into a move tree with a PositionRef per node.",
+  "request": {
+    "pgn": "[Event \"Think64 contract example\"]\n[White \"Student\"]\n[Black \"Opponent\"]\n[Result \"1-0\"]\n\n1. e4 e5 2. Bc4 Nc6 3. Qh5 Nf6? (3... g6 {defends f7 and attacks the queen} 4. Qf3) 4. Qxf7# 1-0\n"
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "headers": {
+      "Event": "Think64 contract example",
+      "Site": "?",
+      "Date": "????.??.??",
+      "Round": "?",
+      "White": "Student",
+      "Black": "Opponent",
+      "Result": "1-0"
+    },
+    "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    "result": "1-0",
+    "nodes": [
+      {
+        "id": "n1",
+        "parent_id": null,
+        "ply": 1,
+        "move": {
+          "uci": "e2e4",
+          "san": "e4"
+        },
+        "fen_after": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4"
+          ]
+        },
+        "is_mainline": true,
+        "children": [
+          "n2"
+        ],
+        "comment": null,
+        "nags": []
+      },
+      {
+        "id": "n2",
+        "parent_id": "n1",
+        "ply": 2,
+        "move": {
+          "uci": "e7e5",
+          "san": "e5"
+        },
+        "fen_after": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5"
+          ]
+        },
+        "is_mainline": true,
+        "children": [
+          "n3"
+        ],
+        "comment": null,
+        "nags": []
+      },
+      {
+        "id": "n3",
+        "parent_id": "n2",
+        "ply": 3,
+        "move": {
+          "uci": "f1c4",
+          "san": "Bc4"
+        },
+        "fen_after": "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4"
+          ]
+        },
+        "is_mainline": true,
+        "children": [
+          "n4"
+        ],
+        "comment": null,
+        "nags": []
+      },
+      {
+        "id": "n4",
+        "parent_id": "n3",
+        "ply": 4,
+        "move": {
+          "uci": "b8c6",
+          "san": "Nc6"
+        },
+        "fen_after": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6"
+          ]
+        },
+        "is_mainline": true,
+        "children": [
+          "n5"
+        ],
+        "comment": null,
+        "nags": []
+      },
+      {
+        "id": "n5",
+        "parent_id": "n4",
+        "ply": 5,
+        "move": {
+          "uci": "d1h5",
+          "san": "Qh5"
+        },
+        "fen_after": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6",
+            "d1h5"
+          ]
+        },
+        "is_mainline": true,
+        "children": [
+          "n6",
+          "n8"
+        ],
+        "comment": null,
+        "nags": []
+      },
+      {
+        "id": "n6",
+        "parent_id": "n5",
+        "ply": 6,
+        "move": {
+          "uci": "g8f6",
+          "san": "Nf6"
+        },
+        "fen_after": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6",
+            "d1h5",
+            "g8f6"
+          ]
+        },
+        "is_mainline": true,
+        "children": [
+          "n7"
+        ],
+        "comment": null,
+        "nags": [
+          2
+        ]
+      },
+      {
+        "id": "n7",
+        "parent_id": "n6",
+        "ply": 7,
+        "move": {
+          "uci": "h5f7",
+          "san": "Qxf7#"
+        },
+        "fen_after": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6",
+            "d1h5",
+            "g8f6",
+            "h5f7"
+          ]
+        },
+        "is_mainline": true,
+        "children": [],
+        "comment": null,
+        "nags": []
+      },
+      {
+        "id": "n8",
+        "parent_id": "n5",
+        "ply": 6,
+        "move": {
+          "uci": "g7g6",
+          "san": "g6"
+        },
+        "fen_after": "r1bqkbnr/pppp1p1p/2n3p1/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 4",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6",
+            "d1h5",
+            "g7g6"
+          ]
+        },
+        "is_mainline": false,
+        "children": [
+          "n9"
+        ],
+        "comment": "defends f7 and attacks the queen",
+        "nags": []
+      },
+      {
+        "id": "n9",
+        "parent_id": "n8",
+        "ply": 7,
+        "move": {
+          "uci": "h5f3",
+          "san": "Qf3"
+        },
+        "fen_after": "r1bqkbnr/pppp1p1p/2n3p1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR b KQkq - 1 4",
+        "position": {
+          "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "moves": [
+            "e2e4",
+            "e7e5",
+            "f1c4",
+            "b8c6",
+            "d1h5",
+            "g7g6",
+            "h5f3"
+          ]
+        },
+        "is_mainline": false,
+        "children": [],
+        "comment": null,
+        "nags": []
+      }
+    ],
+    "mainline": [
+      "n1",
+      "n2",
+      "n3",
+      "n4",
+      "n5",
+      "n6",
+      "n7"
+    ]
+  }
+}

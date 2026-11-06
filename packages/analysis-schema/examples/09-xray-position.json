@@ -1,0 +1,218 @@
+{
+  "name": "xray-position",
+  "method": "POST",
+  "path": "/v1/position",
+  "description": "Rd1 x-rays the black queen through its own bishop; the queen also pins that bishop to the rook.",
+  "request": {
+    "position": {
+      "moves": [],
+      "start_fen": "3qk3/8/8/8/3B4/8/8/3RK3 w - - 0 1"
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "3qk3/8/8/8/3B4/8/8/3RK3 w - - 0 1",
+      "side_to_move": "white",
+      "fullmove_number": 1,
+      "halfmove_clock": 0,
+      "ply": 0
+    },
+    "status": {
+      "state": "ongoing",
+      "is_game_over": false,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "legal_moves": [
+      {
+        "uci": "d1a1",
+        "san": "Ra1"
+      },
+      {
+        "uci": "d1b1",
+        "san": "Rb1"
+      },
+      {
+        "uci": "d1c1",
+        "san": "Rc1"
+      },
+      {
+        "uci": "d1d2",
+        "san": "Rd2"
+      },
+      {
+        "uci": "d1d3",
+        "san": "Rd3"
+      },
+      {
+        "uci": "d4a1",
+        "san": "Ba1"
+      },
+      {
+        "uci": "d4a7",
+        "san": "Ba7"
+      },
+      {
+        "uci": "d4b2",
+        "san": "Bb2"
+      },
+      {
+        "uci": "d4b6",
+        "san": "Bb6"
+      },
+      {
+        "uci": "d4c3",
+        "san": "Bc3"
+      },
+      {
+        "uci": "d4c5",
+        "san": "Bc5"
+      },
+      {
+        "uci": "d4e3",
+        "san": "Be3"
+      },
+      {
+        "uci": "d4e5",
+        "san": "Be5"
+      },
+      {
+        "uci": "d4f2",
+        "san": "Bf2"
+      },
+      {
+        "uci": "d4f6",
+        "san": "Bf6"
+      },
+      {
+        "uci": "d4g1",
+        "san": "Bg1"
+      },
+      {
+        "uci": "d4g7",
+        "san": "Bg7"
+      },
+      {
+        "uci": "d4h8",
+        "san": "Bh8"
+      },
+      {
+        "uci": "e1d2",
+        "san": "Kd2"
+      },
+      {
+        "uci": "e1e2",
+        "san": "Ke2"
+      },
+      {
+        "uci": "e1f1",
+        "san": "Kf1"
+      },
+      {
+        "uci": "e1f2",
+        "san": "Kf2"
+      }
+    ],
+    "material": {
+      "white": {
+        "pawn": 0,
+        "knight": 0,
+        "bishop": 1,
+        "rook": 1,
+        "queen": 0
+      },
+      "black": {
+        "pawn": 0,
+        "knight": 0,
+        "bishop": 0,
+        "rook": 0,
+        "queen": 1
+      },
+      "balance_cp": -100
+    },
+    "facts": [
+      {
+        "kind": "pin",
+        "pinned": {
+          "square": "d4",
+          "type": "bishop",
+          "color": "white"
+        },
+        "pinner": {
+          "square": "d8",
+          "type": "queen",
+          "color": "black"
+        },
+        "shielded": {
+          "square": "d1",
+          "type": "rook",
+          "color": "white"
+        },
+        "absolute": false,
+        "ray": [
+          "d8",
+          "d7",
+          "d6",
+          "d5",
+          "d4",
+          "d3",
+          "d2",
+          "d1"
+        ]
+      },
+      {
+        "kind": "xray",
+        "attacker": {
+          "square": "d1",
+          "type": "rook",
+          "color": "white"
+        },
+        "blocker": {
+          "square": "d4",
+          "type": "bishop",
+          "color": "white"
+        },
+        "target": {
+          "square": "d8",
+          "type": "queen",
+          "color": "black"
+        }
+      },
+      {
+        "kind": "open_file",
+        "file": "a"
+      },
+      {
+        "kind": "open_file",
+        "file": "b"
+      },
+      {
+        "kind": "open_file",
+        "file": "c"
+      },
+      {
+        "kind": "open_file",
+        "file": "d"
+      },
+      {
+        "kind": "open_file",
+        "file": "e"
+      },
+      {
+        "kind": "open_file",
+        "file": "f"
+      },
+      {
+        "kind": "open_file",
+        "file": "g"
+      },
+      {
+        "kind": "open_file",
+        "file": "h"
+      }
+    ]
+  }
+}

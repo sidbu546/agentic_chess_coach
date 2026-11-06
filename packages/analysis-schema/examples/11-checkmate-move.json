@@ -1,0 +1,55 @@
+{
+  "name": "checkmate-move",
+  "method": "POST",
+  "path": "/v1/move",
+  "description": "Qxf7# ends the game: status.state checkmate, winner white.",
+  "request": {
+    "position": {
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "f1c4",
+        "b8c6",
+        "d1h5",
+        "g8f6"
+      ]
+    },
+    "move": "h5f7"
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "legal": true,
+    "move": {
+      "uci": "h5f7",
+      "san": "Qxf7#"
+    },
+    "next": {
+      "start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "f1c4",
+        "b8c6",
+        "d1h5",
+        "g8f6",
+        "h5f7"
+      ]
+    },
+    "position": {
+      "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+      "side_to_move": "black",
+      "fullmove_number": 4,
+      "halfmove_clock": 0,
+      "ply": 7
+    },
+    "status": {
+      "state": "checkmate",
+      "is_game_over": true,
+      "in_check": true,
+      "winner": "white",
+      "claimable_draws": []
+    },
+    "reason": null
+  }
+}

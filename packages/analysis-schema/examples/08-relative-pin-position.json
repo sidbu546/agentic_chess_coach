@@ -1,0 +1,240 @@
+{
+  "name": "relative-pin-position",
+  "method": "POST",
+  "path": "/v1/position",
+  "description": "Bg4 pins Nf3 to the queen: a relative pin, so knight moves stay legal.",
+  "request": {
+    "position": {
+      "moves": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "d7d6",
+        "d2d4",
+        "c8g4"
+      ]
+    }
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.1.0",
+    "position": {
+      "fen": "rn1qkbnr/ppp2ppp/3p4/4p3/3PP1b1/5N2/PPP2PPP/RNBQKB1R w KQkq - 1 4",
+      "side_to_move": "white",
+      "fullmove_number": 4,
+      "halfmove_clock": 1,
+      "ply": 6
+    },
+    "status": {
+      "state": "ongoing",
+      "is_game_over": false,
+      "in_check": false,
+      "winner": null,
+      "claimable_draws": []
+    },
+    "legal_moves": [
+      {
+        "uci": "a2a3",
+        "san": "a3"
+      },
+      {
+        "uci": "a2a4",
+        "san": "a4"
+      },
+      {
+        "uci": "b1a3",
+        "san": "Na3"
+      },
+      {
+        "uci": "b1c3",
+        "san": "Nc3"
+      },
+      {
+        "uci": "b1d2",
+        "san": "Nbd2"
+      },
+      {
+        "uci": "b2b3",
+        "san": "b3"
+      },
+      {
+        "uci": "b2b4",
+        "san": "b4"
+      },
+      {
+        "uci": "c1d2",
+        "san": "Bd2"
+      },
+      {
+        "uci": "c1e3",
+        "san": "Be3"
+      },
+      {
+        "uci": "c1f4",
+        "san": "Bf4"
+      },
+      {
+        "uci": "c1g5",
+        "san": "Bg5"
+      },
+      {
+        "uci": "c1h6",
+        "san": "Bh6"
+      },
+      {
+        "uci": "c2c3",
+        "san": "c3"
+      },
+      {
+        "uci": "c2c4",
+        "san": "c4"
+      },
+      {
+        "uci": "d1d2",
+        "san": "Qd2"
+      },
+      {
+        "uci": "d1d3",
+        "san": "Qd3"
+      },
+      {
+        "uci": "d1e2",
+        "san": "Qe2"
+      },
+      {
+        "uci": "d4d5",
+        "san": "d5"
+      },
+      {
+        "uci": "d4e5",
+        "san": "dxe5"
+      },
+      {
+        "uci": "e1d2",
+        "san": "Kd2"
+      },
+      {
+        "uci": "e1e2",
+        "san": "Ke2"
+      },
+      {
+        "uci": "f1a6",
+        "san": "Ba6"
+      },
+      {
+        "uci": "f1b5",
+        "san": "Bb5+"
+      },
+      {
+        "uci": "f1c4",
+        "san": "Bc4"
+      },
+      {
+        "uci": "f1d3",
+        "san": "Bd3"
+      },
+      {
+        "uci": "f1e2",
+        "san": "Be2"
+      },
+      {
+        "uci": "f3d2",
+        "san": "Nfd2"
+      },
+      {
+        "uci": "f3e5",
+        "san": "Nxe5"
+      },
+      {
+        "uci": "f3g1",
+        "san": "Ng1"
+      },
+      {
+        "uci": "f3g5",
+        "san": "Ng5"
+      },
+      {
+        "uci": "f3h4",
+        "san": "Nh4"
+      },
+      {
+        "uci": "g2g3",
+        "san": "g3"
+      },
+      {
+        "uci": "h1g1",
+        "san": "Rg1"
+      },
+      {
+        "uci": "h2h3",
+        "san": "h3"
+      },
+      {
+        "uci": "h2h4",
+        "san": "h4"
+      }
+    ],
+    "material": {
+      "white": {
+        "pawn": 8,
+        "knight": 2,
+        "bishop": 2,
+        "rook": 2,
+        "queen": 1
+      },
+      "black": {
+        "pawn": 8,
+        "knight": 2,
+        "bishop": 2,
+        "rook": 2,
+        "queen": 1
+      },
+      "balance_cp": 0
+    },
+    "facts": [
+      {
+        "kind": "pin",
+        "pinned": {
+          "square": "f3",
+          "type": "knight",
+          "color": "white"
+        },
+        "pinner": {
+          "square": "g4",
+          "type": "bishop",
+          "color": "black"
+        },
+        "shielded": {
+          "square": "d1",
+          "type": "queen",
+          "color": "white"
+        },
+        "absolute": false,
+        "ray": [
+          "g4",
+          "f3",
+          "e2",
+          "d1"
+        ]
+      },
+      {
+        "kind": "xray",
+        "attacker": {
+          "square": "d1",
+          "type": "queen",
+          "color": "white"
+        },
+        "blocker": {
+          "square": "f3",
+          "type": "knight",
+          "color": "white"
+        },
+        "target": {
+          "square": "g4",
+          "type": "bishop",
+          "color": "black"
+        }
+      }
+    ]
+  }
+}

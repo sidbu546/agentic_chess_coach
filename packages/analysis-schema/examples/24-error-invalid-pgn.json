@@ -1,0 +1,16 @@
+{
+  "name": "error-invalid-pgn",
+  "method": "POST",
+  "path": "/v1/game",
+  "description": "A PGN with an illegal move.",
+  "request": {
+    "pgn": "1. e4 e5 2. Ke3 Ke6 3. Qxh8 *"
+  },
+  "status": 422,
+  "response": {
+    "error": {
+      "code": "invalid_pgn",
+      "message": "illegal san: 'Ke3' in rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+    }
+  }
+}
