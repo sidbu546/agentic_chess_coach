@@ -1,4 +1,4 @@
-# Web app — Person 2
+# Web app — Siddhanth
 
 The Think64 board, coach chat, analysis panel, position setup and PGN viewer. The board is
 modelled on [En Croissant](https://encroissant.org/): lichess's chessground, Mantine dark UI, an
