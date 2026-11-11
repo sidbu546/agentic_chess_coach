@@ -1,0 +1,52 @@
+// Web app <-> coach service (services/coach). Person 2 owns both ends, so these types live on the
+// coach side rather than in packages/analysis-schema. Keep in sync with services/coach.
+import type { ClaimResult, Move, PositionRef, Square } from "@schema";
+
+export type AnnotationColor = "green" | "red" | "blue" | "yellow";
+
+export interface BoardArrow {
+  from: Square;
+  to: Square;
+  color: AnnotationColor;
+}
+
+export interface BoardHighlight {
+  square: Square;
+  color: AnnotationColor;
+}
+
+export interface BoardAnnotations {
+  arrows: BoardArrow[];
+  highlights: BoardHighlight[];
+}
+
+export interface ChatTurn {
+  role: "user" | "coach";
+  content: string;
+}
+
+export interface CoachRequest {
+  question: string;
+  /** The position on the board when the question was asked (start FEN + full history). */
+  position: PositionRef;
+  /** The move that led to this position, if any, so "why was that bad?" has a referent. */
+  last_move?: Move | null;
+  player_id: string;
+  /** Recent turns of this conversation, oldest first. */
+  history: ChatTurn[];
+}
+
+/** One claim the coach made, with the verifier's verdict from /v1/verify. */
+export interface CheckedClaim {
+  text: string;
+  result: ClaimResult;
+}
+
+export interface CoachResponse {
+  answer: string;
+  annotations: BoardAnnotations;
+  claims: CheckedClaim[];
+  /** Chess API endpoints the agent called, for transparency in the UI. */
+  tools_used: string[];
+  model: string;
+}
