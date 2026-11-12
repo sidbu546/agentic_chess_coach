@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Think64 chess truth API
-  version: 0.1.0
+  version: 0.2.0
   summary: The contract between the chess truth service (Person 1) and the coach and product (Person 2).
   description: |
     Everything that crosses the boundary between the two halves of Think64 is defined here.
@@ -169,7 +169,7 @@ components:
     # ---------- primitives ----------
     SchemaVersion:
       type: string
-      pattern: "^0\\.1\\.\\d+$"
+      pattern: "^0\\.2\\.\\d+$"
       description: Contract version. Minor bumps may add fields; anything else is a breaking change.
     Square:
       type: string
@@ -530,6 +530,12 @@ components:
         - { $ref: "#/components/schemas/MateInClaim" }
         - { $ref: "#/components/schemas/BestMoveClaim" }
         - { $ref: "#/components/schemas/BetterThanClaim" }
+        - { $ref: "#/components/schemas/MaterialBalanceClaim" }
+        - { $ref: "#/components/schemas/OpenFileClaim" }
+        - { $ref: "#/components/schemas/BishopPairClaim" }
+        - { $ref: "#/components/schemas/DoubledPawnsClaim" }
+        - { $ref: "#/components/schemas/IsolatedPawnClaim" }
+        - { $ref: "#/components/schemas/PassedPawnClaim" }
       discriminator:
         propertyName: type
         mapping:
@@ -544,6 +550,12 @@ components:
           mate_in: "#/components/schemas/MateInClaim"
           best_move: "#/components/schemas/BestMoveClaim"
           better_than: "#/components/schemas/BetterThanClaim"
+          material_balance: "#/components/schemas/MaterialBalanceClaim"
+          open_file: "#/components/schemas/OpenFileClaim"
+          bishop_pair: "#/components/schemas/BishopPairClaim"
+          doubled_pawns: "#/components/schemas/DoubledPawnsClaim"
+          isolated_pawn: "#/components/schemas/IsolatedPawnClaim"
+          passed_pawn: "#/components/schemas/PassedPawnClaim"
     LegalMoveClaim:
       type: object
       additionalProperties: false
@@ -648,6 +660,66 @@ components:
         type: { const: better_than }
         move: { $ref: "#/components/schemas/UciMove" }
         than: { $ref: "#/components/schemas/UciMove" }
+    # Structural claims (v0.2). Rules-only and deterministic: no engine involved.
+    MaterialBalanceClaim:
+      type: object
+      description: "Material balance (White minus Black, pawn 100 / minor 300 / rook 500 / queen 900, as in Material.balance_cp) equals `balance_cp`. 0 means material is equal."
+      additionalProperties: false
+      required: [id, type, balance_cp]
+      properties:
+        id: { type: string }
+        type: { const: material_balance }
+        balance_cp: { type: integer }
+    OpenFileClaim:
+      type: object
+      description: "`open_for` null: the file has no pawns at all (an open file). `open_for` a colour: the file has no pawns of that colour but has pawns of the other (semi-open for that side), as in SemiOpenFileFact."
+      additionalProperties: false
+      required: [id, type, file, open_for]
+      properties:
+        id: { type: string }
+        type: { const: open_file }
+        file: { $ref: "#/components/schemas/File" }
+        open_for:
+          oneOf:
+            - { $ref: "#/components/schemas/Color" }
+            - { type: "null" }
+    BishopPairClaim:
+      type: object
+      description: "`color` has bishops on both light and dark squares."
+      additionalProperties: false
+      required: [id, type, color]
+      properties:
+        id: { type: string }
+        type: { const: bishop_pair }
+        color: { $ref: "#/components/schemas/Color" }
+    DoubledPawnsClaim:
+      type: object
+      description: "`color` has two or more pawns on `file`."
+      additionalProperties: false
+      required: [id, type, color, file]
+      properties:
+        id: { type: string }
+        type: { const: doubled_pawns }
+        color: { $ref: "#/components/schemas/Color" }
+        file: { $ref: "#/components/schemas/File" }
+    IsolatedPawnClaim:
+      type: object
+      description: "There is a pawn on `square` and its side has no pawns on the adjacent files."
+      additionalProperties: false
+      required: [id, type, square]
+      properties:
+        id: { type: string }
+        type: { const: isolated_pawn }
+        square: { $ref: "#/components/schemas/Square" }
+    PassedPawnClaim:
+      type: object
+      description: "There is a pawn on `square` and no enemy pawn stands in front of it on its own or an adjacent file."
+      additionalProperties: false
+      required: [id, type, square]
+      properties:
+        id: { type: string }
+        type: { const: passed_pawn }
+        square: { $ref: "#/components/schemas/Square" }
     ClaimResult:
       type: object
       additionalProperties: false
