@@ -49,7 +49,10 @@ export interface CoachUsage {
 
 /** One claim the coach made, with the verifier's verdict from /v1/verify. */
 export interface CheckedClaim {
+  /** The model's own words. */
   text: string;
+  /** What the verifier actually tested, written by the coach (e.g. "after a3 Bxc3+ bxc3: white has doubled c-pawns"). */
+  checked?: string;
   result: ClaimResult;
 }
 

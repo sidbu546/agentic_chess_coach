@@ -22,6 +22,7 @@ from .pricing import cost_usd
 from .prompts import ANSWER_SCHEMA, revision_request, system_prompt
 from .schemas import BoardAnnotations, BoardArrow, BoardHighlight, CheckedClaim, CoachRequest, CoachResponse, Usage
 from .tools import TOOL_DEFINITIONS, ChessTools
+from .verification import ClaimChecker
 
 log = logging.getLogger("coach.agent")
 
@@ -90,7 +91,11 @@ class CoachAgent:
         checked = await self._verify(result.output.get("claims", []), position, limits, tools)
 
         for _ in range(self.settings.max_revisions):
-            problems = [f"\"{c.text}\": {c.result['verdict']} ({c.result['reason']})" for c in checked if c.result["verdict"] != "supported"]
+            problems = [
+                f"\"{c.text}\" (checked: {c.checked}): {c.result['verdict']} - {c.result['reason']}"
+                for c in checked
+                if c.result["verdict"] != "supported"
+            ]
             if not problems:
                 break
             result = await self.llm.run(messages=[{"role": "user", "content": revision_request(problems)}], state=result.state, **common)
@@ -144,88 +149,9 @@ class CoachAgent:
     async def _verify(
         self, raw_claims: list[dict[str, Any]], position: dict[str, Any], limits: dict[str, Any], tools: ChessTools
     ) -> list[CheckedClaim]:
-        """Convert LLM claims to contract claims and check them with /v1/verify, keeping the order."""
-        raw_claims = raw_claims[:20]
-        results: list[dict[str, Any] | None] = [None] * len(raw_claims)
-        to_send: list[tuple[int, dict[str, Any]]] = []
-        for i, raw in enumerate(raw_claims):
-            claim, local = await self._to_contract(raw, position, f"c{i}")
-            if local is not None:
-                results[i] = local
-            else:
-                to_send.append((i, claim))
-        if to_send:
-            if "verify" not in tools.used:
-                tools.used.append("verify")
-            data = await self.chess.verify(position, [c for _, c in to_send], limits)
-            for (i, _), res in zip(to_send, data["results"]):
-                results[i] = res
-        return [CheckedClaim(text=raw.get("text", ""), result=res) for raw, res in zip(raw_claims, results) if res]
-
-    async def _to_contract(self, raw: dict[str, Any], position: dict[str, Any], cid: str) -> tuple[dict[str, Any], dict[str, Any] | None]:
-        """Returns (claim, None) to send to /v1/verify, or ({}, local_result) when it can be decided here."""
-        t = raw.get("type")
-
-        def missing(*fields: str) -> dict[str, Any] | None:
-            gone = [f for f in fields if raw.get(f) in (None, "", [])]
-            return {"id": cid, "verdict": "unverifiable", "reason": f"claim is missing {', '.join(gone)}"} if gone else None
-
-        async def uci(field: str) -> tuple[str | None, dict[str, Any] | None]:
-            u, reason = await self.chess.to_uci(position, raw[field])
-            return (u, None) if u else (None, {"id": cid, "verdict": "refuted", "reason": reason or "not a legal move"})
-
-        if t in ("legal_move", "best_move"):
-            if (m := missing("move")):
-                return {}, m
-            u, bad = await uci("move")
-            if bad:
-                return {}, bad
-            return {"id": cid, "type": t, "move": u}, None
-        if t == "better_than":
-            if (m := missing("move", "than")):
-                return {}, m
-            u, bad = await uci("move")
-            if bad:
-                return {}, bad
-            v, bad = await uci("than")
-            if bad:
-                return {}, bad
-            return {"id": cid, "type": t, "move": u, "than": v}, None
-        if t == "legal_line":
-            if (m := missing("moves")):
-                return {}, m
-            pos, ucis = {**position, "moves": list(position["moves"])}, []
-            for san in raw["moves"][:20]:
-                data = await self.chess.move(pos, san, "san")
-                if not data["legal"]:
-                    return {}, {"id": cid, "verdict": "refuted", "reason": f"{san} is not legal at that point in the line"}
-                ucis.append(data["move"]["uci"])
-                pos = data["next"]
-            return {"id": cid, "type": t, "moves": ucis}, None
-        if t == "mate_in":
-            if (m := missing("mate_in_moves", "winner")):
-                return {}, m
-            return {"id": cid, "type": t, "moves": max(1, min(20, int(raw["mate_in_moves"]))), "winner": raw["winner"]}, None
-        if t in ("pinned", "hanging"):
-            if (m := missing("square")) or not SQUARE.match(raw["square"]):
-                return {}, m or {"id": cid, "verdict": "unverifiable", "reason": "bad square"}
-            claim = {"id": cid, "type": t, "square": raw["square"]}
-            if t == "pinned" and raw.get("absolute") is not None:
-                claim["absolute"] = bool(raw["absolute"])
-            return claim, None
-        if t in ("attacks", "defends"):
-            if (m := missing("from", "to")):
-                return {}, m
-            return {"id": cid, "type": t, "from": raw["from"], "to": raw["to"]}, None
-        if t == "piece_on":
-            if (m := missing("square", "piece_type", "color")):
-                return {}, m
-            return {"id": cid, "type": t, "square": raw["square"], "piece_type": raw["piece_type"], "color": raw["color"]}, None
-        if t == "in_check":
-            if (m := missing("color")):
-                return {}, m
-            return {"id": cid, "type": t, "color": raw["color"]}, None
-        return {}, {"id": cid, "verdict": "unverifiable", "reason": f"unknown claim type {t!r}"}
+        if raw_claims and "verify" not in tools.used:
+            tools.used.append("verify")
+        return await ClaimChecker(self.chess, position, limits).check(raw_claims)
 
     # ---------------------------------------------------------------- annotations
 

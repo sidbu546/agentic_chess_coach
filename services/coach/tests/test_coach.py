@@ -299,3 +299,90 @@ def test_openai_no_credit_is_reported_as_such():
             model="gpt-6.1-sol", effort="low", system="s", messages=[{"role": "user", "content": "q"}],
             tools=TOOL_DEFINITIONS, execute=execute, output_schema=ANSWER_SCHEMA, max_tool_rounds=2,
         ))
+
+
+# ---------------------------------------------------------------- v0.2: structural claims, claims after a line
+
+LINE = ["a3", "Bxc3+", "bxc3"]
+
+
+def test_structural_claims_about_the_position_after_a_line(chess_api_url):
+    """The live-test case: what holds after 4. a3 Bxc3+ 5. bxc3 is verified in that position."""
+    llm = QueueLLM([answer(
+        "After 4. a3 Bxc3+ 5. bxc3 White has doubled c-pawns but the bishop pair and a semi-open b-file; material is equal.",
+        [
+            claim("White has doubled c-pawns", "doubled_pawns", color="white", file="c", after=LINE),
+            claim("the bishop pair", "bishop_pair", color="white", after=LINE),
+            claim("a semi-open b-file", "open_file", file="b", open_for="white", after=LINE),
+            claim("material is equal", "material_balance", balance_cp=0, after=LINE),
+            claim("the knight on c3 is pinned", "pinned", square="c3", absolute=True),  # current position
+        ],
+    )])
+    body = ask(chess_api_url, llm, "What happens after a3 Bxc3+ bxc3?", NIMZO).json()
+    assert len(llm.calls) == 1
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"] * 5
+    checked = [c["checked"] for c in body["claims"]]
+    assert checked[0] == "after a3 Bxc3+ bxc3: white has doubled c-pawns"
+    assert checked[2] == "after a3 Bxc3+ bxc3: the b-file is semi-open for white"
+    assert checked[3] == "after a3 Bxc3+ bxc3: material is equal"
+    assert checked[4] == "the piece on c3 is absolutely pinned"
+
+
+def test_false_structural_claim_is_refuted(chess_api_url):
+    llm = QueueLLM([
+        answer("Black keeps the bishop pair.", [claim("Black keeps the bishop pair", "bishop_pair", color="black", after=LINE)]),
+        answer("Black gives up the bishop pair.", []),
+    ])
+    ask(chess_api_url, llm, "What happens after a3 Bxc3+ bxc3?", NIMZO)
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "refuted" in feedback and "after a3 Bxc3+ bxc3: black has the bishop pair" in feedback
+
+
+def test_legal_line_cannot_vouch_for_a_structural_statement(chess_api_url):
+    """The bug from the live test: a legal_line claim attached to 'the bishop pair' must not get a tick."""
+    llm = QueueLLM([
+        answer("White gets the bishop pair.", [claim("but also the bishop pair", "legal_line", moves=LINE)]),
+        answer("White gets the bishop pair.", [claim("the bishop pair", "bishop_pair", color="white", after=LINE)]),
+    ])
+    body = ask(chess_api_url, llm, "What happens after a3 Bxc3+ bxc3?", NIMZO).json()
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "only checks that moves can be played" in feedback
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]
+    assert body["claims"][0]["checked"] == "after a3 Bxc3+ bxc3: white has the bishop pair"
+
+
+def test_plain_legal_line_still_passes(chess_api_url):
+    llm = QueueLLM([answer("You can play 4. a3 Bxc3+ 5. bxc3.", [claim("4. a3 Bxc3+ 5. bxc3", "legal_line", moves=LINE)])])
+    body = ask(chess_api_url, llm, "Can I play a3 here?", NIMZO).json()
+    assert body["claims"][0]["result"]["verdict"] == "supported"
+    assert body["claims"][0]["checked"] == "the moves a3 Bxc3+ bxc3 can be played"
+
+
+def test_illegal_after_line_is_refuted(chess_api_url):
+    llm = QueueLLM([
+        answer("After Nxe5 ...", [claim("after Nxe5", "material_balance", balance_cp=100, after=["Nxe5"])]),
+        answer("ok", []),
+    ])
+    ask(chess_api_url, llm, "What about Nxe5?", NIMZO)
+    assert "the line is illegal at Nxe5" in llm.calls[1]["messages"][0]["content"]
+
+
+def test_service_without_v02_claims_degrades_to_unverifiable(chess_api_url):
+    """An older chess service rejects unknown claim types with 422; only those claims become unverifiable."""
+    from coach.chess_client import ChessApiError, ChessClient
+
+    class OldService(ChessClient):
+        async def verify(self, position, claims, limits):
+            if any(c["type"] == "bishop_pair" for c in claims):
+                raise ChessApiError("invalid_request", "unknown claim type", 422)
+            return await super().verify(position, claims, limits)
+
+    llm = QueueLLM([
+        answer("x", [claim("knight pinned", "pinned", square="c3"), claim("bishop pair", "bishop_pair", color="white")]),
+        answer("x", [claim("knight pinned", "pinned", square="c3")]),
+    ])
+    with TestClient(create_app(settings(chess_api_url), chess=OldService(chess_api_url), llm=llm)) as client:
+        body = client.post("/v1/coach/ask", json={"question": "what's pinned?", "position": NIMZO}).json()
+    first_feedback = llm.calls[1]["messages"][0]["content"]
+    assert "can't check bishop_pair claims" in first_feedback
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]

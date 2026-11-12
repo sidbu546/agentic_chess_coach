@@ -56,7 +56,10 @@ class BoardAnnotations(BaseModel):
 
 
 class CheckedClaim(BaseModel):
+    # The model's own words.
     text: str
+    # What the verifier actually tested, written by the coach (e.g. "the pawn on d4 is passed").
+    checked: str = ""
     # ClaimResult from /v1/verify: {id, verdict, reason, facts?}
     result: dict[str, Any]
 

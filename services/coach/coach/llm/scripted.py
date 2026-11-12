@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..prompts import CLAIM_VALUE_FIELDS
 from .base import LLMResult, LLMUsage, ToolExecutor
 
 LAST_MOVE_WORDS = re.compile(r"\b(last|previous|mistake|blunder|wrong|bad|why did|was it)\b", re.I)
@@ -19,8 +20,7 @@ STATUS = re.compile(r"^Status: (.*)$", re.M)
 
 
 def _blank_claim(text: str, type_: str, **fields: Any) -> dict[str, Any]:
-    base = {k: None for k in ("move", "than", "moves", "square", "from", "to", "piece_type", "color", "winner", "mate_in_moves", "absolute")}
-    return {**base, "text": text, "type": type_, **fields}
+    return {**{k: None for k in CLAIM_VALUE_FIELDS}, "text": text, "type": type_, **fields}
 
 
 class ScriptedAdapter:

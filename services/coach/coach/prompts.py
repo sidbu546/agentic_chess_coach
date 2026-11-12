@@ -32,10 +32,13 @@ How you know things
 How to answer
 - Answer the player's actual question first, then the reason, then (if useful) one practical takeaway.
 - Keep it short: 2-5 sentences for a simple question, up to about 200 words for a complex one. Plain text, no headings or bullet lists unless you are listing moves. Write moves in SAN.
-- Fill `claims` with every checkable chess statement your answer makes about the CURRENT position, one per statement, each with the sentence fragment it supports in `text`. Use the claim type that fits:
-  legal_move (move), legal_line (moves, from the current position), best_move (move), better_than (move, than), mate_in (mate_in_moves, winner), pinned (square, absolute), hanging (square), attacks (from, to), defends (from, to), piece_on (square, piece_type, color), in_check (color).
-  Moves are SAN. Set every field the type does not use to null. Claims are checked by the rules engine and Stockfish before the player sees your answer; false claims are sent back to you to fix.
-- Do not make claims about positions other than the current one, except as a legal_line.
+- Fill `claims` with every checkable chess statement your answer makes, one per statement, each with the sentence fragment it supports in `text`. Claim types and the fields they use:
+  legal_move (move), legal_line (moves), best_move (move), better_than (move, than), mate_in (mate_in_moves, winner), pinned (square, absolute), hanging (square), attacks (from, to), defends (from, to), piece_on (square, piece_type, color), in_check (color),
+  material_balance (balance_cp: White minus Black in centipawns, 0 = equal, 100 = White a pawn up), open_file (file, open_for: null = fully open, or the colour it is semi-open for), bishop_pair (color), doubled_pawns (color, file), isolated_pawn (square), passed_pawn (square).
+  Moves are SAN. Set every field the type does not use to null.
+- A claim must test exactly what its `text` says. legal_move and legal_line only prove that moves can be played; never attach them to statements about material, files, pawn structure, the bishop pair, threats or who is better - use the matching type instead. If no type can test a statement, leave it out of `claims` and only say it if a tool result told you.
+- `after` (SAN moves from the current position, or null) makes a claim about the position after those moves - e.g. after ["a3", "Bxc3+", "bxc3"], doubled_pawns (white, c). Leave it null for claims about the current position.
+- Claims are checked by the rules engine and Stockfish before the player sees your answer; false claims are sent back to you to fix.
 - `arrows` (at most 4) show your answer on the board: give a SAN `move` for a move that can be played now (from/to null), or `from`/`to` squares for an idea, threat or plan (move null). Colors: green = recommended move, red = threat or mistake, blue = plan or idea, yellow = alternative. `highlights` (at most 4) mark key squares or pieces.
 """
 
@@ -55,7 +58,10 @@ def _nullable(schema: dict[str, Any]) -> dict[str, Any]:
 CLAIM_TYPES = [
     "legal_move", "legal_line", "best_move", "better_than", "mate_in", "pinned",
     "hanging", "attacks", "defends", "piece_on", "in_check",
+    # contract v0.2 structural claims
+    "material_balance", "open_file", "bishop_pair", "doubled_pawns", "isolated_pawn", "passed_pawn",
 ]
+FILES = ["a", "b", "c", "d", "e", "f", "g", "h"]
 COLOR = {"type": "string", "enum": ["white", "black"]}
 SQUARE = {"type": "string", "description": "e.g. e4"}
 ANNOTATION_COLOR = {"type": "string", "enum": ["green", "red", "blue", "yellow"]}
@@ -74,7 +80,13 @@ _CLAIM_FIELDS: dict[str, dict[str, Any]] = {
     "winner": _nullable(COLOR),
     "mate_in_moves": _nullable({"type": "integer"}),
     "absolute": _nullable({"type": "boolean"}),
+    "balance_cp": _nullable({"type": "integer"}),
+    "file": _nullable({"type": "string", "enum": FILES}),
+    "open_for": _nullable(COLOR),
+    "after": {"type": ["array", "null"], "items": {"type": "string"}, "description": "SAN moves from the current position"},
 }
+# Every field except text/type, for building blank claims.
+CLAIM_VALUE_FIELDS = [k for k in _CLAIM_FIELDS if k not in ("text", "type")]
 
 ANSWER_SCHEMA: dict[str, Any] = {
     "type": "object",

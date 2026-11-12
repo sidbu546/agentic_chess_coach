@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { GameResponse } from "@schema";
-import gameExample from "../../../../packages/analysis-schema/examples/21-game-with-variation.json";
+import gameExample from "../../../../packages/analysis-schema/examples/22-game-with-variation.json";
 import { formatScore, localPosition, materialDiff, winChance } from "@/lib/chess";
 import { editorFen, pieceAt, possibleCastling } from "./editor";
 import { isMainline, moveNumber, pathTo, ROOT_ID, useGameTree } from "./gameTree";
 
 const game = gameExample.response as unknown as GameResponse;
 
-describe("game tree from /v1/game (contract example 21)", () => {
+describe("game tree from /v1/game (contract example 22)", () => {
   beforeEach(() => useGameTree.getState().loadGame(game));
 
   it("keeps the mainline first and the variation as a sibling", () => {

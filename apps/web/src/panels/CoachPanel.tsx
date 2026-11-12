@@ -260,11 +260,18 @@ function Claims({ claims }: { claims: CheckedClaim[] }) {
         const Icon = v === "supported" ? IconCircleCheck : v === "refuted" ? IconCircleX : IconHelpCircle;
         const color = v === "supported" ? "teal" : v === "refuted" ? "red" : "gray";
         return (
-          <Tooltip key={i} label={c.result.reason} multiline maw={320} openDelay={300}>
+          <Tooltip
+            key={i}
+            label={c.checked ? `Coach wrote: “${c.text}” · Verifier: ${c.result.reason}` : c.result.reason}
+            multiline
+            maw={340}
+            openDelay={300}
+          >
             <Group gap={6} wrap="nowrap" align="flex-start">
               <Icon size={14} color={`var(--mantine-color-${color}-5)`} style={{ flexShrink: 0, marginTop: 2 }} />
+              {/* Show what was actually checked, so a tick never claims more than the verifier tested. */}
               <Text size="xs" c={v === "supported" ? undefined : "dimmed"} td={v === "refuted" ? "line-through" : undefined}>
-                {c.text}
+                {c.checked || c.text}
               </Text>
             </Group>
           </Tooltip>

@@ -31,8 +31,9 @@ def chess_api_url():
 
 
 def claim(text: str, type_: str, **fields: Any) -> dict[str, Any]:
-    base = {k: None for k in ("move", "than", "moves", "square", "from", "to", "piece_type", "color", "winner", "mate_in_moves", "absolute")}
-    return {**base, "text": text, "type": type_, **fields}
+    from coach.prompts import CLAIM_VALUE_FIELDS
+
+    return {**{k: None for k in CLAIM_VALUE_FIELDS}, "text": text, "type": type_, **fields}
 
 
 def answer(text: str, claims: list[dict[str, Any]] | None = None, arrows: list[dict[str, Any]] | None = None) -> dict[str, Any]:

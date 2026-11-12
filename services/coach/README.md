@@ -59,4 +59,12 @@ Adding a provider means one new file in `coach/llm/` implementing `LLMAdapter.ru
   arrow squares are derived from SAN by `/v1/move`.
 - Engine data from the mock is labelled as fake in tool results, so the model doesn't present it.
 - `unverifiable` claims are sent back for hedging; `refuted` claims never reach the player.
+- A claim must test what its sentence says. A `legal_move`/`legal_line` claim attached to a
+  statement about material, files, structure or evaluation is not counted as verified
+  (`coach/verification.py`); the model has to use the matching claim type.
+- Claims can be about the position after a line (`after`); they are verified in that position.
+- Every claim returned carries `checked`, the coach's own description of what the verifier
+  tested; the web app shows that next to the tick, not the model's wording.
+- Structural claims (material, open files, bishop pair, doubled/isolated/passed pawns) need
+  contract v0.2.0. Against an older chess service they come back `unverifiable`, not as errors.
 - Coach-side types live here and in `apps/web/src/coach/types.ts`, not in the shared contract.
