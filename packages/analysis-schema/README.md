@@ -1,4 +1,4 @@
-# analysis-schema — the Think64 shared contract (v0.1.0)
+# analysis-schema — the Think64 shared contract (v0.2.0)
 
 This package is the only thing the two halves of Think64 share. Person 1 (chess truth
 service) implements it; Person 2 (coach and product) calls it. Once both of you sign off
@@ -7,7 +7,7 @@ on it, you can build separately and connect at any point by changing one URL.
 ```
 analysis-schema/
 ├── openapi.yaml              ← the contract. Everything else is derived from this file.
-├── examples/                 ← 24 real request/response pairs (python-chess + Stockfish 17.1)
+├── examples/                 ← 25 real request/response pairs (python-chess + Stockfish 17.1)
 ├── mock/server.py            ← a fake chess truth service for Person 2 to build against
 ├── tests/test_contract.py    ← contract tests both of you run
 ├── types/
@@ -106,8 +106,26 @@ CI (`.github/workflows/contract.yml` at the repo root) runs these tests on every
 Adding a field or a new fact kind is a minor bump (0.1 → 0.2). Clients must ignore fact
 kinds they don't know. Renaming or removing anything is a breaking change; agree first.
 
-## Not in v0.1 (planned)
+## Changes
+
+**v0.2.0** — six structural claim types for `/v1/verify`, so the coach can verify what it says about
+material and pawn structure, not only tactics. All are rules-only (no engine) and deterministic.
+Example 21 covers each one with true and false cases.
+
+| Claim type | Fields | Supported when |
+| --- | --- | --- |
+| `material_balance` | `balance_cp` | White-minus-Black material (as in `Material.balance_cp`) equals it |
+| `open_file` | `file`, `open_for` | `open_for` null: no pawns on the file. A colour: none of that colour's pawns, some of the other's |
+| `bishop_pair` | `color` | That side has bishops on both light and dark squares |
+| `doubled_pawns` | `color`, `file` | That side has two or more pawns on the file |
+| `isolated_pawn` | `square` | A pawn there, and no friendly pawns on the adjacent files |
+| `passed_pawn` | `square` | A pawn there, and no enemy pawn in front of it on its own or an adjacent file |
+
+Person 1: the real `/v1/verify` must support these; `_verify_structural` in `tools/chessref.py` is
+the reference. `schema_version` is now `0.2.0` in every response.
+
+## Not yet in the contract (planned)
 
 - Game review: critical positions and evaluation swings across a PGN (milestone 3).
-- More fact kinds: forks, skewers, overloaded defenders, passed pawns.
+- More fact kinds in `/v1/position`: forks, skewers, overloaded defenders, passed pawns (passed pawns can already be verified as a claim).
 - Concept attribution (joint milestone 4).
