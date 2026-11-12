@@ -64,6 +64,10 @@ class OpenAIAdapter:
             except openai.AuthenticationError as exc:
                 raise LLMError("OpenAI rejected the API key (check OPENAI_API_KEY).") from exc
             except openai.RateLimitError as exc:
+                # OpenAI uses 429 both for real rate limits and for an account with no credit.
+                body = exc.body if isinstance(exc.body, dict) else {}
+                if body.get("type") == "insufficient_quota" or body.get("code") in ("insufficient_quota", "credit_balance_exhausted"):
+                    raise LLMError("The OpenAI account has no credits left; add credits in OpenAI billing settings.") from exc
                 raise LLMError("OpenAI rate limit reached; try again shortly.") from exc
             except openai.BadRequestError as exc:
                 raise LLMError(f"OpenAI rejected the request: {exc}") from exc

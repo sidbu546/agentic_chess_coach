@@ -277,3 +277,25 @@ async def _openai_adapter_tool_loop():
     assert replay[1].type == "reasoning" and replay[2].type == "function_call"
     assert replay[3] == {"type": "function_call_output", "call_id": "call_1", "output": json.dumps({"lines": []})}
     assert result.usage.calls == 2 and result.usage.reasoning_tokens == 120 and result.usage.cached_tokens == 200
+
+
+def test_openai_no_credit_is_reported_as_such():
+    import httpx
+    import openai
+
+    class NoCredit:
+        async def create(self, **kwargs):
+            req = httpx.Request("POST", "https://api.openai.com/v1/responses")
+            body = {"message": "You have no credits remaining.", "type": "insufficient_quota", "code": "credit_balance_exhausted"}
+            raise openai.RateLimitError("429", response=httpx.Response(429, request=req), body=body)
+
+    adapter = OpenAIAdapter(client=SimpleNamespace(responses=NoCredit()))
+
+    async def execute(name, args):
+        return {}
+
+    with pytest.raises(LLMError, match="no credits"):
+        asyncio.run(adapter.run(
+            model="gpt-6.1-sol", effort="low", system="s", messages=[{"role": "user", "content": "q"}],
+            tools=TOOL_DEFINITIONS, execute=execute, output_schema=ANSWER_SCHEMA, max_tool_rounds=2,
+        ))
