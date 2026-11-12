@@ -1,0 +1,199 @@
+/* Board look modelled on En Croissant: chessground + Mantine dark, gray board, staunty pieces. */
+
+.board-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+}
+.board-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.board-row {
+  display: flex;
+}
+.board-square {
+  position: relative;
+  flex-shrink: 0;
+  user-select: none;
+}
+.board-square .cg-host {
+  width: 100%;
+  height: 100%;
+}
+.board-square cg-board {
+  background-color: var(--board-light);
+  background-image: var(--board-image);
+  background-size: cover;
+}
+
+/* Square states */
+.board-square cg-board square.last-move {
+  background-color: color-mix(in srgb, var(--mantine-primary-color-5) 40%, transparent);
+}
+.board-square cg-board square.selected {
+  background-color: color-mix(in srgb, var(--mantine-primary-color-6) 50%, transparent);
+}
+.board-square cg-board square.move-dest {
+  background: radial-gradient(rgba(20, 85, 30, 0.5) 22%, #208530 0, rgba(0, 0, 0, 0.3) 0, rgba(0, 0, 0, 0) 0);
+}
+.board-square cg-board square.oc.move-dest {
+  background: radial-gradient(transparent 0%, transparent 80%, rgba(20, 85, 0, 0.3) 80%);
+}
+.board-square cg-board square.move-dest:hover,
+.board-square cg-board square.move-dest.hover {
+  background: rgba(20, 85, 30, 0.3);
+}
+.board-square cg-board square.check {
+  background: radial-gradient(ellipse at center, rgb(255, 0, 0) 0%, rgb(231, 0, 0) 25%, rgba(169, 0, 0, 0) 89%, rgba(158, 0, 0, 0) 100%);
+}
+.board-square.is-editing cg-board {
+  outline: 2px solid var(--mantine-primary-color-5);
+  outline-offset: 2px;
+}
+
+/* Coordinates, lichess-style: ranks in the top-left corner of the left-hand file, files in the
+   bottom-right corner of the bottom rank. Text takes the opposite square colour. */
+.board-square .cg-wrap coords {
+  opacity: 1;
+  font-weight: 700;
+  font-size: var(--coord-size, 11px);
+  font-family: inherit;
+}
+.board-square .cg-wrap coords.ranks {
+  left: 3px;
+  top: 1px;
+  width: auto;
+  height: 100%;
+}
+.board-square .cg-wrap coords.ranks coord {
+  flex: 1 1 0;
+  transform: none;
+}
+.board-square .cg-wrap coords.files {
+  left: 0;
+  bottom: 1px;
+  width: 100%;
+  height: auto;
+  text-transform: none;
+}
+.board-square .cg-wrap coords.files coord {
+  flex: 1 1 0;
+  text-align: right;
+  padding-right: 3px;
+}
+/* White at the bottom: a1 is dark, so odd ranks/files sit on dark squares. Black: the reverse. */
+.board-square .orientation-white coords coord:nth-child(odd),
+.board-square .orientation-black coords coord:nth-child(even) {
+  color: var(--board-light);
+}
+.board-square .orientation-white coords coord:nth-child(even),
+.board-square .orientation-black coords coord:nth-child(odd) {
+  color: var(--board-dark);
+}
+
+/* Promotion picker */
+.promotion-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.45);
+}
+.promotion-choice {
+  position: absolute;
+  width: 12.5%;
+  height: 12.5%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  background-color: #b0b0b0;
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 0.15s ease;
+}
+.promotion-choice:hover {
+  border-radius: 0;
+  background-color: #e9ecef;
+  background-size: 100%;
+}
+
+/* Evaluation bar */
+.eval-bar {
+  width: 25px;
+  height: 100%;
+  border-radius: var(--mantine-radius-xs);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--mantine-color-dark-4);
+}
+.eval-part {
+  display: flex;
+  flex-direction: column;
+  transition: height 0.2s ease;
+}
+.eval-black {
+  background: var(--mantine-color-dark-4);
+}
+.eval-white {
+  background: var(--mantine-color-gray-2);
+}
+
+/* Player bars */
+.board-bar {
+  height: 100%;
+  align-items: flex-end;
+}
+.turn-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--mantine-color-gray-6);
+  opacity: 0.35;
+  flex-shrink: 0;
+}
+.turn-dot-white {
+  background: #f1f3f5;
+}
+.turn-dot-black {
+  background: #1a1b1e;
+}
+.turn-dot[data-active] {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--mantine-primary-color-5);
+}
+.captured-piece {
+  width: 20px;
+  height: 20px;
+  margin-right: -7px;
+}
+
+/* Piece sets (assets in public/pieces, credits in apps/web/ASSETS.md) */
+.pieces-staunty .cg-wrap piece.pawn.white { background-image: url("/pieces/staunty/wP.svg"); }
+.pieces-staunty .cg-wrap piece.knight.white { background-image: url("/pieces/staunty/wN.svg"); }
+.pieces-staunty .cg-wrap piece.bishop.white { background-image: url("/pieces/staunty/wB.svg"); }
+.pieces-staunty .cg-wrap piece.rook.white { background-image: url("/pieces/staunty/wR.svg"); }
+.pieces-staunty .cg-wrap piece.queen.white { background-image: url("/pieces/staunty/wQ.svg"); }
+.pieces-staunty .cg-wrap piece.king.white { background-image: url("/pieces/staunty/wK.svg"); }
+.pieces-staunty .cg-wrap piece.pawn.black { background-image: url("/pieces/staunty/bP.svg"); }
+.pieces-staunty .cg-wrap piece.knight.black { background-image: url("/pieces/staunty/bN.svg"); }
+.pieces-staunty .cg-wrap piece.bishop.black { background-image: url("/pieces/staunty/bB.svg"); }
+.pieces-staunty .cg-wrap piece.rook.black { background-image: url("/pieces/staunty/bR.svg"); }
+.pieces-staunty .cg-wrap piece.queen.black { background-image: url("/pieces/staunty/bQ.svg"); }
+.pieces-staunty .cg-wrap piece.king.black { background-image: url("/pieces/staunty/bK.svg"); }
+.pieces-cburnett .cg-wrap piece.pawn.white { background-image: url("/pieces/cburnett/wP.svg"); }
+.pieces-cburnett .cg-wrap piece.knight.white { background-image: url("/pieces/cburnett/wN.svg"); }
+.pieces-cburnett .cg-wrap piece.bishop.white { background-image: url("/pieces/cburnett/wB.svg"); }
+.pieces-cburnett .cg-wrap piece.rook.white { background-image: url("/pieces/cburnett/wR.svg"); }
+.pieces-cburnett .cg-wrap piece.queen.white { background-image: url("/pieces/cburnett/wQ.svg"); }
+.pieces-cburnett .cg-wrap piece.king.white { background-image: url("/pieces/cburnett/wK.svg"); }
+.pieces-cburnett .cg-wrap piece.pawn.black { background-image: url("/pieces/cburnett/bP.svg"); }
+.pieces-cburnett .cg-wrap piece.knight.black { background-image: url("/pieces/cburnett/bN.svg"); }
+.pieces-cburnett .cg-wrap piece.bishop.black { background-image: url("/pieces/cburnett/bB.svg"); }
+.pieces-cburnett .cg-wrap piece.rook.black { background-image: url("/pieces/cburnett/bR.svg"); }
+.pieces-cburnett .cg-wrap piece.queen.black { background-image: url("/pieces/cburnett/bQ.svg"); }
+.pieces-cburnett .cg-wrap piece.king.black { background-image: url("/pieces/cburnett/bK.svg"); }

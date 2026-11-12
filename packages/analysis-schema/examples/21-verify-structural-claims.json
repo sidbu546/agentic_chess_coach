@@ -1,0 +1,112 @@
+{
+  "name": "verify-structural-claims",
+  "method": "POST",
+  "path": "/v1/verify",
+  "description": "v0.2 structural claims after 4. a3 Bxc3+ 5. bxc3 in the Nimzo: material, files, bishop pair, pawn structure. Rules-only.",
+  "request": {
+    "position": {
+      "moves": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e6",
+        "b1c3",
+        "f8b4",
+        "a2a3",
+        "b4c3",
+        "b2c3"
+      ]
+    },
+    "claims": [
+      {
+        "id": "s1",
+        "type": "material_balance",
+        "balance_cp": 0
+      },
+      {
+        "id": "s2",
+        "type": "open_file",
+        "file": "b",
+        "open_for": "white"
+      },
+      {
+        "id": "s3",
+        "type": "bishop_pair",
+        "color": "white"
+      },
+      {
+        "id": "s4",
+        "type": "bishop_pair",
+        "color": "black"
+      },
+      {
+        "id": "s5",
+        "type": "doubled_pawns",
+        "color": "white",
+        "file": "c"
+      },
+      {
+        "id": "s6",
+        "type": "isolated_pawn",
+        "square": "a3"
+      },
+      {
+        "id": "s7",
+        "type": "passed_pawn",
+        "square": "d4"
+      },
+      {
+        "id": "s8",
+        "type": "open_file",
+        "file": "e",
+        "open_for": null
+      }
+    ]
+  },
+  "status": 200,
+  "response": {
+    "schema_version": "0.2.0",
+    "results": [
+      {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "material balance is 0 cp (White minus Black)"
+      },
+      {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "b-file is semi-open for white (black pawns on it)"
+      },
+      {
+        "id": "s3",
+        "verdict": "supported",
+        "reason": "white has the bishop pair (2 bishop(s))"
+      },
+      {
+        "id": "s4",
+        "verdict": "refuted",
+        "reason": "black has not got the bishop pair (1 bishop(s))"
+      },
+      {
+        "id": "s5",
+        "verdict": "supported",
+        "reason": "white has 2 pawn(s) on the c-file"
+      },
+      {
+        "id": "s6",
+        "verdict": "supported",
+        "reason": "a3 is isolated"
+      },
+      {
+        "id": "s7",
+        "verdict": "refuted",
+        "reason": "d4 is not passed (stopped by e6, c7, d7)"
+      },
+      {
+        "id": "s8",
+        "verdict": "refuted",
+        "reason": "e-file is not open (white, black pawns on it)"
+      }
+    ]
+  }
+}

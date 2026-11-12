@@ -14,7 +14,7 @@ import chess
 import chess.engine
 import chess.pgn
 
-SCHEMA_VERSION = "0.1.0"
+SCHEMA_VERSION = "0.2.0"
 STARTPOS = chess.STARTING_FEN
 DEFAULT_DEPTH = 16
 
@@ -515,6 +515,9 @@ def _verify_one(board, c, eng, limits) -> dict:
         color = chess.WHITE if c["color"] == "white" else chess.BLACK
         ok = board.turn == color and board.is_check()
         return _verdict(ok, f"{c['color']} is {'' if ok else 'not '}in check")
+    structural = _verify_structural(board, c)
+    if structural is not None:
+        return structural
     # engine-backed claims
     if eng is None:
         return {"verdict": "unverifiable", "reason": "engine unavailable"}
@@ -544,3 +547,55 @@ def _verify_one(board, c, eng, limits) -> dict:
         tol = c.get("tolerance_cp", 30)
         return _verdict(best_cp - mine <= tol, f"best {best_cp} cp, {c['move']} {mine} cp (mover's view)")
     return {"verdict": "unverifiable", "reason": f"unknown claim type {t}"}
+
+
+# ---------------------------------------------------------------- structural claims (v0.2, rules-only)
+
+def _pawn_files(board: chess.Board, color: bool) -> list[int]:
+    return [chess.square_file(s) for s in board.pieces(chess.PAWN, color)]
+
+
+def _verify_structural(board: chess.Board, c: dict) -> dict | None:
+    """Claims about material and pawn structure. Returns None for other claim types."""
+    t = c["type"]
+    if t == "material_balance":
+        bal = material(board)["balance_cp"]
+        return _verdict(bal == c["balance_cp"], f"material balance is {bal} cp (White minus Black)")
+    if t == "open_file":
+        f = chess.FILE_NAMES.index(c["file"])
+        w = f in _pawn_files(board, chess.WHITE)
+        b = f in _pawn_files(board, chess.BLACK)
+        if c["open_for"] is None:
+            ok, what = not w and not b, "open"
+        else:
+            mine, theirs = (w, b) if c["open_for"] == "white" else (b, w)
+            ok, what = not mine and theirs, f"semi-open for {c['open_for']}"
+        pawns = ", ".join(n for n, has in (("white", w), ("black", b)) if has) or "no"
+        return _verdict(ok, f"{c['file']}-file is {'' if ok else 'not '}{what} ({pawns} pawns on it)")
+    if t == "bishop_pair":
+        color = chess.WHITE if c["color"] == "white" else chess.BLACK
+        bishops = board.pieces(chess.BISHOP, color)
+        light = bool(bishops & chess.BB_LIGHT_SQUARES)
+        dark = bool(bishops & chess.BB_DARK_SQUARES)
+        ok = light and dark
+        return _verdict(ok, f"{c['color']} has {'' if ok else 'not got '}the bishop pair ({len(bishops)} bishop(s))")
+    if t == "doubled_pawns":
+        color = chess.WHITE if c["color"] == "white" else chess.BLACK
+        n = _pawn_files(board, color).count(chess.FILE_NAMES.index(c["file"]))
+        return _verdict(n >= 2, f"{c['color']} has {n} pawn(s) on the {c['file']}-file")
+    if t in ("isolated_pawn", "passed_pawn"):
+        sq = chess.parse_square(c["square"])
+        p = board.piece_at(sq)
+        if p is None or p.piece_type != chess.PAWN:
+            return _verdict(False, f"no pawn on {c['square']}")
+        f, r = chess.square_file(sq), chess.square_rank(sq)
+        near = {f - 1, f + 1} & set(range(8))
+        if t == "isolated_pawn":
+            ok = not (near & set(_pawn_files(board, p.color)))
+            return _verdict(ok, f"{c['square']} is {'' if ok else 'not '}isolated")
+        ahead = (lambda rr: rr > r) if p.color == chess.WHITE else (lambda rr: rr < r)
+        blockers = [chess.square_name(s) for s in board.pieces(chess.PAWN, not p.color)
+                    if chess.square_file(s) in near | {f} and ahead(chess.square_rank(s))]
+        ok = not blockers
+        return _verdict(ok, f"{c['square']} is {'' if ok else 'not '}passed" + ("" if ok else f" (stopped by {', '.join(blockers)})"))
+    return None

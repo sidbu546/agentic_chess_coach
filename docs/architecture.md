@@ -34,7 +34,7 @@ Full write-up with the block diagram: [Think64 system design: who builds what](h
 
 ## Milestones
 
-1. Week 1, together: shared contract (done, `packages/analysis-schema` v0.1.0).
+1. Week 1, together: shared contract (done, `packages/analysis-schema` v0.1.0; v0.2.0 adds structural claim types).
 2. Weeks 2–3, separately: Person 1 gets FEN → Stockfish → top 3 moves; Person 2 gets board → chat → mock analysis → LLM explanation.
 3. First joint demo: swap the mock for the real service; load a position, analyze it, get a grounded explanation.
 4. Then weekly: what-if moves, PGN review, verification.
