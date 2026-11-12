@@ -1,4 +1,4 @@
-import { ActionIcon, Alert, Badge, Box, Button, Group, Loader, ScrollArea, Stack, Text, Textarea, Tooltip } from "@mantine/core";
+import { ActionIcon, Alert, Badge, Box, Button, Group, Loader, ScrollArea, Stack, Switch, Text, Textarea, Tooltip } from "@mantine/core";
 import { IconCircleCheck, IconCircleX, IconEye, IconEyeOff, IconHelpCircle, IconSend, IconTrash } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { positionKey } from "@/api/chessApi";
@@ -23,6 +23,7 @@ export function CoachPanel() {
   const rootFen = nodes[ROOT_ID].fen;
   const { messages, shownId, add, update, show, clear } = useCoach();
   const [draft, setDraft] = useState("");
+  const [thinkHarder, setThinkHarder] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
   const busy = messages.some((m) => m.status === "pending");
 
@@ -50,7 +51,14 @@ export function CoachPanel() {
     const id = newMsgId();
     add({ id, role: "coach", text: "", positionKey: key, nodeId: node.id, status: "pending" });
     try {
-      const res = await askCoach({ question: q, position: node.position, last_move: node.move, player_id: playerId(), history });
+      const res = await askCoach({
+        question: q,
+        position: node.position,
+        last_move: node.move,
+        player_id: playerId(),
+        history,
+        depth: thinkHarder ? "deep" : "auto",
+      });
       update(id, {
         status: "ok",
         text: res.answer,
@@ -58,6 +66,8 @@ export function CoachPanel() {
         claims: res.claims,
         toolsUsed: res.tools_used,
         model: res.model,
+        tier: res.tier,
+        usage: res.usage,
       });
       if (res.annotations.arrows.length || res.annotations.highlights.length) show(id);
     } catch (err) {
@@ -109,11 +119,27 @@ export function CoachPanel() {
       </ScrollArea>
 
       <Box className="chat-input">
+        <Group justify="space-between" mb={6}>
+          <Tooltip label="Use the stronger reasoning tier for this question (slower, costs more)" multiline maw={260}>
+            <Switch
+              size="xs"
+              label="Think harder"
+              checked={thinkHarder}
+              onChange={(e) => setThinkHarder(e.currentTarget.checked)}
+            />
+          </Tooltip>
+          {draft.length > 3500 && (
+            <Text size="xs" c={draft.length >= 4000 ? "red" : "dimmed"}>
+              {draft.length}/4000
+            </Text>
+          )}
+        </Group>
         <Textarea
           placeholder="Ask about the position… (Enter to send, Shift+Enter for a new line)"
           autosize
           minRows={1}
           maxRows={5}
+          maxLength={4000}
           value={draft}
           onChange={(e) => setDraft(e.currentTarget.value)}
           onKeyDown={(e) => {
@@ -194,6 +220,20 @@ function Message({
       {m.claims && m.claims.length > 0 && <Claims claims={m.claims} />}
       <Group gap={6} mt={6} justify="space-between">
         <Group gap={4}>
+          {m.tier && (
+            <Tooltip
+              label={
+                m.usage
+                  ? `${m.usage.llm_calls} model call(s) · ${m.usage.input_tokens.toLocaleString()} in (${m.usage.cached_tokens.toLocaleString()} cached) · ${m.usage.output_tokens.toLocaleString()} out (${m.usage.reasoning_tokens.toLocaleString()} reasoning)`
+                  : m.model
+              }
+            >
+              <Badge size="xs" variant="light" color={m.tier === "deep" ? "violet" : m.tier === "fallback" ? "orange" : "blue"}>
+                {m.tier} · {m.model}
+                {m.usage && m.usage.cost_usd > 0 ? ` · $${m.usage.cost_usd.toFixed(4)}` : ""}
+              </Badge>
+            </Tooltip>
+          )}
           {m.toolsUsed?.map((t) => (
             <Badge key={t} size="xs" variant="outline" color="gray">
               {t}

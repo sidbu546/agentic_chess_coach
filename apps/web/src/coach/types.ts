@@ -34,6 +34,17 @@ export interface CoachRequest {
   player_id: string;
   /** Recent turns of this conversation, oldest first. */
   history: ChatTurn[];
+  /** "deep" forces the stronger tier ("Think harder"); "auto" lets the coach route. */
+  depth?: "auto" | "fast" | "deep";
+}
+
+export interface CoachUsage {
+  input_tokens: number;
+  cached_tokens: number;
+  output_tokens: number;
+  reasoning_tokens: number;
+  llm_calls: number;
+  cost_usd: number;
 }
 
 /** One claim the coach made, with the verifier's verdict from /v1/verify. */
@@ -49,4 +60,7 @@ export interface CoachResponse {
   /** Chess API endpoints the agent called, for transparency in the UI. */
   tools_used: string[];
   model: string;
+  /** Which tier answered; "fallback" means only verified facts could be given. */
+  tier?: "fast" | "deep" | "fallback";
+  usage?: CoachUsage;
 }

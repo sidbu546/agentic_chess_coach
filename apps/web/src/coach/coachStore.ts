@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { BoardAnnotations, CheckedClaim } from "./types";
+import type { BoardAnnotations, CheckedClaim, CoachResponse } from "./types";
 
 export interface ChatMessage {
   id: string;
@@ -14,6 +14,8 @@ export interface ChatMessage {
   claims?: CheckedClaim[];
   toolsUsed?: string[];
   model?: string;
+  tier?: CoachResponse["tier"];
+  usage?: CoachResponse["usage"];
 }
 
 interface CoachState {
