@@ -6,7 +6,10 @@ exactly what was checked.
 - A claim whose type cannot test its own sentence (e.g. a legal_line attached to "White has the
   bishop pair") is not counted as verified; it goes back to the model.
 - Every result carries `checked`: a plain description of what the verifier actually tested, so a
-  green tick in the UI never implies more than that.
+  green tick in the UI never implies more than that. Moves in it are the chess API's SAN, so a
+  "+" or "#" appears only when the rules engine says so.
+- `checkmate` is checked by the coach itself from /v1/position's game status after the line (the
+  rules engine decides; no contract claim type is needed and no engine is involved).
 """
 from __future__ import annotations
 
@@ -44,6 +47,7 @@ class ClaimChecker:
         self.position = position
         self.limits = limits
         self._after_cache: dict[tuple[str, ...], tuple[dict[str, Any], list[str]]] = {}
+        self._line_san: dict[str, list[str]] = {}
 
     async def check(self, raw_claims: list[dict[str, Any]]) -> list[CheckedClaim]:
         raw_claims = raw_claims[:20]
@@ -56,7 +60,12 @@ class ClaimChecker:
             try:
                 pos, line = await self._position_after(raw.get("after"))
                 checked = describe(raw, line)
+                if raw.get("type") == "checkmate":
+                    out[i] = CheckedClaim(text=text, checked=checked, result=await self._checkmate(pos, raw, cid))
+                    continue
                 claim = await self._to_contract(raw, pos, cid)
+                if claim.pop("_san", None) is not None:  # legal_line: describe it with the API's SAN
+                    checked = describe({**raw, "moves": self._line_san[cid]}, line)
                 groups.setdefault(tuple(line), []).append((i, claim))
                 out[i] = CheckedClaim(text=text, checked=checked, result={})
             except Unresolved as u:
@@ -103,6 +112,18 @@ class ClaimChecker:
                 results.append({"id": c["id"], "verdict": "unverifiable", "reason": f"the chess service can't check {c['type']} claims"})
         return results
 
+    async def _checkmate(self, pos: dict[str, Any], raw: dict[str, Any], cid: str) -> dict[str, Any]:
+        winner = raw.get("color")
+        if winner not in ("white", "black"):
+            return {"id": cid, "verdict": "unverifiable", "reason": "checkmate claim is missing color (the winner)"}
+        status = (await self.chess.position(pos))["status"]
+        if status["state"] == "checkmate" and status["winner"] == winner:
+            return {"id": cid, "verdict": "supported", "reason": f"the position is checkmate; {winner} wins"}
+        if status["state"] == "checkmate":
+            return {"id": cid, "verdict": "refuted", "reason": f"it is checkmate, but {status['winner']} wins"}
+        state = "check, not checkmate" if status["in_check"] else status["state"].replace("_", " ")
+        return {"id": cid, "verdict": "refuted", "reason": f"the position is not checkmate ({state})"}
+
     async def _uci(self, pos: dict[str, Any], san: str) -> str:
         uci, reason = await self.chess.to_uci(pos, san)
         if not uci:
@@ -136,14 +157,16 @@ class ClaimChecker:
             return {"id": cid, "type": t, "move": await self._uci(pos, raw["move"]), "than": await self._uci(pos, raw["than"])}
         if t == "legal_line":
             need("moves")
-            p, ucis = {**pos, "moves": list(pos["moves"])}, []
+            p, ucis, sans = {**pos, "moves": list(pos["moves"])}, [], []
             for san in raw["moves"][:20]:
                 data = await self.chess.move(p, san, "san")
                 if not data["legal"]:
                     raise Unresolved("refuted", f"{san} is not legal at that point in the line")
                 ucis.append(data["move"]["uci"])
+                sans.append(data["move"]["san"])
                 p = data["next"]
-            return {"id": cid, "type": t, "moves": ucis}
+            self._line_san[cid] = sans
+            return {"id": cid, "type": t, "moves": ucis, "_san": True}
         if t == "mate_in":
             need("mate_in_moves", "winner")
             return {"id": cid, "type": t, "moves": max(1, min(20, int(raw["mate_in_moves"]))), "winner": raw["winner"]}
@@ -195,6 +218,7 @@ def describe(raw: dict[str, Any], line: list[str]) -> str:
         "doubled_pawns": lambda: f"{g('color')} has doubled {g('file')}-pawns",
         "isolated_pawn": lambda: f"the pawn on {g('square')} is isolated",
         "passed_pawn": lambda: f"the pawn on {g('square')} is passed",
+        "checkmate": lambda: f"it is checkmate; {g('color')} wins",
     }.get(t)
     text = what() if what else f"{t} claim"
     return f"after {' '.join(line)}: {text}" if line else text

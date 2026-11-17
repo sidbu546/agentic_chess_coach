@@ -386,3 +386,45 @@ def test_service_without_v02_claims_degrades_to_unverifiable(chess_api_url):
     first_feedback = llm.calls[1]["messages"][0]["content"]
     assert "can't check bishop_pair claims" in first_feedback
     assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]
+
+
+START = {"start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": []}
+SCHOLAR = ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6", "Qxf7"]  # model left off the "#"
+
+
+def test_quick_win_checkmate_is_checked_by_the_rules_engine(chess_api_url):
+    llm = QueueLLM([answer(
+        "I can see a win for White: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
+        [claim("1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#", "legal_line", moves=SCHOLAR),
+         claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)],
+    )])
+    body = ask(chess_api_url, llm, "How can White win in 4 moves?", START).json()
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported", "supported"]
+    # The tick shows the API's SAN: the "#" is there because the rules engine says it is mate.
+    assert body["claims"][0]["checked"] == "the moves e4 e5 Bc4 Nc6 Qh5 Nf6 Qxf7# can be played"
+    assert body["claims"][1]["checked"].endswith("Qxf7#: it is checkmate; white wins")
+    assert len(llm.calls) == 1  # nothing to revise
+
+
+def test_claimed_mate_that_is_not_mate_is_refuted(chess_api_url):
+    line = ["e4", "e5", "Bc4", "Nc6", "Qh5", "g6", "Qf3"]
+    llm = QueueLLM([
+        answer("I can see a win for White ...", [claim("mate", "checkmate", color="white", after=line)]),
+        answer("ok", []),
+    ])
+    ask(chess_api_url, llm, "How can White win in 4 moves?", START)
+    assert "the position is not checkmate" in llm.calls[1]["messages"][0]["content"]
+
+
+def test_fake_check_mark_in_model_san_is_not_shown(chess_api_url):
+    llm = QueueLLM([answer("1.e4#", [claim("1.e4#", "legal_line", moves=["e4#"])])])
+    body = ask(chess_api_url, llm, "Can I play e4?", START).json()
+    assert body["claims"][0]["checked"] == "the moves e4 can be played"
+
+
+def test_prompt_never_tells_the_player_about_the_engine():
+    from coach.prompts import system_prompt
+
+    p = system_prompt("intermediate")
+    assert "isn't connected yet" not in p
+    assert "I can see a win for White:" in p

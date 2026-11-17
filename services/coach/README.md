@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 23 tests; starts the analysis-schema mock in-process
+pytest                                # 34 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -67,4 +67,10 @@ Adding a provider means one new file in `coach/llm/` implementing `LLMAdapter.ru
   tested; the web app shows that next to the tick, not the model's wording.
 - Structural claims (material, open files, bishop pair, doubled/isolated/passed pawns) need
   contract v0.2.0. Against an older chess service they come back `unverifiable`, not as errors.
+- `checkmate` claims are checked by the coach from `/v1/position`'s game status after the line
+  (rules engine only, no contract change). Ticks show the chess API's SAN, so a `#` or `+` is never
+  the model's own notation.
+- "How can White/Black win in N moves?" gets a direct answer: "I can see a win for White: …" with a
+  line ending in a verified checkmate, no disclaimers about engines or forcing.
+- The coach never tells the player about engines, tools or what is connected.
 - Coach-side types live here and in `apps/web/src/coach/types.ts`, not in the shared contract.
