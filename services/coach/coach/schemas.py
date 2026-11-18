@@ -27,14 +27,21 @@ class ChatTurn(BaseModel):
     content: str
 
 
+PLAYER_ID = r"^p_[A-Za-z0-9_-]{1,64}$"
+Level = Literal["beginner", "intermediate", "advanced"]
+ExplanationDepth = Literal["short", "normal", "detailed"]
+
+
 class CoachRequest(BaseModel):
     question: str = Field(min_length=1, max_length=4000)
     position: PositionRef
     last_move: Move | None = None
-    player_id: str = "p_anonymous"
+    player_id: str = Field(default="p_anonymous", pattern=PLAYER_ID)
     history: list[ChatTurn] = Field(default_factory=list, max_length=12)
     # Optional override of the automatic routing ("think harder").
     depth: Literal["auto", "fast", "deep"] = "auto"
+    # Groups questions into sessions in player memory (one per page load in the web app).
+    session_id: str | None = Field(default=None, max_length=64)
 
 
 class BoardArrow(BaseModel):
@@ -81,6 +88,19 @@ class CoachResponse(BaseModel):
     model: str
     tier: Literal["fast", "deep", "fallback"] = "fast"
     usage: Usage = Field(default_factory=Usage)
+    # What player memory told the coach, so the UI can show who it answered for.
+    level: Level = "intermediate"
+    explanation_depth: ExplanationDepth = "normal"
 
     def to_json(self) -> dict[str, Any]:
         return self.model_dump(by_alias=True)
+
+
+class PlayerUpdate(BaseModel):
+    """PATCH /v1/players/{id}. Only the fields sent are changed; null clears rating or level."""
+
+    rating: int | None = Field(default=None, ge=100, le=3500)
+    level: Level | None = None
+    explanation_depth: ExplanationDepth | None = None
+
+    model_config = {"extra": "forbid"}

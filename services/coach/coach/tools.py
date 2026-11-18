@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from .memory import detect_patterns
 from .board_text import describe_fact, fmt_score, position_brief
 from .chess_client import ChessApiError, ChessClient
 
@@ -108,13 +109,16 @@ def describe_difference(d: dict[str, Any]) -> str:
 class ChessTools:
     """Executes tool calls for one coach request, against one position."""
 
-    def __init__(self, client: ChessClient, position: dict[str, Any], fen: str, limits: dict[str, Any]):
+    def __init__(self, client: ChessClient, position: dict[str, Any], fen: str, limits: dict[str, Any], engine_real: bool = True):
         self.client = client
         self.position = position
         self.fen = fen
         self.limits = limits
+        self.engine_real = engine_real  # from /v1/health; False against the mock
         self.used: list[str] = []  # chess API endpoints called, shown in the UI
-        self.engine_is_mock = False
+        self.engine_is_mock = not engine_real
+        # Set by review_last_move when the reviewed move shows a mistake pattern; player memory stores it.
+        self.mistake: dict[str, Any] | None = None
 
     def _note(self, endpoint: str) -> None:
         if endpoint not in self.used:
@@ -242,8 +246,22 @@ class ChessTools:
         line, best = data["lines"][0], data["best"]
         parent_fen = data["position"]["fen"]
         full, white = int(parent_fen.split()[5]), parent_fen.split()[1] == "w"
+        # Mistake patterns come from the rules engine's facts before and after the move.
+        self._note("position")
+        before = await self.client.position(parent, pieces=True)
+        after = await self.client.position(self.position, pieces=True)
+        mover = "white" if white else "black"
+        patterns = detect_patterns(before, after, mover, line["move"])
+        if self.engine_real:  # with a real engine, only moves it rates as mistakes count
+            if line["loss_cp"] <= 100:
+                patterns = []
+            elif not patterns:
+                patterns = [{"theme": "engine_mistake", "detail": f"{line['move']['san']} loses about {line['loss_cp'] / 100:.1f} pawns compared with {best['move']['san']}"}]
+        self.mistake = {"fen": parent_fen, "move": line["move"]["san"], "color": mover, "patterns": patterns} if patterns else None
         return {
             "available": True,
+            "engine_note": _mock_note("mock" if not self.engine_real else ""),
+            "patterns_from_rules_engine": [p["detail"] for p in patterns],
             "played": line["move"]["san"],
             "played_by": "white" if white else "black",
             "loss_cp": line["loss_cp"],

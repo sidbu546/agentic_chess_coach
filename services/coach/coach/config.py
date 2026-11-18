@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from dataclasses import dataclass, field
 
 
@@ -26,6 +27,8 @@ class Settings:
     deep: TierConfig = field(
         default_factory=lambda: TierConfig(_env("COACH_MODEL_DEEP", "gpt-6.1-sol"), _env("COACH_EFFORT_DEEP", "high"))
     )
+    # Player memory (SQLite). ":memory:" keeps it in RAM only.
+    db_path: str = field(default_factory=lambda: _env("COACH_DB_PATH", str(Path(__file__).resolve().parents[1] / "data" / "players.sqlite3")))
     port: int = field(default_factory=lambda: int(_env("COACH_PORT", "8065")))
     cors_origins: tuple[str, ...] = field(
         default_factory=lambda: tuple(o.strip() for o in _env("COACH_CORS_ORIGINS", "http://localhost:5173").split(","))

@@ -36,6 +36,8 @@ export interface CoachRequest {
   history: ChatTurn[];
   /** "deep" forces the stronger tier ("Think harder"); "auto" lets the coach route. */
   depth?: "auto" | "fast" | "deep";
+  /** Groups questions into sessions in player memory (one per page load). */
+  session_id?: string;
 }
 
 export interface CoachUsage {
@@ -66,4 +68,49 @@ export interface CoachResponse {
   /** Which tier answered; "fallback" means only verified facts could be given. */
   tier?: "fast" | "deep" | "fallback";
   usage?: CoachUsage;
+  /** What player memory told the coach about who it is answering. */
+  level?: Level;
+  explanation_depth?: ExplanationDepth;
+}
+
+// ---------------------------------------------------------------- player memory
+
+export type Level = "beginner" | "intermediate" | "advanced";
+export type ExplanationDepth = "short" | "normal" | "detailed";
+
+export interface RecurringMistake {
+  theme: string;
+  /** e.g. "left a piece undefended where it could be taken" */
+  label: string;
+  count: number;
+  /** Unix seconds. */
+  last_seen: number;
+  last_example: { move: string; detail: string };
+}
+
+export interface PlayerProfile {
+  player_id: string;
+  rating: number | null;
+  /** The level the coach uses: chosen by the player, else from the rating, else "intermediate". */
+  level: Level;
+  level_source: "chosen" | "rating" | "default";
+  explanation_depth: ExplanationDepth;
+  recurring_mistakes: RecurringMistake[];
+  stats: { questions: number; sessions: number; first_seen: number | null; last_seen: number | null };
+}
+
+/** PATCH /v1/players/{id}: only the keys sent change; null clears rating or level. */
+export interface PlayerUpdate {
+  rating?: number | null;
+  level?: Level | null;
+  explanation_depth?: ExplanationDepth;
+}
+
+export interface SessionSummary {
+  session_id: string;
+  started: number;
+  ended: number;
+  questions: number;
+  cost_usd: number;
+  topics: string[];
 }

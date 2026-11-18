@@ -21,6 +21,12 @@ from coach.llm.base import LLMError, LLMResult, LLMUsage  # noqa: E402
 NIMZO = {"moves": ["d2d4", "g8f6", "c2c4", "e7e6", "b1c3", "f8b4"]}
 
 
+@pytest.fixture(autouse=True)
+def _memory_in_ram(monkeypatch):
+    """Each test app gets a fresh in-memory player database, never the real file."""
+    monkeypatch.setenv("COACH_DB_PATH", ":memory:")
+
+
 @pytest.fixture(scope="session")
 def chess_api_url():
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), mock_server.Handler)

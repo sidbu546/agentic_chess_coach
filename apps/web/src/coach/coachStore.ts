@@ -37,7 +37,7 @@ export const useCoach = create<CoachState>()((set) => ({
   clear: () => set({ messages: [], shownId: null }),
 }));
 
-/** Stable per-browser player id until player memory and accounts exist. */
+/** Stable per-browser player id; player memory is keyed by it (no accounts yet). */
 export function playerId(): string {
   const k = "think64-player-id";
   try {
@@ -49,5 +49,20 @@ export function playerId(): string {
     return id;
   } catch {
     return "p_anonymous";
+  }
+}
+
+/** One id per page load, so player memory can group questions into sessions. */
+export function sessionId(): string {
+  const k = "think64-session-id";
+  try {
+    let id = sessionStorage.getItem(k);
+    if (!id) {
+      id = `s_${crypto.randomUUID()}`;
+      sessionStorage.setItem(k, id);
+    }
+    return id;
+  } catch {
+    return "s_default";
   }
 }

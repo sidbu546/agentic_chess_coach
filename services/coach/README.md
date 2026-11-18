@@ -19,13 +19,14 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 34 tests; starts the analysis-schema mock in-process
+pytest                                # 47 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
 
 ```
-question ──► route: fast or deep tier
+question ──► player memory: level, explanation depth, recurring mistakes, earlier questions
+         ──► route: fast or deep tier
          ──► /v1/position → context (FEN, piece list, status, material, facts)
          ──► LLM with chess tools ─┬─ analyze_position  → /v1/analyze
                                    ├─ compare_moves     → /v1/compare
@@ -42,7 +43,31 @@ question ──► route: fast or deep tier
 | Coach agent | `coach/agent.py`, `coach/prompts.py`, `coach/tools.py` | Routing, context, tool loop, verify → revise → fallback |
 | LLM adapter | `coach/llm/` | `openai_adapter.py` (Responses API, strict tools + JSON schema, `store=False`); `scripted.py` (no key needed) |
 | Cost logging | `coach/pricing.py` | Real token usage per answer (incl. cached and reasoning tokens) → USD, logged and returned to the UI |
-| Player memory | — | Next component. Until then every player is treated as `intermediate` (engine depth 16) |
+| Player memory | `coach/memory.py` | SQLite (`COACH_DB_PATH`). Level, rating, explanation depth, recurring mistakes, past sessions |
+
+## Player memory
+
+Keyed by the `player_id` the web app keeps in the browser (no accounts yet). `p_anonymous` is never stored.
+
+| Endpoint | |
+| --- | --- |
+| `GET /v1/players/{id}` | Profile: level (chosen, else from rating, else intermediate), rating, explanation depth, recurring mistakes, stats |
+| `PATCH /v1/players/{id}` | Change `rating`, `level` (null = use the rating) or `explanation_depth` (`short` / `normal` / `detailed`) |
+| `DELETE /v1/players/{id}` | Forget everything stored about the player |
+| `GET /v1/players/{id}/sessions` | Past sessions with their first questions |
+
+What it changes in an answer:
+- **Level** picks the prompt's level guide and the engine depth (beginner 12, intermediate 16, advanced 20).
+  Beginners also get moves explained in words the first time ("Nf3 (knight to f3)").
+- **Explanation depth** sets the answer length.
+- **Recurring mistakes** (2+ times) and up to four questions from earlier sessions go into the context, so the
+  coach can say "this is the hanging-piece pattern again".
+
+Mistakes are recorded only when the player asks about a move (`review_last_move`), and only from the rules
+engine's facts before and after it: a piece left undefended and attacked, an undefended enemy piece not
+taken, or a new pin on one of the mover's pieces. Pawns, even trades and moves that give check are left out.
+With a real engine connected, a pattern counts only if the engine rates the move a mistake (loss > 100 cp).
+Asking about the same move twice counts once.
 
 ## Models
 

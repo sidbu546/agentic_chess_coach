@@ -1,11 +1,13 @@
 import { ActionIcon, Alert, Badge, Box, Button, Group, Loader, ScrollArea, Stack, Switch, Text, Textarea, Tooltip } from "@mantine/core";
-import { IconCircleCheck, IconCircleX, IconEye, IconEyeOff, IconHelpCircle, IconSend, IconTrash } from "@tabler/icons-react";
+import { IconCircleCheck, IconCircleX, IconEye, IconEyeOff, IconHelpCircle, IconSend, IconTrash, IconUser } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { positionKey } from "@/api/chessApi";
 import { askCoach, CoachApiError, COACH_API_URL } from "@/coach/coachApi";
-import { playerId, useCoach, type ChatMessage } from "@/coach/coachStore";
+import { playerId, sessionId, useCoach, type ChatMessage } from "@/coach/coachStore";
+import { usePlayer } from "@/coach/playerStore";
 import type { CheckedClaim } from "@/coach/types";
 import { moveNumber, ROOT_ID, useCurrentNode, useGameTree } from "@/state/gameTree";
+import { PlayerModal } from "./PlayerModal";
 
 const SUGGESTIONS = [
   "What's the best move here, and why?",
@@ -24,8 +26,15 @@ export function CoachPanel() {
   const { messages, shownId, add, update, show, clear } = useCoach();
   const [draft, setDraft] = useState("");
   const [thinkHarder, setThinkHarder] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profile = usePlayer((s) => s.profile);
+  const loadProfile = usePlayer((s) => s.load);
   const viewport = useRef<HTMLDivElement>(null);
   const busy = messages.some((m) => m.status === "pending");
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   useEffect(() => {
     viewport.current?.scrollTo({ top: viewport.current.scrollHeight, behavior: "smooth" });
@@ -58,6 +67,7 @@ export function CoachPanel() {
         player_id: playerId(),
         history,
         depth: thinkHarder ? "deep" : "auto",
+        session_id: sessionId(),
       });
       update(id, {
         status: "ok",
@@ -70,6 +80,7 @@ export function CoachPanel() {
         usage: res.usage,
       });
       if (res.annotations.arrows.length || res.annotations.highlights.length) show(id);
+      loadProfile(); // the answer may have added a mistake or a session
     } catch (err) {
       const offline = err instanceof CoachApiError && err.offline;
       update(id, {
@@ -128,11 +139,24 @@ export function CoachPanel() {
               onChange={(e) => setThinkHarder(e.currentTarget.checked)}
             />
           </Tooltip>
-          {draft.length > 3500 && (
-            <Text size="xs" c={draft.length >= 4000 ? "red" : "dimmed"}>
-              {draft.length}/4000
-            </Text>
-          )}
+          <Group gap={6}>
+            {draft.length > 3500 && (
+              <Text size="xs" c={draft.length >= 4000 ? "red" : "dimmed"}>
+                {draft.length}/4000
+              </Text>
+            )}
+            <Tooltip label="Your level and how much detail the coach gives. Click to change.">
+              <Button
+                size="compact-xs"
+                variant="light"
+                color="gray"
+                leftSection={<IconUser size={12} />}
+                onClick={() => setProfileOpen(true)}
+              >
+                {profile ? `${cap(profile.level)} · ${profile.explanation_depth}` : "Profile"}
+              </Button>
+            </Tooltip>
+          </Group>
         </Group>
         <Textarea
           placeholder="Ask about the position… (Enter to send, Shift+Enter for a new line)"
@@ -165,9 +189,12 @@ export function CoachPanel() {
           }
         />
       </Box>
+      <PlayerModal opened={profileOpen} onClose={() => setProfileOpen(false)} />
     </Box>
   );
 }
+
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function Message({
   m,

@@ -6,7 +6,8 @@ from typing import Any
 LEVEL_GUIDE = {
     "beginner": (
         "The player is a beginner (roughly under 1200). Use plain words, name pieces and squares, explain one idea "
-        "at a time, and say 'about a pawn' rather than '+1.0'. Avoid jargon; if you must use a term, define it."
+        "at a time, and say 'about a pawn' rather than '+1.0'. Avoid jargon; if you must use a term, define it. "
+        "The first time you write a move, say what it means, e.g. 'Nf3 (knight to f3)', 'Qxf7# (queen takes on f7, checkmate)'."
     ),
     "intermediate": (
         "The player is an intermediate club player (roughly 1200-1800). Use standard chess terms, give the key line "
@@ -31,7 +32,8 @@ How you know things
 
 How to answer
 - Answer the player's actual question first, then the reason, then (if useful) one practical takeaway.
-- Keep it short: 2-5 sentences for a simple question, up to about 200 words for a complex one. Plain text, no headings or bullet lists unless you are listing moves. Write moves in SAN.
+- {depth_guide} Plain text, no headings or bullet lists unless you are listing moves. Write moves in SAN.
+- The context may include player memory (level, recurring mistakes, earlier questions). Use it to pitch the answer. If the question touches one of their recurring mistakes, point that out in one sentence. Don't recite their profile back to them.
 - Fill `claims` with every checkable chess statement your answer makes, one per statement, each with the sentence fragment it supports in `text`. Claim types and the fields they use:
   legal_move (move), legal_line (moves), best_move (move), better_than (move, than), mate_in (mate_in_moves, winner), pinned (square, absolute), hanging (square), attacks (from, to), defends (from, to), piece_on (square, piece_type, color), in_check (color),
   checkmate (color: the side that wins; use `after` for the line that delivers it),
@@ -45,8 +47,18 @@ How to answer
 """
 
 
-def system_prompt(level: str) -> str:
-    return SYSTEM_PROMPT.format(level_guide=LEVEL_GUIDE.get(level, LEVEL_GUIDE["intermediate"]))
+DEPTH_GUIDE = {
+    "short": "The player prefers short answers: 1-3 sentences, just the key point and the move.",
+    "normal": "Keep it short: 2-5 sentences for a simple question, up to about 200 words for a complex one.",
+    "detailed": "The player prefers detailed explanations: give the reasoning step by step and the main line, up to about 350 words for a complex question.",
+}
+
+
+def system_prompt(level: str, depth: str = "normal") -> str:
+    return SYSTEM_PROMPT.format(
+        level_guide=LEVEL_GUIDE.get(level, LEVEL_GUIDE["intermediate"]),
+        depth_guide=DEPTH_GUIDE.get(depth, DEPTH_GUIDE["normal"]),
+    )
 
 
 def _nullable(schema: dict[str, Any]) -> dict[str, Any]:

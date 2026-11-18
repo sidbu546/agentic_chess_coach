@@ -18,6 +18,7 @@ from .board_text import describe_fact, position_brief
 from .chess_client import ChessClient
 from .config import Settings, TierConfig
 from .llm.base import LLMAdapter, LLMResult, LLMUsage
+from .memory import ANONYMOUS, DEFAULT_DEPTH, DEFAULT_LEVEL, PlayerMemory
 from .pricing import cost_usd
 from .prompts import ANSWER_SCHEMA, revision_request, system_prompt
 from .schemas import BoardAnnotations, BoardArrow, BoardHighlight, CheckedClaim, CoachRequest, CoachResponse, Usage
@@ -32,7 +33,6 @@ LEVEL_LIMITS = {
     "intermediate": {"depth": 16, "multipv": 3},
     "advanced": {"depth": 20, "multipv": 3},
 }
-DEFAULT_LEVEL = "intermediate"  # until player memory supplies the real level
 
 DEEP_WORDS = re.compile(
     r"\b(why|how|plan|plans|strategy|strategic|explain|compare|versus|vs|better|worse|instead|idea|ideas|"
@@ -55,10 +55,21 @@ def route(req: CoachRequest) -> str:
 
 
 class CoachAgent:
-    def __init__(self, settings: Settings, chess: ChessClient, llm: LLMAdapter):
+    def __init__(self, settings: Settings, chess: ChessClient, llm: LLMAdapter, memory: PlayerMemory | None = None):
         self.settings = settings
         self.chess = chess
         self.llm = llm
+        self.memory = memory
+        self._engine_real: bool | None = None
+
+    async def _engine_is_real(self) -> bool:
+        """Whether the chess API runs a real engine (the mock reports engine name "mock")."""
+        if self._engine_real is None:
+            try:
+                self._engine_real = ((await self.chess.health()).get("engine") or {}).get("name") != "mock"
+            except Exception:
+                return False
+        return self._engine_real
 
     async def ask(self, req: CoachRequest) -> CoachResponse:
         started = time.monotonic()
@@ -68,17 +79,21 @@ class CoachAgent:
 
         tier = route(req)
         tier_cfg: TierConfig = self.settings.deep if tier == "deep" else self.settings.fast
-        level = DEFAULT_LEVEL
+        remember = self.memory is not None and req.player_id != ANONYMOUS
+        profile = self.memory.profile(req.player_id) if remember else None
+        level = profile["level"] if profile else DEFAULT_LEVEL
+        depth = profile["explanation_depth"] if profile else DEFAULT_DEPTH
         limits = {"depth": LEVEL_LIMITS[level]["depth"]}
-        tools = ChessTools(self.chess, position, fen, limits)
+        tools = ChessTools(self.chess, position, fen, limits, engine_real=await self._engine_is_real())
         tools.used.append("position")
 
         messages = [{"role": "user" if t.role == "user" else "assistant", "content": t.content} for t in req.history[-6:]]
-        messages.append({"role": "user", "content": self._context(pos, req)})
+        memory_note = self.memory.context(profile, req.session_id) if profile else None
+        messages.append({"role": "user", "content": self._context(pos, req, memory_note)})
         common = dict(
             model=tier_cfg.model,
             effort=tier_cfg.effort,
-            system=system_prompt(level),
+            system=system_prompt(level, depth),
             tools=TOOL_DEFINITIONS,
             execute=tools.run,
             output_schema=ANSWER_SCHEMA,
@@ -116,6 +131,7 @@ class CoachAgent:
                 model=model_name,
                 tier=tier,
             )
+        response.level, response.explanation_depth = level, depth
         response.usage = Usage(
             input_tokens=usage.input_tokens,
             cached_tokens=usage.cached_tokens,
@@ -124,6 +140,13 @@ class CoachAgent:
             llm_calls=usage.calls,
             cost_usd=cost_usd(tier_cfg.model, usage),
         )
+        if remember:
+            self.memory.record_interaction(
+                req.player_id, req.session_id or "default", req.question, response.answer, fen, response.tier, response.usage.cost_usd
+            )
+            if tools.mistake:
+                m = tools.mistake
+                self.memory.record_mistakes(req.player_id, m["fen"], m["move"], m["color"], m["patterns"])
         verdicts = [c.result["verdict"] for c in response.claims]
         log.info(
             "answer tier=%s model=%s calls=%d in=%d cached=%d out=%d reasoning=%d cost=$%.4f claims=%s tools=%s %.1fs",
@@ -135,10 +158,11 @@ class CoachAgent:
     # ---------------------------------------------------------------- context
 
     @staticmethod
-    def _context(pos: dict[str, Any], req: CoachRequest) -> str:
+    def _context(pos: dict[str, Any], req: CoachRequest, memory_note: str | None = None) -> str:
         last = req.last_move.san if req.last_move else None
         return (
-            "Current position (ground truth from the rules engine):\n"
+            (f"{memory_note}\n\n" if memory_note else "")
+            + "Current position (ground truth from the rules engine):\n"
             f"{position_brief(pos, last)}\n"
             f"Moves played from the start position: {len(req.position.moves)}\n\n"
             f"Question: {req.question.strip()}"
