@@ -118,7 +118,7 @@ def test_hanging_piece_mistakes_are_recorded_once_per_move_and_become_recurring(
     assert m[0]["last_example"]["move"] == "Bg5"
 
     c.ask("Anything else?", session_id="later")
-    assert "left a piece undefended where it could be taken (2 times)" in llm.calls[-1]["messages"][-1]["content"]
+    assert "left a piece undefended where it could be taken (2 times, last: after Bg5" in llm.calls[-1]["messages"][-1]["content"]
     c.close()
 
 
@@ -178,3 +178,66 @@ def test_hanging_piece_after_giving_check_is_not_counted():
 def test_pawns_are_ignored():
     after = _pos([_hanging("e4", "pawn", "white")])
     assert detect_patterns(_pos([]), after, "white", {"uci": "e2e4", "san": "e4"}) == []
+
+
+# ---------------------------------------------------------------- whole-game review, side, history labels
+
+# 1.e4 e5 2.Na3 Qh4 3.Nc4 Qxe4+ - White's knight goes to the rim; Black's queen comes out on move 2.
+GAME = {"moves": ["e2e4", "e7e5", "b1a3", "d8h4", "a3c4", "h4e4"]}
+
+
+def test_game_moves_reach_the_context_in_san(chess_api_url):
+    c = Coach(chess_api_url)
+    c.ask("What happened?", GAME)
+    context = c.llm.calls[0]["messages"][-1]["content"]
+    assert "Game so far (6 plies, from the rules engine): 1. e4 e5 2. Na3 Qh4 3. Nc4 Qxe4+" in context
+    c.close()
+
+
+def test_review_game_finds_habits_for_the_players_side_only_and_saves_them(chess_api_url):
+    llm = QueueLLM([answer("ok")], tool_calls=[("review_game", {})])
+    c = Coach(chess_api_url, llm)
+    c.ask("What mistakes do I keep making?", GAME, player_color="white")
+    review = llm.tool_results[0]
+    assert review["reviewed"] == "3 white moves"
+    assert [f["move"] for f in review["findings"]] == ["2. Na3"]
+    assert "put the knight on the edge" in review["findings"][0]["patterns"][0]
+    assert all(f["by"] == "white" for f in review["findings"])  # Black's early Qh4 is not the player's habit
+    themes = {m["theme"] for m in c.profile()["recurring_mistakes"]}
+    assert themes == {"knight_on_rim"}
+    c.close()
+
+
+def test_review_game_without_a_side_reviews_both(chess_api_url):
+    llm = QueueLLM([answer("ok")], tool_calls=[("review_game", {})])
+    c = Coach(chess_api_url, llm)
+    c.ask("Review the game", GAME)
+    review = llm.tool_results[0]
+    assert review["reviewed"] == "6 white and black moves"
+    assert {f["move"] for f in review["findings"]} >= {"2. Na3", "2... Qh4"}
+    c.close()
+
+
+def test_review_last_move_does_not_blame_the_player_for_the_opponents_move(chess_api_url):
+    llm = QueueLLM([answer("ok")], tool_calls=[("review_last_move", {})])
+    c = Coach(chess_api_url, llm)
+    # White's 2.Ba6?? hangs the bishop, but the player is Black
+    c.ask("What was wrong with that move?", BA6, {"uci": "f1a6", "san": "Ba6"}, player_color="black")
+    assert c.profile()["recurring_mistakes"] == []
+    c.close()
+
+
+def test_history_about_another_position_is_labelled(chess_api_url):
+    c = Coach(chess_api_url)
+    other = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"
+    start = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    c.ask("And now?", history=[
+        {"role": "user", "content": "Is e4 good?", "fen": other},
+        {"role": "coach", "content": "Yes.", "fen": other},
+        {"role": "user", "content": "What about here?", "fen": start},
+    ])
+    msgs = c.llm.calls[0]["messages"]
+    assert msgs[0]["content"].startswith("[This message was about a different position: " + other)
+    assert msgs[1]["role"] == "assistant" and msgs[1]["content"].startswith("[This message was about a different position")
+    assert msgs[2]["content"] == "What about here?"
+    c.close()

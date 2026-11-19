@@ -18,6 +18,7 @@ from .board_text import describe_fact, position_brief
 from .chess_client import ChessClient
 from .config import Settings, TierConfig
 from .llm.base import LLMAdapter, LLMResult, LLMUsage
+from .game import GameReplay, numbered_game
 from .memory import ANONYMOUS, DEFAULT_DEPTH, DEFAULT_LEVEL, PlayerMemory
 from .pricing import cost_usd
 from .prompts import ANSWER_SCHEMA, revision_request, system_prompt
@@ -37,7 +38,7 @@ LEVEL_LIMITS = {
 DEEP_WORDS = re.compile(
     r"\b(why|how|plan|plans|strategy|strategic|explain|compare|versus|vs|better|worse|instead|idea|ideas|"
     r"structure|long[- ]term|evaluate|evaluation|what if|review|understand|difference|sacrifice|endgame|"
-    r"middlegame|imbalance|weakness|weaknesses)\b",
+    r"middlegame|imbalance|weakness|weaknesses|mistakes|habits|repeat|improve)\b",
     re.I,
 )
 SAN_TOKEN = re.compile(r"\b(?:[KQRBN][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8]|[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?(?![\w])")
@@ -60,6 +61,7 @@ class CoachAgent:
         self.chess = chess
         self.llm = llm
         self.memory = memory
+        self.replay = GameReplay(chess)
         self._engine_real: bool | None = None
 
     async def _engine_is_real(self) -> bool:
@@ -84,12 +86,23 @@ class CoachAgent:
         level = profile["level"] if profile else DEFAULT_LEVEL
         depth = profile["explanation_depth"] if profile else DEFAULT_DEPTH
         limits = {"depth": LEVEL_LIMITS[level]["depth"]}
-        tools = ChessTools(self.chess, position, fen, limits, engine_real=await self._engine_is_real())
+        game_sans = await self.replay.sans(position)
+        tools = ChessTools(
+            self.chess, position, fen, limits,
+            engine_real=await self._engine_is_real(), player_color=req.player_color, game_sans=game_sans,
+        )
         tools.used.append("position")
 
-        messages = [{"role": "user" if t.role == "user" else "assistant", "content": t.content} for t in req.history[-6:]]
+        messages = [
+            {
+                "role": "user" if t.role == "user" else "assistant",
+                # Turns about another position (or another game) must not be read as about this one.
+                "content": f"[This message was about a different position: {t.fen}]\n{t.content}" if t.fen and t.fen != fen else t.content,
+            }
+            for t in req.history[-6:]
+        ]
         memory_note = self.memory.context(profile, req.session_id) if profile else None
-        messages.append({"role": "user", "content": self._context(pos, req, memory_note)})
+        messages.append({"role": "user", "content": self._context(pos, req, memory_note, game_sans)})
         common = dict(
             model=tier_cfg.model,
             effort=tier_cfg.effort,
@@ -144,8 +157,7 @@ class CoachAgent:
             self.memory.record_interaction(
                 req.player_id, req.session_id or "default", req.question, response.answer, fen, response.tier, response.usage.cost_usd
             )
-            if tools.mistake:
-                m = tools.mistake
+            for m in tools.mistakes:
                 self.memory.record_mistakes(req.player_id, m["fen"], m["move"], m["color"], m["patterns"])
         verdicts = [c.result["verdict"] for c in response.claims]
         log.info(
@@ -158,13 +170,20 @@ class CoachAgent:
     # ---------------------------------------------------------------- context
 
     @staticmethod
-    def _context(pos: dict[str, Any], req: CoachRequest, memory_note: str | None = None) -> str:
+    def _context(pos: dict[str, Any], req: CoachRequest, memory_note: str | None = None, game_sans: list[str] | None = None) -> str:
         last = req.last_move.san if req.last_move else None
+        game = numbered_game(game_sans, req.position.start_fen) if game_sans else "none yet"
+        side = (
+            f"The player plays {req.player_color} (their board faces that side). Judge their moves, not the opponent's.\n"
+            if req.player_color
+            else ""
+        )
         return (
             (f"{memory_note}\n\n" if memory_note else "")
-            + "Current position (ground truth from the rules engine):\n"
-            f"{position_brief(pos, last)}\n"
-            f"Moves played from the start position: {len(req.position.moves)}\n\n"
+            + side
+            + f"Game so far ({len(req.position.moves)} plies, from the rules engine): {game}\n\n"
+            "Current position (ground truth from the rules engine):\n"
+            f"{position_brief(pos, last)}\n\n"
             f"Question: {req.question.strip()}"
         )
 

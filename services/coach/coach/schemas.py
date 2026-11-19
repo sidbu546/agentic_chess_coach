@@ -25,6 +25,8 @@ class Move(BaseModel):
 class ChatTurn(BaseModel):
     role: Literal["user", "coach"]
     content: str
+    # FEN of the position this turn was about; turns about other positions are labelled for the LLM.
+    fen: str | None = None
 
 
 PLAYER_ID = r"^p_[A-Za-z0-9_-]{1,64}$"
@@ -42,6 +44,8 @@ class CoachRequest(BaseModel):
     depth: Literal["auto", "fast", "deep"] = "auto"
     # Groups questions into sessions in player memory (one per page load in the web app).
     session_id: str | None = Field(default=None, max_length=64)
+    # The side the player plays (the web app sends the board orientation). None = unknown.
+    player_color: Literal["white", "black"] | None = None
 
 
 class BoardArrow(BaseModel):

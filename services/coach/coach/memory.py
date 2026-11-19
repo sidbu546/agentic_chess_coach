@@ -24,6 +24,14 @@ THEMES = {
     "missed_free_piece": "missed a chance to take an undefended piece",
     "walked_into_pin": "let a piece get pinned",
     "engine_mistake": "played a move the engine rates as a mistake",
+    # opening habits (from the moves and squares, no engine needed)
+    "knight_on_rim": "moved a knight to the edge of the board in the opening",
+    "early_queen": "brought the queen out in the first three moves",
+    "slow_development": "still had two or more knights or bishops at home on move 10",
+}
+HOME_MINORS = {
+    "white": {("b1", "knight"), ("g1", "knight"), ("c1", "bishop"), ("f1", "bishop")},
+    "black": {("b8", "knight"), ("g8", "knight"), ("c8", "bishop"), ("f8", "bishop")},
 }
 VALUE = {"pawn": 1, "knight": 3, "bishop": 3, "rook": 5, "queen": 9, "king": 100}
 
@@ -193,9 +201,12 @@ class PlayerMemory:
         """Short block for the coach's context. Only what helps pitch the explanation."""
         lines = [f"- Level: {profile['level']}" + (f" (rating {profile['rating']})" if profile["rating"] else "")]
         lines.append(f"- Prefers {profile['explanation_depth']} explanations")
-        recurring = [m for m in profile["recurring_mistakes"] if m["count"] >= 2]
-        if recurring:
-            lines.append("- Recurring mistakes in moves they asked about: " + "; ".join(f"{m['label']} ({m['count']} times)" for m in recurring[:3]))
+        found = profile["recurring_mistakes"]
+        if found:
+            lines.append(
+                "- Mistake patterns found in their reviewed moves so far (all games): "
+                + "; ".join(f"{m['label']} ({m['count']} times, last: {m['last_example']['detail']})" for m in found[:5])
+            )
         earlier = [s for s in self.sessions(profile["player_id"], limit=4) if s["session_id"] != current_session][:3]
         if earlier:
             topics = [t for s in earlier for t in s["topics"][:2]][:4]
@@ -240,7 +251,12 @@ def detect_patterns(before: dict[str, Any], after: dict[str, Any], mover: str, m
 
     pinned_before = {f["pinned"]["square"] for f in before["facts"] if f["kind"] == "pin" and f["pinned"]["color"] == mover}
     for f in after["facts"]:
-        if f["kind"] == "pin" and f["pinned"]["color"] == mover and f["pinned"]["square"] not in pinned_before:
+        if (
+            f["kind"] == "pin"
+            and f["pinned"]["color"] == mover
+            and f["pinned"]["square"] not in pinned_before
+            and (f["pinned"]["type"] != "pawn" or f["absolute"])  # a pawn shielding a piece is noise
+        ):
             p = f["pinned"]
             out.append({
                 "theme": "walked_into_pin",
@@ -249,3 +265,21 @@ def detect_patterns(before: dict[str, Any], after: dict[str, Any], mover: str, m
     # one entry per theme per move
     seen: set[str] = set()
     return [p for p in out if not (p["theme"] in seen or seen.add(p["theme"]))]
+
+
+def opening_habits(before: dict[str, Any], mover: str, move: dict[str, str]) -> list[dict[str, str]]:
+    """Habits visible from one move: knight to the rim, early queen, slow development (at move 10)."""
+    full = int(before["position"]["fen"].split()[5])
+    san, to_sq = move["san"], move["uci"][2:4]
+    label = f"{full}{'.' if mover == 'white' else '...'} {san}"
+    out = []
+    if san.startswith("N") and to_sq[0] in "ah" and full <= 10:
+        out.append({"theme": "knight_on_rim", "detail": f"{label} put the knight on the edge, where it controls fewer squares"})
+    if san.startswith("Q") and full <= 3:
+        out.append({"theme": "early_queen", "detail": f"{label} brought the queen out on move {full}"})
+    if full == 10:
+        home = {(e["piece"]["square"], e["piece"]["type"]) for e in before.get("pieces") or [] if e["piece"]["color"] == mover}
+        left = sorted(sq for sq, t in HOME_MINORS[mover] & home)
+        if len(left) >= 2:
+            out.append({"theme": "slow_development", "detail": f"on move 10 the pieces on {', '.join(left)} had not moved yet"})
+    return out

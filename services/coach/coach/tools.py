@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from .memory import detect_patterns
+from .memory import THEMES, detect_patterns, opening_habits
 from .board_text import describe_fact, fmt_score, position_brief
 from .chess_client import ChessApiError, ChessClient
 
@@ -57,6 +57,17 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "required": ["moves"],
             "additionalProperties": False,
         },
+    },
+    {
+        "name": "review_game",
+        "description": (
+            "Go through every move the player made in the game on the board (both sides if their side is unknown) "
+            "and report mistake patterns found by the rules engine: pieces left undefended, free pieces not taken, "
+            "new pins on their pieces, and opening habits (knight to the edge, early queen, slow development). With "
+            "a real engine it also reports each move's loss. Use it for questions about the whole game, the "
+            "player's habits, or what they should stop repeating. Found patterns are saved to player memory."
+        ),
+        "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False},
     },
     {
         "name": "review_last_move",
@@ -109,7 +120,16 @@ def describe_difference(d: dict[str, Any]) -> str:
 class ChessTools:
     """Executes tool calls for one coach request, against one position."""
 
-    def __init__(self, client: ChessClient, position: dict[str, Any], fen: str, limits: dict[str, Any], engine_real: bool = True):
+    def __init__(
+        self,
+        client: ChessClient,
+        position: dict[str, Any],
+        fen: str,
+        limits: dict[str, Any],
+        engine_real: bool = True,
+        player_color: str | None = None,
+        game_sans: list[str] | None = None,
+    ):
         self.client = client
         self.position = position
         self.fen = fen
@@ -117,8 +137,10 @@ class ChessTools:
         self.engine_real = engine_real  # from /v1/health; False against the mock
         self.used: list[str] = []  # chess API endpoints called, shown in the UI
         self.engine_is_mock = not engine_real
-        # Set by review_last_move when the reviewed move shows a mistake pattern; player memory stores it.
-        self.mistake: dict[str, Any] | None = None
+        self.player_color = player_color  # None = unknown, review both sides
+        self.game_sans = game_sans or []
+        # Mistakes found in the player's moves by review_last_move / review_game; player memory stores them.
+        self.mistakes: list[dict[str, Any]] = []
 
     def _note(self, endpoint: str) -> None:
         if endpoint not in self.used:
@@ -257,7 +279,8 @@ class ChessTools:
                 patterns = []
             elif not patterns:
                 patterns = [{"theme": "engine_mistake", "detail": f"{line['move']['san']} loses about {line['loss_cp'] / 100:.1f} pawns compared with {best['move']['san']}"}]
-        self.mistake = {"fen": parent_fen, "move": line["move"]["san"], "color": mover, "patterns": patterns} if patterns else None
+        if patterns and self.player_color in (None, mover):  # don't blame the player for the opponent's move
+            self.mistakes.append({"fen": parent_fen, "move": line["move"]["san"], "color": mover, "patterns": patterns})
         return {
             "available": True,
             "engine_note": _mock_note("mock" if not self.engine_real else ""),
@@ -272,6 +295,54 @@ class ChessTools:
             "engine_best_line": numbered([m["san"] for m in best["pv"][:10]], full, white),
             "played_line": numbered([m["san"] for m in line["pv"][:10]], full, white),
             "differences": [describe_difference(d) for d in line["differences"]],
+        }
+
+
+    async def _tool_review_game(self) -> dict[str, Any]:
+        start, moves = self.position["start_fen"], self.position["moves"]
+        if not moves:
+            return {"available": False, "reason": "No moves have been played in this game yet."}
+        first = max(0, len(moves) - 80)  # the last 80 plies at most
+        self._note("position")
+        positions = [await self.client.position({"start_fen": start, "moves": moves[:i]}, pieces=True) for i in range(first, len(moves) + 1)]
+        findings, summary, reviewed = [], {}, 0
+        for k, i in enumerate(range(first, len(moves))):
+            before, after = positions[k], positions[k + 1]
+            mover = before["position"]["side_to_move"]
+            if self.player_color and mover != self.player_color:
+                continue
+            reviewed += 1
+            move = {"uci": moves[i], "san": self.game_sans[i] if i < len(self.game_sans) else moves[i]}
+            tactical = detect_patterns(before, after, mover, move)
+            loss = None
+            if self.engine_real:
+                self._note("compare")
+                limits = {**self.limits, "depth": min(self.limits.get("depth", 16), 12)}
+                line = (await self.client.compare({"start_fen": start, "moves": moves[:i]}, [moves[i]], limits))["lines"][0]
+                loss = line["loss_cp"]
+                if loss <= 100:
+                    tactical = []
+                elif not tactical:
+                    tactical = [{"theme": "engine_mistake", "detail": f"{move['san']} loses about {loss / 100:.1f} pawns"}]
+            patterns = tactical + opening_habits(before, mover, move)
+            if not patterns:
+                continue
+            full = int(before["position"]["fen"].split()[5])
+            findings.append({
+                "move": f"{full}{'.' if mover == 'white' else '...'} {move['san']}",
+                "by": mover,
+                "patterns": [p["detail"] for p in patterns],
+                **({"loss_cp": loss} if loss is not None else {}),
+            })
+            for p in patterns:
+                summary[THEMES[p["theme"]]] = summary.get(THEMES[p["theme"]], 0) + 1
+            self.mistakes.append({"fen": before["position"]["fen"], "move": move["san"], "color": mover, "patterns": patterns})
+        return {
+            "available": True,
+            "reviewed": f"{reviewed} {self.player_color or 'white and black'} moves" + (f" (the last {len(moves) - first} plies)" if first else ""),
+            "engine_note": _mock_note("mock" if not self.engine_real else ""),
+            "summary": summary or "no mistake patterns found by the rules engine",
+            "findings": findings[:30],
         }
 
 

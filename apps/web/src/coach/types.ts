@@ -23,6 +23,8 @@ export interface BoardAnnotations {
 export interface ChatTurn {
   role: "user" | "coach";
   content: string;
+  /** FEN of the position the turn was about, so the coach doesn't mix up positions. */
+  fen?: string;
 }
 
 export interface CoachRequest {
@@ -38,6 +40,8 @@ export interface CoachRequest {
   depth?: "auto" | "fast" | "deep";
   /** Groups questions into sessions in player memory (one per page load). */
   session_id?: string;
+  /** The side the player plays; the web app sends the board orientation. */
+  player_color?: "white" | "black";
 }
 
 export interface CoachUsage {

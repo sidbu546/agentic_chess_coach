@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 47 tests; starts the analysis-schema mock in-process
+pytest                                # 52 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -28,10 +28,12 @@ pytest                                # 47 tests; starts the analysis-schema moc
 question ──► player memory: level, explanation depth, recurring mistakes, earlier questions
          ──► route: fast or deep tier
          ──► /v1/position → context (FEN, piece list, status, material, facts)
+             + the game so far in SAN (replayed with /v1/move, cached) and the player's side
          ──► LLM with chess tools ─┬─ analyze_position  → /v1/analyze
                                    ├─ compare_moves     → /v1/compare
                                    ├─ explore_line      → /v1/move ×n, /v1/position, /v1/analyze
-                                   └─ review_last_move  → /v1/compare on the previous position
+                                   ├─ review_last_move  → /v1/compare on the previous position
+                                   └─ review_game       → /v1/position for every ply (+ /v1/compare with a real engine)
          ──► answer + structured claims (SAN) ──► SAN→UCI by /v1/move ──► /v1/verify
                  refuted/unverifiable ──► one revision round with the verifier's reasons
                  still refuted        ──► safe answer from verified facts only (tier "fallback")
@@ -63,9 +65,16 @@ What it changes in an answer:
 - **Recurring mistakes** (2+ times) and up to four questions from earlier sessions go into the context, so the
   coach can say "this is the hanging-piece pattern again".
 
-Mistakes are recorded only when the player asks about a move (`review_last_move`), and only from the rules
-engine's facts before and after it: a piece left undefended and attacked, an undefended enemy piece not
-taken, or a new pin on one of the mover's pieces. Pawns, even trades and moves that give check are left out.
+Mistakes are recorded when the player asks about a move (`review_last_move`) or about their game or habits
+(`review_game`, which goes through every move of the player's side). They come only from the rules engine's
+facts before and after each move: a piece left undefended and attacked, an undefended enemy piece not taken,
+or a new pin on one of the mover's pieces (pawns only if pinned to the king). Pawns, even trades and moves
+that give check are left out. `review_game` also notes opening habits: a knight to the a/h-file in the first
+10 moves, the queen out in the first 3, and two or more knights/bishops still at home on move 10.
+
+The player's side is the board orientation the web app sends (`player_color`); only that side's moves are
+judged. Chat-history turns carry the FEN they were about, and turns about another position are labelled as
+such for the model.
 With a real engine connected, a pattern counts only if the engine rates the move a mistake (loss > 100 cp).
 Asking about the same move twice counts once.
 

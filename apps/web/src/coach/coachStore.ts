@@ -9,6 +9,8 @@ export interface ChatMessage {
   positionKey: string;
   /** Node in the game tree the message was asked at, so clicking it can jump back there. */
   nodeId: string;
+  /** FEN of that position, sent with the chat history. */
+  fen?: string;
   status: "pending" | "ok" | "error";
   annotations?: BoardAnnotations;
   claims?: CheckedClaim[];

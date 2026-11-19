@@ -7,13 +7,14 @@ import { playerId, sessionId, useCoach, type ChatMessage } from "@/coach/coachSt
 import { usePlayer } from "@/coach/playerStore";
 import type { CheckedClaim } from "@/coach/types";
 import { moveNumber, ROOT_ID, useCurrentNode, useGameTree } from "@/state/gameTree";
+import { useSettings } from "@/state/settings";
 import { PlayerModal } from "./PlayerModal";
 
 const SUGGESTIONS = [
   "What's the best move here, and why?",
   "What was wrong with the last move?",
   "What is my opponent threatening?",
-  "What's the plan for both sides?",
+  "What mistakes did I make this game?",
 ];
 
 let msgCounter = 0;
@@ -55,10 +56,10 @@ export function CoachPanel() {
     const history = messages
       .filter((m) => m.status === "ok")
       .slice(-6)
-      .map((m) => ({ role: m.role, content: m.text }));
-    add({ id: newMsgId(), role: "user", text: q, positionKey: key, nodeId: node.id, status: "ok" });
+      .map((m) => ({ role: m.role, content: m.text, fen: m.fen }));
+    add({ id: newMsgId(), role: "user", text: q, positionKey: key, nodeId: node.id, fen: node.fen, status: "ok" });
     const id = newMsgId();
-    add({ id, role: "coach", text: "", positionKey: key, nodeId: node.id, status: "pending" });
+    add({ id, role: "coach", text: "", positionKey: key, nodeId: node.id, fen: node.fen, status: "pending" });
     try {
       const res = await askCoach({
         question: q,
@@ -68,6 +69,8 @@ export function CoachPanel() {
         history,
         depth: thinkHarder ? "deep" : "auto",
         session_id: sessionId(),
+        // The side at the bottom of the board is the player's side.
+        player_color: useSettings.getState().orientation,
       });
       update(id, {
         status: "ok",
