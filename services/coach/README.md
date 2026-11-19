@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 52 tests; starts the analysis-schema mock in-process
+pytest                                # 54 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -71,9 +71,11 @@ facts before and after each move: a piece left undefended and attacked, an undef
 or a new pin on one of the mover's pieces (pawns only if pinned to the king). Pawns, even trades and moves
 that give check are left out. `review_game` also notes opening habits: a knight to the a/h-file in the first
 10 moves, the queen out in the first 3, and two or more knights/bishops still at home on move 10.
+It also counts material given away (pawns included): material the player had before a move and no longer
+has after the reply and their own next move, so an immediate recapture is not counted.
 
-The player's side is the board orientation the web app sends (`player_color`); only that side's moves are
-judged. Chat-history turns carry the FEN they were about, and turns about another position are labelled as
+The player's side is the board orientation the web app sends (`player_color`), unless the question says
+otherwise ("I am Black"): the model then passes `side` to `review_game`. Only that side's moves are judged. Chat-history turns carry the FEN they were about, and turns about another position are labelled as
 such for the model.
 With a real engine connected, a pattern counts only if the engine rates the move a mistake (loss > 100 cp).
 Asking about the same move twice counts once.

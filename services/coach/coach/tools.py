@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from .memory import THEMES, detect_patterns, opening_habits
+from .memory import THEMES, detect_patterns, material_given_away, opening_habits
 from .board_text import describe_fact, fmt_score, position_brief
 from .chess_client import ChessApiError, ChessClient
 
@@ -67,7 +67,18 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "a real engine it also reports each move's loss. Use it for questions about the whole game, the "
             "player's habits, or what they should stop repeating. Found patterns are saved to player memory."
         ),
-        "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "side": {
+                    "type": ["string", "null"],
+                    "enum": ["white", "black", "both", None],
+                    "description": "The side the player plays. If the question says it ('I am Black'), use that; otherwise null (the board orientation).",
+                }
+            },
+            "required": ["side"],
+            "additionalProperties": False,
+        },
     },
     {
         "name": "review_last_move",
@@ -298,8 +309,9 @@ class ChessTools:
         }
 
 
-    async def _tool_review_game(self) -> dict[str, Any]:
+    async def _tool_review_game(self, side: str | None = None) -> dict[str, Any]:
         start, moves = self.position["start_fen"], self.position["moves"]
+        side = None if side == "both" else (side or self.player_color)
         if not moves:
             return {"available": False, "reason": "No moves have been played in this game yet."}
         first = max(0, len(moves) - 80)  # the last 80 plies at most
@@ -309,11 +321,14 @@ class ChessTools:
         for k, i in enumerate(range(first, len(moves))):
             before, after = positions[k], positions[k + 1]
             mover = before["position"]["side_to_move"]
-            if self.player_color and mover != self.player_color:
+            if side and mover != side:
                 continue
             reviewed += 1
             move = {"uci": moves[i], "san": self.game_sans[i] if i < len(self.game_sans) else moves[i]}
             tactical = detect_patterns(before, after, mover, move)
+            if not tactical and k + 3 < len(positions):  # after the reply and the player's next move
+                reply = self.game_sans[i + 1] if i + 1 < len(self.game_sans) else "the reply"
+                tactical = material_given_away(before, positions[k + 3], mover, move, reply)
             loss = None
             if self.engine_real:
                 self._note("compare")
@@ -339,7 +354,7 @@ class ChessTools:
             self.mistakes.append({"fen": before["position"]["fen"], "move": move["san"], "color": mover, "patterns": patterns})
         return {
             "available": True,
-            "reviewed": f"{reviewed} {self.player_color or 'white and black'} moves" + (f" (the last {len(moves) - first} plies)" if first else ""),
+            "reviewed": f"{reviewed} {side or 'white and black'} moves" + (f" (the last {len(moves) - first} plies)" if first else ""),
             "engine_note": _mock_note("mock" if not self.engine_real else ""),
             "summary": summary or "no mistake patterns found by the rules engine",
             "findings": findings[:30],

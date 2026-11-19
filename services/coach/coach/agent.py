@@ -174,7 +174,9 @@ class CoachAgent:
         last = req.last_move.san if req.last_move else None
         game = numbered_game(game_sans, req.position.start_fen) if game_sans else "none yet"
         side = (
-            f"The player plays {req.player_color} (their board faces that side). Judge their moves, not the opponent's.\n"
+            f"The board faces {req.player_color}, so the player probably plays {req.player_color}. If the question says they "
+            "play the other side, believe the question (and pass that side to review_game). Judge the player's moves, not "
+            "the opponent's.\n"
             if req.player_color
             else ""
         )

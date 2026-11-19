@@ -24,6 +24,7 @@ THEMES = {
     "missed_free_piece": "missed a chance to take an undefended piece",
     "walked_into_pin": "let a piece get pinned",
     "engine_mistake": "played a move the engine rates as a mistake",
+    "gave_away_material": "gave away material that wasn't won back",
     # opening habits (from the moves and squares, no engine needed)
     "knight_on_rim": "moved a knight to the edge of the board in the opening",
     "early_queen": "brought the queen out in the first three moves",
@@ -283,3 +284,24 @@ def opening_habits(before: dict[str, Any], mover: str, move: dict[str, str]) -> 
         if len(left) >= 2:
             out.append({"theme": "slow_development", "detail": f"on move 10 the pieces on {', '.join(left)} had not moved yet"})
     return out
+
+
+PLURAL = {"pawn": "pawns", "knight": "knights", "bishop": "bishops", "rook": "rooks", "queen": "queens"}
+
+
+def material_given_away(before: dict[str, Any], later: dict[str, Any], mover: str, move: dict[str, str], reply: str) -> list[dict[str, str]]:
+    """Material the mover had before the move and no longer has after the reply and their next move.
+
+    `later` is the position after the mover's next move, so an immediate recapture is not counted.
+    Includes pawns (unlike detect_patterns): a pawn given away for nothing is the most common beginner loss.
+    """
+    sign = 1 if mover == "white" else -1
+    lost_cp = sign * (before["material"]["balance_cp"] - later["material"]["balance_cp"])
+    if lost_cp < 100:
+        return []
+    mine_before, mine_later = before["material"][mover], later["material"][mover]
+    gone = [(t, mine_before[t] - mine_later[t]) for t in ("queen", "rook", "bishop", "knight", "pawn") if mine_before[t] > mine_later[t]]
+    what = ", ".join(f"the {t}" if n == 1 and t == "queen" else f"a {t}" if n == 1 else f"{n} {PLURAL[t]}" for t, n in gone) or "material"
+    full = int(before["position"]["fen"].split()[5])
+    label = f"{full}{'.' if mover == 'white' else '...'} {move['san']}"
+    return [{"theme": "gave_away_material", "detail": f"after {label}, {reply} won {what} ({lost_cp / 100:g} pawn{'' if lost_cp == 100 else 's'} of material) and it wasn't won back"}]

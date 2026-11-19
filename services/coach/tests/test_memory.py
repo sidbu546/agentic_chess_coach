@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from coach.app import create_app
-from coach.memory import PlayerMemory, detect_patterns
+from coach.memory import PlayerMemory, detect_patterns, material_given_away
 from .conftest import QueueLLM, answer
 from .test_coach import settings
 
@@ -241,3 +241,36 @@ def test_history_about_another_position_is_labelled(chess_api_url):
     assert msgs[1]["role"] == "assistant" and msgs[1]["content"].startswith("[This message was about a different position")
     assert msgs[2]["content"] == "What about here?"
     c.close()
+
+
+# The game from the live test: the player said "I am Black" but the board faced White.
+# 1.e4 b5 2.Bxb5 e5 3.Bf1 d5 4.exd5 Qxd5 5.Nc3 c5 6.Nxd5 a5 7.Nf3
+LIVE = {"moves": ["e2e4", "b7b5", "f1b5", "e7e5", "b5f1", "d7d5", "e4d5", "d8d5", "b1c3", "c7c5", "c3d5", "a7a5", "g1f3"]}
+
+
+def test_review_game_side_from_the_question_beats_the_board_orientation(chess_api_url):
+    llm = QueueLLM([answer("ok")], tool_calls=[("review_game", {"side": "black"})])
+    c = Coach(chess_api_url, llm)
+    c.ask("I am black now, what mistakes am I making?", LIVE, player_color="white")
+    review = llm.tool_results[0]
+    assert review["reviewed"] == "6 black moves"
+    found = {f["move"]: f["patterns"] for f in review["findings"]}
+    assert "Bxb5 won a pawn (1 pawn of material) and it wasn't won back" in found["1... b5"][0]
+    assert found["5... c5"] == ["after c5 the queen on d5 could be taken for free"]
+    assert "3... d5" not in found  # exd5 Qxd5 is an even trade
+    themes = {m["theme"]: m["count"] for m in c.profile()["recurring_mistakes"]}
+    assert themes == {"gave_away_material": 1, "left_piece_hanging": 1}
+    context = llm.calls[0]["messages"][-1]["content"]
+    assert "If the question says they play the other side, believe the question" in context
+    c.close()
+
+
+def test_material_given_away_ignores_a_recapture():
+    def pos(balance, white, black, fen="8/8/8/8/8/8/8/8 b - - 0 1"):
+        return {"material": {"balance_cp": balance, "white": white, "black": black}, "position": {"fen": fen}}
+
+    zero = {"queen": 1, "rook": 2, "bishop": 2, "knight": 2, "pawn": 8}
+    seven = {**zero, "pawn": 7}
+    # Black's pawn is taken, and Black takes one back before their next move is counted
+    assert material_given_away(pos(0, zero, zero), pos(0, seven, seven), "black", {"uci": "d7d5", "san": "d5"}, "exd5") == []
+    assert material_given_away(pos(0, zero, zero), pos(100, zero, seven), "black", {"uci": "b7b5", "san": "b5"}, "Bxb5")
