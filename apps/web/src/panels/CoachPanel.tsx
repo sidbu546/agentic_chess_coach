@@ -1,12 +1,23 @@
 import { ActionIcon, Alert, Badge, Box, Button, Group, Loader, ScrollArea, Stack, Switch, Text, Textarea, Tooltip } from "@mantine/core";
-import { IconCircleCheck, IconCircleX, IconEye, IconEyeOff, IconHelpCircle, IconSend, IconTrash, IconUser } from "@tabler/icons-react";
+import {
+  IconCircleCheck,
+  IconCircleX,
+  IconEye,
+  IconEyeOff,
+  IconHelpCircle,
+  IconPlayerPlayFilled,
+  IconSend,
+  IconTrash,
+  IconUser,
+} from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 import { positionKey } from "@/api/chessApi";
 import { askCoach, CoachApiError, COACH_API_URL } from "@/coach/coachApi";
 import { playerId, sessionId, useCoach, type ChatMessage } from "@/coach/coachStore";
 import { usePlayer } from "@/coach/playerStore";
-import type { CheckedClaim } from "@/coach/types";
+import type { CheckedClaim, CoachLine } from "@/coach/types";
 import { moveNumber, ROOT_ID, useCurrentNode, useGameTree } from "@/state/gameTree";
+import { lineText, useLinePlayer } from "@/state/linePlayer";
 import { useSettings } from "@/state/settings";
 import { PlayerModal } from "./PlayerModal";
 
@@ -77,6 +88,7 @@ export function CoachPanel() {
         text: res.answer,
         annotations: res.annotations,
         claims: res.claims,
+        lines: res.lines ?? [],
         toolsUsed: res.tools_used,
         model: res.model,
         tier: res.tier,
@@ -126,6 +138,12 @@ export function CoachPanel() {
               onJump={() => {
                 if (nodes[m.nodeId]) useGameTree.getState().goTo(m.nodeId);
                 if (m.annotations) show(m.id);
+              }}
+              onPlay={(line) => {
+                if (!nodes[m.nodeId]) return;
+                useGameTree.getState().goTo(m.nodeId);
+                show(null);
+                useLinePlayer.getState().open(line, m.nodeId);
               }}
             />
           ))}
@@ -206,6 +224,7 @@ function Message({
   shown,
   onToggleShow,
   onJump,
+  onPlay,
 }: {
   m: ChatMessage;
   where: string;
@@ -213,6 +232,7 @@ function Message({
   shown: boolean;
   onToggleShow: () => void;
   onJump: () => void;
+  onPlay: (line: CoachLine) => void;
 }) {
   if (m.role === "user") {
     return (
@@ -247,6 +267,7 @@ function Message({
       <Text size="sm" style={{ whiteSpace: "pre-wrap" }}>
         {m.text}
       </Text>
+      {m.lines && m.lines.length > 0 && <Lines lines={m.lines} onPlay={onPlay} />}
       {m.claims && m.claims.length > 0 && <Claims claims={m.claims} />}
       <Group gap={6} mt={6} justify="space-between">
         <Group gap={4}>
@@ -279,6 +300,39 @@ function Message({
         )}
       </Group>
     </Box>
+  );
+}
+
+function Lines({ lines, onPlay }: { lines: CoachLine[]; onPlay: (line: CoachLine) => void }) {
+  const playing = useLinePlayer((s) => s.line);
+  return (
+    <Stack gap={4} mt={8}>
+      {lines.map((line, i) => {
+        const last = line.steps[line.steps.length - 1];
+        return (
+          <Group key={i} className="line-chip" gap={8} wrap="nowrap" justify="space-between">
+            <Text size="xs" style={{ fontVariantNumeric: "tabular-nums" }} lineClamp={2}>
+              {lineText(line)}
+            </Text>
+            <Group gap={6} wrap="nowrap" style={{ flexShrink: 0 }}>
+              {last.state === "checkmate" && (
+                <Badge size="xs" color="red" variant="light">
+                  mate
+                </Badge>
+              )}
+              <Button
+                size="compact-xs"
+                variant={playing === line ? "filled" : "light"}
+                leftSection={<IconPlayerPlayFilled size={11} />}
+                onClick={() => onPlay(line)}
+              >
+                Play
+              </Button>
+            </Group>
+          </Group>
+        );
+      })}
+    </Stack>
   );
 }
 

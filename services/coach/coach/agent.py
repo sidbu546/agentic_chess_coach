@@ -22,7 +22,7 @@ from .game import GameReplay, numbered_game
 from .memory import ANONYMOUS, DEFAULT_DEPTH, DEFAULT_LEVEL, PlayerMemory
 from .pricing import cost_usd
 from .prompts import ANSWER_SCHEMA, revision_request, system_prompt
-from .schemas import BoardAnnotations, BoardArrow, BoardHighlight, CheckedClaim, CoachRequest, CoachResponse, Usage
+from .schemas import BoardAnnotations, BoardArrow, BoardHighlight, CheckedClaim, CoachLine, CoachRequest, CoachResponse, Usage
 from .tools import TOOL_DEFINITIONS, ChessTools
 from .verification import ClaimChecker
 
@@ -116,7 +116,7 @@ class CoachAgent:
         usage = LLMUsage()
         result: LLMResult = await self.llm.run(messages=messages, **common)
         usage.add(result.usage)
-        checked = await self._verify(result.output.get("claims", []), position, limits, tools)
+        checked, steps = await self._verify(result.output.get("claims", []), position, limits, tools)
 
         for _ in range(self.settings.max_revisions):
             problems = [
@@ -128,7 +128,7 @@ class CoachAgent:
                 break
             result = await self.llm.run(messages=[{"role": "user", "content": revision_request(problems)}], state=result.state, **common)
             usage.add(result.usage)
-            checked = await self._verify(result.output.get("claims", []), position, limits, tools)
+            checked, steps = await self._verify(result.output.get("claims", []), position, limits, tools)
 
         refuted = [c for c in checked if c.result["verdict"] == "refuted"]
         model_name = result.model
@@ -143,6 +143,7 @@ class CoachAgent:
                 tools_used=tools.used,
                 model=model_name,
                 tier=tier,
+                lines=self._lines(checked, steps, fen),
             )
         response.level, response.explanation_depth = level, depth
         response.usage = Usage(
@@ -193,10 +194,25 @@ class CoachAgent:
 
     async def _verify(
         self, raw_claims: list[dict[str, Any]], position: dict[str, Any], limits: dict[str, Any], tools: ChessTools
-    ) -> list[CheckedClaim]:
+    ) -> tuple[list[CheckedClaim], dict[str, list[dict[str, Any]]]]:
         if raw_claims and "verify" not in tools.used:
             tools.used.append("verify")
-        return await ClaimChecker(self.chess, position, limits).check(raw_claims)
+        checker = ClaimChecker(self.chess, position, limits)
+        checked = await checker.check(raw_claims)
+        return checked, checker.lines
+
+    @staticmethod
+    def _lines(checked: list[CheckedClaim], steps: dict[str, list[dict[str, Any]]], start_fen: str) -> list[CoachLine]:
+        """Supported legal_line claims as playable lines (longest first, no duplicates, at most 3)."""
+        out: dict[tuple[str, ...], CoachLine] = {}
+        for c in checked:
+            line = steps.get(c.result.get("id", ""))
+            if not line or c.result.get("verdict") != "supported":
+                continue
+            key = tuple(s["uci"] for s in line)
+            if key not in out:
+                out[key] = CoachLine(title=c.text, start_fen=start_fen, steps=line)
+        return sorted(out.values(), key=lambda l: -len(l.steps))[:3]
 
     # ---------------------------------------------------------------- annotations
 

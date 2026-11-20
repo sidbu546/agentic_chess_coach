@@ -428,3 +428,26 @@ def test_prompt_never_tells_the_player_about_the_engine():
     p = system_prompt("intermediate")
     assert "isn't connected yet" not in p
     assert "I can see a win for White:" in p
+
+
+def test_supported_lines_come_back_playable_with_positions(chess_api_url):
+    llm = QueueLLM([answer(
+        "I can see a win for White: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
+        [claim("1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#", "legal_line", moves=SCHOLAR),
+         claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)],
+    )])
+    body = ask(chess_api_url, llm, "How can White win in 4 moves?", START).json()
+    (line,) = body["lines"]
+    assert line["start_fen"].startswith("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w")
+    assert [s["san"] for s in line["steps"]] == ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6", "Qxf7#"]
+    assert line["steps"][0]["uci"] == "e2e4" and line["steps"][0]["fen"].startswith("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP")
+    assert (line["steps"][-1]["state"], line["steps"][-1]["winner"]) == ("checkmate", "white")
+
+
+def test_refuted_or_unverifiable_lines_are_not_playable(chess_api_url):
+    llm = QueueLLM([
+        answer("x", [claim("bad line", "legal_line", moves=["e4", "e5", "Ke3", "Ke6"]), claim("odd", "legal_line", moves=["e4", "Qh4"])]),
+        answer("x", []),
+    ])
+    body = ask(chess_api_url, llm, "Show me a line", START).json()
+    assert body["lines"] == []

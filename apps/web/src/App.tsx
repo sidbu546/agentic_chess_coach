@@ -3,6 +3,7 @@ import { IconChartLine, IconChess, IconInfoCircle, IconMessageCircle, IconSettin
 import { useState } from "react";
 import { Board } from "@/board/Board";
 import { BoardControls } from "@/board/BoardControls";
+import { LinePlayerBar } from "@/board/LinePlayerBar";
 import { useBoardHotkeys } from "@/lib/useHotkeys";
 import { NotationPanel } from "@/notation/NotationPanel";
 import { AnalysisPanel } from "@/panels/AnalysisPanel";
@@ -11,11 +12,13 @@ import { EditPanel } from "@/panels/EditPanel";
 import { ImportModal } from "@/panels/ImportModal";
 import { InfoPanel, useHealth } from "@/panels/InfoPanel";
 import { SettingsModal } from "@/panels/SettingsModal";
+import { useLinePlayer } from "@/state/linePlayer";
 import { useUi } from "@/state/ui";
 
 export default function App() {
   useBoardHotkeys();
   const editing = useUi((s) => s.editing);
+  const playingLine = useLinePlayer((s) => s.line !== null);
   const [tab, setTab] = useState<string | null>("coach");
 
   return (
@@ -24,7 +27,7 @@ export default function App() {
       <main className="workspace">
         <section className="board-pane" aria-label="Board">
           <Board />
-          <BoardControls />
+          {playingLine && !editing ? <LinePlayerBar /> : <BoardControls />}
         </section>
         <section className="side-pane" aria-label="Panels">
           {editing ? (

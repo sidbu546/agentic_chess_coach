@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { BoardAnnotations, CheckedClaim, CoachResponse } from "./types";
+import type { BoardAnnotations, CheckedClaim, CoachLine, CoachResponse } from "./types";
 
 export interface ChatMessage {
   id: string;
@@ -14,6 +14,7 @@ export interface ChatMessage {
   status: "pending" | "ok" | "error";
   annotations?: BoardAnnotations;
   claims?: CheckedClaim[];
+  lines?: CoachLine[];
   toolsUsed?: string[];
   model?: string;
   tier?: CoachResponse["tier"];

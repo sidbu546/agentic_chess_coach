@@ -15,6 +15,7 @@ import { coachShapes, engineShapes } from "@/lib/shapes";
 import { playMove } from "@/state/actions";
 import { useEditor } from "@/state/editor";
 import { useCurrentNode, useGameTree } from "@/state/gameTree";
+import { useLinePlayer, usePreviewPosition } from "@/state/linePlayer";
 import { BOARD_THEMES, useSettings } from "@/state/settings";
 import { useUi } from "@/state/ui";
 import { BoardBar, MaterialStrip } from "./BoardBar";
@@ -73,10 +74,16 @@ export function Board() {
   );
   const editor = useEditor(useShallow((s) => ({ placement: s.placement, tool: s.tool, turn: s.turn })));
   const shownCoach = useCoach((s) => s.messages.find((m) => m.id === s.shownId));
+  const lp = useLinePlayer(useShallow((s) => ({ line: s.line, index: s.index, ideas: s.ideas })));
+  const previewAt = usePreviewPosition();
+  // While a coach line plays back, the board shows the line's positions instead of the game's.
+  const preview = !ui.editing && lp.line && previewAt ? { ...previewAt, line: lp.line, index: lp.index } : null;
+  const viewFen = preview ? preview.fen : node.fen;
+  const viewPosition = preview ? preview.position : node.position;
 
-  const local = useMemo(() => localPosition(node.fen), [node.fen]);
-  const analysis = useAnalysis(node.position);
-  const info = usePositionInfo(node.position);
+  const local = useMemo(() => localPosition(viewFen), [viewFen]);
+  const analysis = useAnalysis(viewPosition);
+  const info = usePositionInfo(viewPosition);
   const status = info.data?.data.status;
 
   const apiRef = useRef<Api | null>(null);
@@ -86,15 +93,18 @@ export function Board() {
 
   const orientation = st.orientation;
   const turn = local.turn;
-  const nodeKey = `${gameVersion}:${node.id}`;
+  const nodeKey = preview ? `line:${preview.index}` : `${gameVersion}:${node.id}`;
 
   const submit = useCallback(async (uci: string) => {
+    // A move made while a line plays back: put the line up to here into the game, then the move.
+    const player = useLinePlayer.getState();
+    if (player.line) await player.addToGame(player.index);
     const ok = await playMove(uci);
     if (!ok) setResetNonce((n) => n + 1); // snap the piece back to the confirmed position
   }, []);
 
   const onAfterMove = (orig: Key, dest: Key, meta: { ctrlKey?: boolean }) => {
-    if (isPromotion(node.fen, orig, dest)) {
+    if (isPromotion(viewFen, orig, dest)) {
       if (st.autoQueen && !meta.ctrlKey) submit(`${orig}${dest}q`);
       else setPromo({ from: orig, to: dest });
       return;
@@ -120,14 +130,20 @@ export function Board() {
   const candidates = analysis.data?.data.analysis.candidates ?? [];
   const coachHere = shownCoach && shownCoach.positionKey === positionKey(node.position) ? shownCoach : undefined;
   let autoShapes: DrawShape[] = [];
-  if (!ui.editing) {
+  const engineReal = analysis.data?.data.analysis.engine.name !== "mock";
+  if (preview) {
+    const next = preview.line.steps[preview.index];
+    if (lp.ideas && engineReal && ui.engineOn) autoShapes = engineShapes(candidates, turn);
+    if (next) autoShapes = [...autoShapes, { orig: next.uci.slice(0, 2) as Key, dest: next.uci.slice(2, 4) as Key, brush: "green" }];
+  } else if (!ui.editing) {
     if (ui.hoverShapes.length) autoShapes = ui.hoverShapes;
     else if (coachHere) autoShapes = coachShapes(coachHere.annotations);
     else if (st.showEngineArrows && ui.engineOn) autoShapes = engineShapes(candidates, turn);
   }
 
   const gameOver = status?.is_game_over ?? false;
-  const lastMove = node.move ? ([node.move.uci.slice(0, 2), node.move.uci.slice(2, 4)] as Key[]) : undefined;
+  const lastUci = preview ? preview.line.steps[preview.index - 1]?.uci : node.move?.uci;
+  const lastMove = lastUci ? ([lastUci.slice(0, 2), lastUci.slice(2, 4)] as Key[]) : undefined;
   const toolActive = ui.editing && editor.tool !== null;
 
   const config: Config = ui.editing
@@ -146,7 +162,7 @@ export function Board() {
         drawable: { enabled: false, shapes: [], autoShapes: [] },
       }
     : {
-        fen: node.fen,
+        fen: viewFen,
         orientation,
         turnColor: turn,
         lastMove: st.highlightLastMove ? lastMove : undefined,
@@ -169,9 +185,11 @@ export function Board() {
           visible: true,
           defaultSnapToValidMove: true,
           eraseOnMovablePieceClick: false,
-          shapes: userShapes.get(nodeKey) ?? [],
+          shapes: preview ? [] : (userShapes.get(nodeKey) ?? []),
           autoShapes,
-          onChange: (shapes) => userShapes.set(nodeKey, shapes),
+          onChange: (shapes) => {
+            if (!preview) userShapes.set(nodeKey, shapes);
+          },
         },
       };
 
@@ -214,7 +232,7 @@ export function Board() {
               colorDot={topColor}
               toMove={(ui.editing ? editTurn : turn) === topColor}
             >
-              {!ui.editing && <MaterialStrip fen={node.fen} color={topColor} pieceSet={st.pieceSet} />}
+              {!ui.editing && <MaterialStrip fen={viewFen} color={topColor} pieceSet={st.pieceSet} />}
             </BoardBar>
           </Box>
           <Box className="board-row" style={{ height: size, gap: GAP }}>
@@ -229,10 +247,14 @@ export function Board() {
               </Box>
             )}
             <Box
-              className={`board-square pieces-${st.pieceSet}${ui.editing ? " is-editing" : ""}`}
+              className={`board-square pieces-${st.pieceSet}${ui.editing ? " is-editing" : ""}${preview ? " is-previewing" : ""}`}
               style={{ width: size, height: size, ...boardVars }}
               onWheel={(e) => {
                 if (!st.scrollToNavigate || ui.editing || promo) return;
+                if (preview) {
+                  useLinePlayer.getState().step(e.deltaY > 0 ? 1 : -1);
+                  return;
+                }
                 const tree = useGameTree.getState();
                 if (e.deltaY > 0) tree.next();
                 else if (e.deltaY < 0) tree.prev();
@@ -278,7 +300,7 @@ export function Board() {
                   {label}
                 </Badge>
               )}
-              {!ui.editing && <MaterialStrip fen={node.fen} color={bottomColor} pieceSet={st.pieceSet} />}
+              {!ui.editing && <MaterialStrip fen={viewFen} color={bottomColor} pieceSet={st.pieceSet} />}
             </BoardBar>
           </Box>
         </Box>

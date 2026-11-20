@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 54 tests; starts the analysis-schema mock in-process
+pytest                                # 56 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -99,6 +99,9 @@ Adding a provider means one new file in `coach/llm/` implementing `LLMAdapter.ru
   statement about material, files, structure or evaluation is not counted as verified
   (`coach/verification.py`); the model has to use the matching claim type.
 - Claims can be about the position after a line (`after`); they are verified in that position.
+- `lines` in the response are the answer's `legal_line` claims that `/v1/verify` supported, with the
+  UCI, SAN, FEN and game status after every move (from `/v1/move`). The web app plays them back on
+  the board; refuted or unverifiable lines are never playable.
 - Every claim returned carries `checked`, the coach's own description of what the verifier
   tested; the web app shows that next to the tick, not the model's wording.
 - Structural claims (material, open files, bishop pair, doubled/isolated/passed pawns) need

@@ -332,3 +332,44 @@ code {
     height: 280px;
   }
 }
+
+/* ---------- coach line playback ---------- */
+.line-player {
+  padding: 8px 10px;
+  border-top: 1px solid var(--mantine-color-dark-4);
+  flex-shrink: 0;
+}
+.line-moves {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+.line-move {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--mantine-color-dimmed);
+  white-space: nowrap;
+}
+.line-move[data-done] {
+  color: var(--mantine-color-text);
+}
+.line-move[data-current] {
+  background: var(--mantine-color-blue-filled);
+  color: #fff;
+}
+.line-move:hover:not([data-current]) {
+  background: var(--mantine-color-dark-5);
+}
+.board-square.is-previewing {
+  outline: 2px solid var(--mantine-color-blue-filled);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.line-chip {
+  border: 1px solid var(--mantine-color-dark-4);
+  border-radius: 6px;
+  padding: 6px 8px;
+}

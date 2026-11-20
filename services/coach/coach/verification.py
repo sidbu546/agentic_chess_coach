@@ -48,6 +48,10 @@ class ClaimChecker:
         self.limits = limits
         self._after_cache: dict[tuple[str, ...], tuple[dict[str, Any], list[str]]] = {}
         self._line_san: dict[str, list[str]] = {}
+        self._after_steps: dict[tuple[str, ...], list[dict[str, Any]]] = {}
+        # legal_line claims, step by step (uci, san, fen and status after each move), keyed by claim id.
+        # Only the ones /v1/verify supports are shown to the player as playable lines.
+        self.lines: dict[str, list[dict[str, Any]]] = {}
 
     async def check(self, raw_claims: list[dict[str, Any]]) -> list[CheckedClaim]:
         raw_claims = raw_claims[:20]
@@ -86,13 +90,16 @@ class ClaimChecker:
             return self._after_cache[key]
         pos = {**self.position, "moves": list(self.position["moves"])}
         sans: list[str] = []
+        steps: list[dict[str, Any]] = []
         for san in key[:12]:
             data = await self.chess.move(pos, san, "san")
             if not data["legal"]:
                 raise Unresolved("refuted", f"the line is illegal at {san}: {(data.get('reason') or {}).get('message', 'illegal')}")
             sans.append(data["move"]["san"])
+            steps.append(_step(data))
             pos = data["next"]
         self._after_cache[key] = (pos, sans)
+        self._after_steps[key] = steps
         return pos, sans
 
     async def _verify(self, pos: dict[str, Any], claims: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -157,15 +164,17 @@ class ClaimChecker:
             return {"id": cid, "type": t, "move": await self._uci(pos, raw["move"]), "than": await self._uci(pos, raw["than"])}
         if t == "legal_line":
             need("moves")
-            p, ucis, sans = {**pos, "moves": list(pos["moves"])}, [], []
+            p, ucis, sans, steps = {**pos, "moves": list(pos["moves"])}, [], [], []
             for san in raw["moves"][:20]:
                 data = await self.chess.move(p, san, "san")
                 if not data["legal"]:
                     raise Unresolved("refuted", f"{san} is not legal at that point in the line")
                 ucis.append(data["move"]["uci"])
                 sans.append(data["move"]["san"])
+                steps.append(_step(data))
                 p = data["next"]
             self._line_san[cid] = sans
+            self.lines[cid] = self._after_steps.get(tuple(raw.get("after") or []), []) + steps
             return {"id": cid, "type": t, "moves": ucis, "_san": True}
         if t == "mate_in":
             need("mate_in_moves", "winner")
@@ -195,6 +204,18 @@ class ClaimChecker:
             need("color")
             return {"id": cid, "type": t, "color": raw["color"], "file": raw["file"]}
         raise Unresolved("unverifiable", f"unknown claim type {t!r}")
+
+
+def _step(move_response: dict[str, Any]) -> dict[str, Any]:
+    status = move_response["status"]
+    return {
+        "uci": move_response["move"]["uci"],
+        "san": move_response["move"]["san"],
+        "fen": move_response["position"]["fen"],
+        "state": status["state"],
+        "in_check": status["in_check"],
+        "winner": status["winner"],
+    }
 
 
 def describe(raw: dict[str, Any], line: list[str]) -> str:

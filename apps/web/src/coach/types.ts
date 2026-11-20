@@ -72,6 +72,8 @@ export interface CoachResponse {
   /** Which tier answered; "fallback" means only verified facts could be given. */
   tier?: "fast" | "deep" | "fallback";
   usage?: CoachUsage;
+  /** Lines from the answer that /v1/verify supported, playable on the board. */
+  lines?: CoachLine[];
   /** What player memory told the coach about who it is answering. */
   level?: Level;
   explanation_depth?: ExplanationDepth;
@@ -117,4 +119,23 @@ export interface SessionSummary {
   questions: number;
   cost_usd: number;
   topics: string[];
+}
+
+// ---------------------------------------------------------------- playable lines
+
+export interface LineStep {
+  uci: string;
+  san: string;
+  /** Position after this move, from the chess API. */
+  fen: string;
+  state: "ongoing" | "checkmate" | "stalemate" | "insufficient_material" | "fivefold_repetition" | "seventyfive_moves";
+  in_check: boolean;
+  winner: "white" | "black" | null;
+}
+
+export interface CoachLine {
+  /** The coach's words for this line. */
+  title: string;
+  start_fen: string;
+  steps: LineStep[];
 }

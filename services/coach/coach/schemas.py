@@ -75,6 +75,25 @@ class CheckedClaim(BaseModel):
     result: dict[str, Any]
 
 
+class LineStep(BaseModel):
+    uci: str
+    san: str
+    # Position and game status after this move, from the chess API.
+    fen: str
+    state: str
+    in_check: bool
+    winner: Literal["white", "black"] | None = None
+
+
+class CoachLine(BaseModel):
+    """A line from the answer that /v1/verify supported, ready to play back on the board."""
+
+    title: str
+    # The position the line starts from (the position the question was asked in).
+    start_fen: str
+    steps: list[LineStep]
+
+
 class Usage(BaseModel):
     input_tokens: int = 0
     cached_tokens: int = 0
@@ -92,6 +111,8 @@ class CoachResponse(BaseModel):
     model: str
     tier: Literal["fast", "deep", "fallback"] = "fast"
     usage: Usage = Field(default_factory=Usage)
+    # Verified lines the player can play back on the board.
+    lines: list[CoachLine] = Field(default_factory=list)
     # What player memory told the coach, so the UI can show who it answered for.
     level: Level = "intermediate"
     explanation_depth: ExplanationDepth = "normal"

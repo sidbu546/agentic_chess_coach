@@ -33,12 +33,18 @@ npm run build
 | Move tree | `src/state/gameTree.ts`, `src/notation/` | Mainline + variations, comments, NAGs; right-click to promote or delete |
 | Analysis | `src/panels/AnalysisPanel.tsx` | `/v1/analyze` lines (hover to preview, click to play), facts from `/v1/position` (hover to draw) |
 | Coach chat | `src/panels/CoachPanel.tsx`, `src/coach/` | Talks to `services/coach`; shows each claim's `/v1/verify` verdict and draws the coach's arrows |
+| Line playback | `src/state/linePlayer.ts`, `src/board/LinePlayerBar.tsx` | ▶ Play on a coach answer animates its verified line on the board without touching the game; pause and move a piece to branch off, or add the line to the game |
+| Player profile | `src/panels/PlayerModal.tsx`, `src/coach/playerStore.ts` | Level, rating, explanation depth, mistakes the coach noticed, past sessions, forget me |
 | Setup | `src/panels/EditPanel.tsx`, `src/state/editor.ts` | Drag/drop or click-to-place pieces, side to move, castling; validated by `/v1/position` |
 | Import | `src/panels/ImportModal.tsx` | PGN paste/upload → `/v1/game`; FEN → `/v1/position` |
 
 Board interaction: drag or click to move, right-click drag to draw arrows (Shift/Alt/Ctrl for
 colours), right-click a square for a circle. Keys: ← → to step, ↑ ↓ for start/end, `f` to flip.
 Scroll on the board to step through the game.
+
+While a coach line plays back: space plays/pauses, ← → step, ↑ ↓ jump to the start/end, Esc closes,
+and scrolling steps through the line. Every position shown comes from the chess API (the coach
+returns the FEN after each move), so the web app computes nothing itself.
 
 ## Ownership rules this app follows
 
