@@ -108,6 +108,8 @@ class CoachResponse(BaseModel):
     annotations: BoardAnnotations
     claims: list[CheckedClaim]
     tools_used: list[str]
+    # Coach tools the model called (analyze_position, review_game, ...), for evaluation.
+    tools_called: list[str] = Field(default_factory=list)
     model: str
     tier: Literal["fast", "deep", "fallback"] = "fast"
     usage: Usage = Field(default_factory=Usage)

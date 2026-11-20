@@ -147,6 +147,7 @@ class ChessTools:
         self.limits = limits
         self.engine_real = engine_real  # from /v1/health; False against the mock
         self.used: list[str] = []  # chess API endpoints called, shown in the UI
+        self.called: list[str] = []  # coach tools the model called, in order (for the evaluation harness)
         self.engine_is_mock = not engine_real
         self.player_color = player_color  # None = unknown, review both sides
         self.game_sans = game_sans or []
@@ -166,6 +167,7 @@ class ChessTools:
         return self.fen.split()[1] == "w"
 
     async def run(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
+        self.called.append(name)
         handler = getattr(self, f"_tool_{name}", None)
         if handler is None:
             return {"error": f"unknown tool {name}"}

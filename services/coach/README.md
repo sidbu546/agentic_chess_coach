@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 68 tests; starts the analysis-schema mock in-process
+pytest                                # 73 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -45,6 +45,7 @@ question ──► player memory: level, explanation depth, recurring mistakes, 
 | Coach agent | `coach/agent.py`, `coach/prompts.py`, `coach/tools.py` | Routing, context, tool loop, verify → revise → fallback |
 | LLM adapter | `coach/llm/` | `openai_adapter.py` (Responses API, strict tools + JSON schema, `store=False`); `scripted.py` (no key needed) |
 | Cost logging | `coach/pricing.py` | Real token usage per answer (incl. cached and reasoning tokens) → USD, logged and returned to the UI |
+| Evaluation harness | `evaluation/` | Fixed positions and questions scored for chess correctness, task and level fit (+ optional LLM judge), cost and latency per model. See [evaluation/README.md](evaluation/README.md) |
 | Player memory | `coach/memory.py` | SQLite (`COACH_DB_PATH`). Level, rating, explanation depth, recurring mistakes, past sessions |
 
 ## Player memory

@@ -11,3 +11,4 @@ dist/
 !.env.example
 *.tsbuildinfo
 services/coach/data/
+services/coach/evaluation/results/

@@ -211,6 +211,7 @@ class CoachAgent:
                 lines=self._lines(checked, steps, fen),
             )
         response.level, response.explanation_depth = level, depth
+        response.tools_called = list(tools.called)
         response.usage = Usage(
             input_tokens=usage.input_tokens,
             cached_tokens=usage.cached_tokens,

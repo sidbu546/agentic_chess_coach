@@ -1,0 +1,173 @@
+# Fixed positions and questions for the coach evaluation harness (see evaluation/README.md).
+#
+# Every case also gets the default checks: no refuted claim reaches the player, no fallback answer,
+# answer length fits the player's explanation depth, and for beginners: no engine jargon and moves
+# explained in words. Checks listed here are added on top.
+#
+# position: {moves: [UCI...], start_fen: FEN (optional)}       level: beginner | intermediate | advanced
+# depth: short | normal | detailed (default normal)               player_color: white | black (optional)
+# min_supported: claims that must be verified as supported (default 1)
+# checks:
+#   mentions_any / mentions_all / not_mentions: [words or SAN]    (chess)
+#   claim_checked: text that a supported claim's "checked" must contain   (chess)
+#   tool_used: tool name                                           (task)
+#   mate_line: {side, lo, hi}  a verified line ending in that side's mate on its lo..hi-th move  (task)
+#   playable_line: {side, moves}  a verified line with at least that many moves by that side   (task)
+
+- id: start-best-move-beginner
+  question: "What's the best move here, and why?"
+  position: {moves: []}
+  level: beginner
+  checks:
+    - mentions_any: ["e4", "d4", "Nf3", "c4"]
+
+- id: start-best-move-advanced
+  question: "What's the best move here, and why?"
+  position: {moves: []}
+  level: advanced
+  depth: short
+  checks:
+    - mentions_any: ["e4", "d4", "Nf3", "c4"]
+
+- id: nimzo-pin
+  question: "Is my knight on c3 pinned? Can I move it?"
+  position: {moves: [d2d4, g8f6, c2c4, e7e6, b1c3, f8b4]}
+  level: intermediate
+  player_color: white
+  checks:
+    - mentions_any: ["pin", "pinned"]
+    - claim_checked: "c3 is"
+
+- id: relative-pin-bg4
+  question: "What is Black's bishop on g4 doing?"
+  position: {moves: [e2e4, e7e5, g1f3, d7d6, d2d4, c8g4]}
+  level: intermediate
+  player_color: white
+  checks:
+    - mentions_any: ["pin", "pinned"]
+    - mentions_any: ["f3", "knight"]
+
+- id: mate-in-one
+  question: "Is there a checkmate for White right now?"
+  position: {moves: [e2e4, e7e5, f1c4, b8c6, d1h5, g8f6]}
+  level: beginner
+  player_color: white
+  checks:
+    - mentions_any: ["Qxf7#", "Qxf7"]
+    - mate_line: {side: white, lo: 1, hi: 1}
+
+- id: already-checkmate
+  question: "What should Black play now?"
+  position: {moves: [e2e4, e7e5, f1c4, b8c6, d1h5, g8f6, h5f7]}
+  level: beginner
+  player_color: black
+  min_supported: 0
+  checks:
+    - mentions_any: ["checkmate", "mate", "game is over"]
+
+- id: stalemate
+  question: "What's Black's best move here?"
+  position: {moves: [], start_fen: "7k/5Q2/6K1/8/8/8/8/8 b - - 0 1"}
+  level: intermediate
+  min_supported: 0
+  checks:
+    - mentions_any: ["stalemate", "draw"]
+
+- id: threefold
+  question: "Is this game a draw?"
+  position: {moves: [g1f3, g8f6, f3g1, f6g8, g1f3, g8f6, f3g1, f6g8]}
+  level: intermediate
+  min_supported: 0
+  checks:
+    - mentions_any: ["repetition", "threefold", "repeated"]
+
+- id: scholar-win-white
+  question: "How can White checkmate in 4-5 moves?"
+  position: {moves: []}
+  level: beginner
+  player_color: white
+  checks:
+    - mentions_any: ["I can see a win for White"]
+    - not_mentions: ["can't verify", "not connected", "engine isn't"]
+    - mate_line: {side: white, lo: 4, hi: 5}
+
+- id: fools-mate-black
+  question: "How can Black win in 2 moves?"
+  position: {moves: []}
+  level: beginner
+  player_color: black
+  checks:
+    - mentions_any: ["I can see a win for Black"]
+    - mate_line: {side: black, lo: 1, hi: 2}
+
+- id: mate-midgame-white
+  question: "What moves should White make from now to checkmate in 4-5 moves?"
+  position: {moves: [e2e4, a7a5, b1a3, a5a4, a3b5, a8a6, b5c7, d8c7, f1a6, b7b5]}
+  level: beginner
+  player_color: white
+  checks:
+    - mate_line: {side: white, lo: 4, hi: 5}
+
+- id: best-two-moves
+  question: "Just tell me the best 2 moves for White, no need for checkmate."
+  position: {moves: [e2e4, e7e5]}
+  level: beginner
+  player_color: white
+  checks:
+    - playable_line: {side: white, moves: 2}
+    - not_mentions: ["I can see a win"]
+
+- id: last-move-blunder
+  question: "What was wrong with my last move?"
+  position: {moves: [e2e4, e7e5, f1a6]}
+  last_move: {uci: f1a6, san: Ba6}
+  level: beginner
+  player_color: white
+  checks:
+    - tool_used: review_last_move
+    - mentions_any: ["a6"]
+    - mentions_any: ["free", "undefended", "unprotected", "taken", "capture", "hanging"]
+
+- id: game-review-black
+  question: "I am Black. What mistakes did I make this game, and what should I not repeat?"
+  position: {moves: [e2e4, b7b5, f1b5, e7e5, b5f1, d7d5, e4d5, d8d5, b1c3, c7c5, c3d5, a7a5, g1f3]}
+  level: beginner
+  player_color: white   # the board faces White, but the question says Black
+  checks:
+    - tool_used: review_game
+    - mentions_all: ["c5"]
+    - mentions_any: ["b5"]
+    - mentions_any: ["queen"]
+
+- id: italian-why
+  question: "Why is Nf6 a good move for Black here, and what should White do about it?"
+  position: {moves: [e2e4, e7e5, g1f3, b8c6, f1c4, g8f6]}
+  level: advanced
+  player_color: white
+  checks:
+    - mentions_any: ["e4"]
+
+- id: illegal-premise
+  question: "Why is Qxf7 winning for White here?"
+  position: {moves: []}
+  level: intermediate
+  min_supported: 0
+  checks:
+    - mentions_any: ["not legal", "illegal", "can't", "cannot", "isn't possible", "not possible", "no queen", "isn't a legal"]
+
+- id: material-count
+  question: "Who is ahead in material, and by how much?"
+  position: {moves: [e2e4, b7b5, f1b5, e7e5, b5f1, d7d5, e4d5, d8d5, b1c3, c7c5, c3d5, a7a5, g1f3]}
+  level: intermediate
+  checks:
+    - mentions_any: ["White"]
+    - claim_checked: "material"
+
+- id: structure-doubled-pawns
+  question: "What happened to White's pawn structure after bxc3?"
+  position: {moves: [d2d4, g8f6, c2c4, e7e6, b1c3, f8b4, a2a3, b4c3, b2c3]}
+  level: intermediate
+  player_color: white
+  checks:
+    - mentions_any: ["doubled"]
+    - claim_checked: "doubled c-pawns"
