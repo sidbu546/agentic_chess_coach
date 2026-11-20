@@ -35,7 +35,12 @@ class CheckResult:
         return {"name": self.name, "category": self.category, "passed": self.passed, "detail": self.detail}
 
 
+APOSTROPHES = str.maketrans({"\u2019": "'", "\u2018": "'", "\u02bc": "'"})
+
+
 def _mentions(text: str, word: str) -> bool:
+    # Models write curly apostrophes ("isn’t"); cases are written with straight ones.
+    text, word = text.translate(APOSTROPHES), word.translate(APOSTROPHES)
     return re.search(rf"(?<![A-Za-z0-9]){re.escape(word)}(?![A-Za-z0-9])", text, re.I) is not None
 
 

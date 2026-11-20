@@ -153,7 +153,7 @@
   level: intermediate
   min_supported: 0
   checks:
-    - mentions_any: ["not legal", "illegal", "can't", "cannot", "isn't possible", "not possible", "no queen", "isn't a legal"]
+    - mentions_any: ["not legal", "illegal", "isn't legal", "can't", "cannot", "isn't possible", "not possible", "no queen", "isn't a legal"]
 
 - id: material-count
   question: "Who is ahead in material, and by how much?"

@@ -71,3 +71,10 @@ def test_paid_runs_ask_first(tmp_path, monkeypatch, capsys):
     code = asyncio.run(main(["--llm", "openai", "--only", "nimzo-pin", "--out", str(tmp_path)]))
     assert code == 1 and not list(tmp_path.iterdir())
     assert "Nothing was sent" in capsys.readouterr().out
+
+
+def test_curly_apostrophes_match():
+    """The live Sol answer wrote "isn’t legal"; the check must accept it."""
+    case = {"id": "x", "question": "q", "min_supported": 0, "checks": [{"mentions_any": ["isn't legal"]}]}
+    r = response("Qxf7 isn\u2019t legal in the position shown.")
+    assert all(c.passed for c in run_checks(case, r))
