@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 56 tests; starts the analysis-schema mock in-process
+pytest                                # 64 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -109,7 +109,10 @@ Adding a provider means one new file in `coach/llm/` implementing `LLMAdapter.ru
 - `checkmate` claims are checked by the coach from `/v1/position`'s game status after the line
   (rules engine only, no contract change). Ticks show the chess API's SAN, so a `#` or `+` is never
   the model's own notation.
-- "How can White/Black win in N moves?" gets a direct answer: "I can see a win for White: …" with a
-  line ending in a verified checkmate, no disclaimers about engines or forcing.
+- "How can White/Black checkmate / win in N moves?" (from any position) gets a direct answer: "I can see
+  a win for White: …" with a line that ends with the mating move, no disclaimers. The coach reads the
+  range from the question ("4-5 moves" = mate on the winner's 4th or 5th move; "in 11 moves" = 10th or
+  11th) and only accepts a line that `/v1/move` confirms ends in checkmate inside it; otherwise the
+  model gets the reason and another round (one extra for these requests). Such questions use the deep tier.
 - The coach never tells the player about engines, tools or what is connected.
 - Coach-side types live here and in `apps/web/src/coach/types.ts`, not in the shared contract.

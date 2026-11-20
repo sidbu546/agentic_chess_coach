@@ -91,7 +91,7 @@ class ClaimChecker:
         pos = {**self.position, "moves": list(self.position["moves"])}
         sans: list[str] = []
         steps: list[dict[str, Any]] = []
-        for san in key[:12]:
+        for san in key[:40]:
             data = await self.chess.move(pos, san, "san")
             if not data["legal"]:
                 raise Unresolved("refuted", f"the line is illegal at {san}: {(data.get('reason') or {}).get('message', 'illegal')}")
@@ -165,7 +165,7 @@ class ClaimChecker:
         if t == "legal_line":
             need("moves")
             p, ucis, sans, steps = {**pos, "moves": list(pos["moves"])}, [], [], []
-            for san in raw["moves"][:20]:
+            for san in raw["moves"][:40]:
                 data = await self.chess.move(p, san, "san")
                 if not data["legal"]:
                     raise Unresolved("refuted", f"{san} is not legal at that point in the line")

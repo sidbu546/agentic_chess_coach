@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 import re
 import time
+from dataclasses import dataclass
 from typing import Any
 
 from .board_text import describe_fact, position_brief
@@ -43,6 +44,60 @@ DEEP_WORDS = re.compile(
 )
 SAN_TOKEN = re.compile(r"\b(?:[KQRBN][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8]|[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?(?![\w])")
 SQUARE = re.compile(r"^[a-h][1-8]$")
+MATE_WORDS = re.compile(r"\b(check\s?mate|mate|win)\b", re.I)
+MOVE_RANGE = re.compile(
+    r"\b(\d{1,2})\s*(?:-|–|—|to|or)\s*(\d{1,2})\s*moves?\b|\b(\d{1,2})\s*moves?\b", re.I
+)
+
+
+@dataclass(frozen=True)
+class MateTask:
+    """'How can White checkmate in 4-5 moves?': the answer must contain a verified mate in that range."""
+
+    side: str
+    lo: int
+    hi: int
+
+    def text(self) -> str:
+        span = f"{self.lo}-{self.hi}" if self.lo != self.hi else str(self.hi)
+        return f"checkmate by {self.side} in {span} {self.side} moves (counting only {self.side}'s moves, the mating move included)"
+
+
+def mate_task(question: str, side_to_move: str) -> MateTask | None:
+    if not MATE_WORDS.search(question):
+        return None
+    m = MOVE_RANGE.search(question)
+    if not m:
+        return None
+    if m.group(1):
+        lo, hi = sorted((int(m.group(1)), int(m.group(2))))
+    else:  # "in 11 moves" -> its 10th or 11th move
+        hi = int(m.group(3))
+        lo = max(1, hi - 1)
+    if not 1 <= hi <= 20:
+        return None
+    white, black = re.search(r"\bwhite\b", question, re.I), re.search(r"\bblack\b", question, re.I)
+    side = "white" if white and not black else "black" if black and not white else side_to_move
+    return MateTask(side, lo, hi)
+
+
+def mate_problem(task: MateTask, lines: list[CoachLine], fen: str) -> str | None:
+    """None if a verified line delivers the requested mate; otherwise what is wrong, for the revision."""
+    stm = "white" if fen.split()[1] == "w" else "black"
+    seen = "none of the verified lines in your answer ends in checkmate"
+    for line in lines:
+        moves_by_side = sum(1 for i in range(len(line.steps)) if (i % 2 == 0) == (stm == task.side))
+        last = line.steps[-1]
+        if last.state == "checkmate" and last.winner == task.side:
+            if task.lo <= moves_by_side <= task.hi:
+                return None
+            seen = f"your line ends in checkmate after {moves_by_side} {task.side} moves, outside the range asked"
+    return (
+        f"The player asked for {task.text()}, but {seen}. Give one line from the current position, as a legal_line "
+        f"claim, that ends with {task.side}'s checkmating move inside that range, plus a checkmate claim with after = "
+        f"the whole line. Build it with explore_line until it reports checkmate; use natural-looking mistakes for the "
+        f"defending side where needed."
+    )
 
 
 def route(req: CoachRequest) -> str:
@@ -79,7 +134,9 @@ class CoachAgent:
         pos = await self.chess.position(position)  # also validates the position (422 on bad FEN/history)
         fen = pos["position"]["fen"]
 
-        tier = route(req)
+        side_to_move = "white" if fen.split()[1] == "w" else "black"
+        task = mate_task(req.question, side_to_move)
+        tier = "deep" if task and req.depth != "fast" else route(req)
         tier_cfg: TierConfig = self.settings.deep if tier == "deep" else self.settings.fast
         remember = self.memory is not None and req.player_id != ANONYMOUS
         profile = self.memory.profile(req.player_id) if remember else None
@@ -102,7 +159,10 @@ class CoachAgent:
             for t in req.history[-6:]
         ]
         memory_note = self.memory.context(profile, req.session_id) if profile else None
-        messages.append({"role": "user", "content": self._context(pos, req, memory_note, game_sans)})
+        context = self._context(pos, req, memory_note, game_sans)
+        if task:
+            context += f"\n\nTask: give a line that ends in {task.text()}."
+        messages.append({"role": "user", "content": context})
         common = dict(
             model=tier_cfg.model,
             effort=tier_cfg.effort,
@@ -118,12 +178,17 @@ class CoachAgent:
         usage.add(result.usage)
         checked, steps = await self._verify(result.output.get("claims", []), position, limits, tools)
 
-        for _ in range(self.settings.max_revisions):
+        # A checkmate-in-N request gets one extra round to find the mate.
+        for _ in range(self.settings.max_revisions + (1 if task else 0)):
             problems = [
                 f"\"{c.text}\" (checked: {c.checked}): {c.result['verdict']} - {c.result['reason']}"
                 for c in checked
                 if c.result["verdict"] != "supported"
             ]
+            if task:
+                missing = mate_problem(task, self._lines(checked, steps, fen), fen)
+                if missing:
+                    problems.append(missing)
             if not problems:
                 break
             result = await self.llm.run(messages=[{"role": "user", "content": revision_request(problems)}], state=result.state, **common)

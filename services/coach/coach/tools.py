@@ -53,7 +53,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         ),
         "parameters": {
             "type": "object",
-            "properties": {"moves": {**SAN_LIST, "description": "1-10 moves in SAN."}},
+            "properties": {"moves": {**SAN_LIST, "description": "1-40 moves (plies) in SAN, both sides alternating."}},
             "required": ["moves"],
             "additionalProperties": False,
         },
@@ -235,7 +235,7 @@ class ChessTools:
         self._note("move")
         pos = {**self.position, "moves": list(self.position["moves"])}
         played: list[str] = []
-        for san in list(moves)[:10]:
+        for san in list(moves)[:40]:
             data = await self.client.move(pos, san, "san")
             if not data["legal"]:
                 return {

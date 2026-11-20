@@ -411,6 +411,7 @@ def test_claimed_mate_that_is_not_mate_is_refuted(chess_api_url):
     llm = QueueLLM([
         answer("I can see a win for White ...", [claim("mate", "checkmate", color="white", after=line)]),
         answer("ok", []),
+        answer("ok", []),  # a checkmate-in-N request gets one extra revision round
     ])
     ask(chess_api_url, llm, "How can White win in 4 moves?", START)
     assert "the position is not checkmate" in llm.calls[1]["messages"][0]["content"]
@@ -451,3 +452,50 @@ def test_refuted_or_unverifiable_lines_are_not_playable(chess_api_url):
     ])
     body = ask(chess_api_url, llm, "Show me a line", START).json()
     assert body["lines"] == []
+
+
+# ---------------------------------------------------------------- checkmate in N moves
+
+
+@pytest.mark.parametrize(
+    "question,stm,expected",
+    [
+        ("What moves should White make from now to checkmate in 4-5 moves?", "white", ("white", 4, 5)),
+        ("How can Black win in 2–3 moves?", "white", ("black", 2, 3)),
+        ("show me a mate in 11 moves", "black", ("black", 10, 11)),
+        ("checkmate in 6 to 7 moves for white", "black", ("white", 6, 7)),
+        ("What mistakes am I making? I want higher chances of winning", "white", None),
+        ("What's the best move?", "white", None),
+    ],
+)
+def test_mate_task_parsing(question, stm, expected):
+    from coach.agent import mate_task
+
+    t = mate_task(question, stm)
+    assert (t and (t.side, t.lo, t.hi)) == expected
+
+
+def test_a_line_that_stops_before_mate_is_sent_back(chess_api_url):
+    quiet = answer("Play 1.e4 e5 2.Bc4.", [claim("1.e4 e5 2.Bc4", "legal_line", moves=["e4", "e5", "Bc4"])])
+    mate = answer(
+        "I can see a win for White: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
+        [claim("1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#", "legal_line", moves=SCHOLAR),
+         claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)],
+    )
+    llm = QueueLLM([quiet, mate])
+    body = ask(chess_api_url, llm, "What moves should White make to checkmate in 4-5 moves?", START).json()
+    assert "Task: give a line that ends in checkmate by white in 4-5 white moves" in llm.calls[0]["messages"][-1]["content"]
+    assert llm.calls[0]["effort"] == "high"  # mate requests use the deep tier
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "none of the verified lines in your answer ends in checkmate" in feedback
+    assert body["lines"][0]["steps"][-1]["state"] == "checkmate"
+    assert len(llm.calls) == 2
+
+
+def test_a_mate_outside_the_requested_range_is_sent_back(chess_api_url):
+    mate4 = answer("I can see a win for White: ...", [
+        claim("line", "legal_line", moves=SCHOLAR), claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)])
+    llm = QueueLLM([mate4, mate4, mate4])
+    ask(chess_api_url, llm, "How can White checkmate in 6-7 moves?", START)
+    assert "ends in checkmate after 4 white moves, outside the range asked" in llm.calls[1]["messages"][0]["content"]
+    assert len(llm.calls) == 3  # one normal revision + one extra for the mate
