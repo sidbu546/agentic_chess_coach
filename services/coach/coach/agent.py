@@ -44,10 +44,12 @@ DEEP_WORDS = re.compile(
 )
 SAN_TOKEN = re.compile(r"\b(?:[KQRBN][a-h]?[1-8]?x?[a-h][1-8]|[a-h]x[a-h][1-8]|[a-h][1-8](?:=[QRBN])?|O-O(?:-O)?)[+#]?(?![\w])")
 SQUARE = re.compile(r"^[a-h][1-8]$")
-MATE_WORDS = re.compile(r"\b(check\s?mate|mate|win)\b", re.I)
-MOVE_RANGE = re.compile(
-    r"\b(\d{1,2})\s*(?:-|–|—|to|or)\s*(\d{1,2})\s*moves?\b|\b(\d{1,2})\s*moves?\b", re.I
+# "checkmate in 4-5 moves", "win within 3 moves", "mate in 11 moves" - the count must follow "in"/"within".
+MATE_REQUEST = re.compile(
+    r"\b(?:check\s?mate|mate|win)\w*\b(?:\s+\w+){0,3}?\s+(?:in|within)\s+(\d{1,2})(?:\s*(?:-|–|—|to|or)\s*(\d{1,2}))?\s*moves?\b",
+    re.I,
 )
+NO_MATE = re.compile(r"\b(?:no|not|don'?t|without|no need (?:for|of)|skip)\b(?:\s+\w+){0,3}?\s+check\s?mate\b", re.I)
 
 
 @dataclass(frozen=True)
@@ -64,15 +66,13 @@ class MateTask:
 
 
 def mate_task(question: str, side_to_move: str) -> MateTask | None:
-    if not MATE_WORDS.search(question):
+    m = MATE_REQUEST.search(question)
+    if not m or NO_MATE.search(question):
         return None
-    m = MOVE_RANGE.search(question)
-    if not m:
-        return None
-    if m.group(1):
+    if m.group(2):
         lo, hi = sorted((int(m.group(1)), int(m.group(2))))
     else:  # "in 11 moves" -> its 10th or 11th move
-        hi = int(m.group(3))
+        hi = int(m.group(1))
         lo = max(1, hi - 1)
     if not 1 <= hi <= 20:
         return None
@@ -268,7 +268,7 @@ class CoachAgent:
 
     @staticmethod
     def _lines(checked: list[CheckedClaim], steps: dict[str, list[dict[str, Any]]], start_fen: str) -> list[CoachLine]:
-        """Supported legal_line claims as playable lines (longest first, no duplicates, at most 3)."""
+        """Supported line and move claims as playable lines (longest first, no duplicates or prefixes, at most 3)."""
         out: dict[tuple[str, ...], CoachLine] = {}
         for c in checked:
             line = steps.get(c.result.get("id", ""))
@@ -277,7 +277,10 @@ class CoachAgent:
             key = tuple(s["uci"] for s in line)
             if key not in out:
                 out[key] = CoachLine(title=c.text, start_fen=start_fen, steps=line)
-        return sorted(out.values(), key=lambda l: -len(l.steps))[:3]
+        # A move that is just the start of a longer line adds nothing to play back.
+        keys = list(out)
+        kept = [out[k] for k in keys if not any(len(o) > len(k) and o[: len(k)] == k for o in keys)]
+        return sorted(kept, key=lambda l: -len(l.steps))[:3]
 
     # ---------------------------------------------------------------- annotations
 

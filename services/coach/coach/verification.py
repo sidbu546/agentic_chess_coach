@@ -49,7 +49,7 @@ class ClaimChecker:
         self._after_cache: dict[tuple[str, ...], tuple[dict[str, Any], list[str]]] = {}
         self._line_san: dict[str, list[str]] = {}
         self._after_steps: dict[tuple[str, ...], list[dict[str, Any]]] = {}
-        # legal_line claims, step by step (uci, san, fen and status after each move), keyed by claim id.
+        # legal_line / legal_move / best_move claims, step by step (uci, san, fen and status after each move), keyed by claim id.
         # Only the ones /v1/verify supports are shown to the player as playable lines.
         self.lines: dict[str, list[dict[str, Any]]] = {}
 
@@ -158,7 +158,11 @@ class ClaimChecker:
             )
         if t in ("legal_move", "best_move"):
             need("move")
-            return {"id": cid, "type": t, "move": await self._uci(pos, raw["move"])}
+            uci = await self._uci(pos, raw["move"])
+            # A suggested move is playable on the board too (one step, or after its `after` line).
+            data = await self.chess.move(pos, uci, "uci")
+            self.lines[cid] = self._after_steps.get(tuple(raw.get("after") or []), []) + [_step(data)]
+            return {"id": cid, "type": t, "move": uci}
         if t == "better_than":
             need("move", "than")
             return {"id": cid, "type": t, "move": await self._uci(pos, raw["move"]), "than": await self._uci(pos, raw["than"])}

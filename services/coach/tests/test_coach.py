@@ -466,6 +466,9 @@ def test_refuted_or_unverifiable_lines_are_not_playable(chess_api_url):
         ("checkmate in 6 to 7 moves for white", "black", ("white", 6, 7)),
         ("What mistakes am I making? I want higher chances of winning", "white", None),
         ("What's the best move?", "white", None),
+        ("now just say the best 2 move for white just one no need for check mate show in animation", "black", None),
+        ("best 3 moves for black, not checkmate in 3 moves", "black", None),
+        ("How do I win within 3 moves as White?", "white", ("white", 2, 3)),
     ],
 )
 def test_mate_task_parsing(question, stm, expected):
@@ -499,3 +502,13 @@ def test_a_mate_outside_the_requested_range_is_sent_back(chess_api_url):
     ask(chess_api_url, llm, "How can White checkmate in 6-7 moves?", START)
     assert "ends in checkmate after 4 white moves, outside the range asked" in llm.calls[1]["messages"][0]["content"]
     assert len(llm.calls) == 3  # one normal revision + one extra for the mate
+
+
+def test_suggested_moves_are_playable_and_prefixes_are_dropped(chess_api_url):
+    llm = QueueLLM([answer("Play 1.e4, and after 1...e5 2.Nf3.", [
+        claim("1.e4", "legal_move", move="e4"),
+        claim("1.e4 e5 2.Nf3", "legal_line", moves=["e4", "e5", "Nf3"]),
+        claim("1.d4 is fine too", "legal_move", move="d4"),
+    ])])
+    body = ask(chess_api_url, llm, "best 2 moves for white", START).json()
+    assert [[s["san"] for s in l["steps"]] for l in body["lines"]] == [["e4", "e5", "Nf3"], ["d4"]]

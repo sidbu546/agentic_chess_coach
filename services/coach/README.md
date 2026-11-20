@@ -19,7 +19,7 @@ The web app (`apps/web`) talks to it at `http://localhost:8065`. Settings are en
 see [.env.example](.env.example).
 
 ```bash
-pytest                                # 64 tests; starts the analysis-schema mock in-process
+pytest                                # 68 tests; starts the analysis-schema mock in-process
 ```
 
 ## How an answer is made
@@ -99,7 +99,8 @@ Adding a provider means one new file in `coach/llm/` implementing `LLMAdapter.ru
   statement about material, files, structure or evaluation is not counted as verified
   (`coach/verification.py`); the model has to use the matching claim type.
 - Claims can be about the position after a line (`after`); they are verified in that position.
-- `lines` in the response are the answer's `legal_line` claims that `/v1/verify` supported, with the
+- `lines` in the response are the answer's `legal_line`, `legal_move` and `best_move` claims that `/v1/verify` supported
+  (a move that only starts a longer line is dropped), with the
   UCI, SAN, FEN and game status after every move (from `/v1/move`). The web app plays them back on
   the board; refuted or unverifiable lines are never playable.
 - Every claim returned carries `checked`, the coach's own description of what the verifier
@@ -114,5 +115,6 @@ Adding a provider means one new file in `coach/llm/` implementing `LLMAdapter.ru
   range from the question ("4-5 moves" = mate on the winner's 4th or 5th move; "in 11 moves" = 10th or
   11th) and only accepts a line that `/v1/move` confirms ends in checkmate inside it; otherwise the
   model gets the reason and another round (one extra for these requests). Such questions use the deep tier.
+  Only "checkmate/mate/win in|within N moves" counts; "no need for checkmate" does not.
 - The coach never tells the player about engines, tools or what is connected.
 - Coach-side types live here and in `apps/web/src/coach/types.ts`, not in the shared contract.
