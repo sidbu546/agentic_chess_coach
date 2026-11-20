@@ -18,7 +18,7 @@
   },
   "status": 200,
   "response": {
-    "schema_version": "0.1.0",
+    "schema_version": "0.2.0",
     "legal": false,
     "move": null,
     "next": null,

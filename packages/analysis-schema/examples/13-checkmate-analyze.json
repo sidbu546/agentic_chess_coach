@@ -22,7 +22,7 @@
   },
   "status": 200,
   "response": {
-    "schema_version": "0.1.0",
+    "schema_version": "0.2.0",
     "position": {
       "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
       "side_to_move": "black",

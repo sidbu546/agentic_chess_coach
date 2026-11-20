@@ -8,3 +8,7 @@ dist/
 .env
 .env.*
 .DS_Store
+!.env.example
+*.tsbuildinfo
+services/coach/data/
+services/coach/evaluation/results/

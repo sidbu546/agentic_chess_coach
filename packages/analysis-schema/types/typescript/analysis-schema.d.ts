@@ -372,7 +372,7 @@ export interface components {
             differences: components["schemas"]["Difference"][];
         };
         /** @description A checkable statement the coach wants to make. `id` is chosen by the caller and echoed back. */
-        Claim: components["schemas"]["LegalMoveClaim"] | components["schemas"]["LegalLineClaim"] | components["schemas"]["PieceOnClaim"] | components["schemas"]["AttacksClaim"] | components["schemas"]["DefendsClaim"] | components["schemas"]["PinnedClaim"] | components["schemas"]["HangingClaim"] | components["schemas"]["InCheckClaim"] | components["schemas"]["MateInClaim"] | components["schemas"]["BestMoveClaim"] | components["schemas"]["BetterThanClaim"];
+        Claim: components["schemas"]["LegalMoveClaim"] | components["schemas"]["LegalLineClaim"] | components["schemas"]["PieceOnClaim"] | components["schemas"]["AttacksClaim"] | components["schemas"]["DefendsClaim"] | components["schemas"]["PinnedClaim"] | components["schemas"]["HangingClaim"] | components["schemas"]["InCheckClaim"] | components["schemas"]["MateInClaim"] | components["schemas"]["BestMoveClaim"] | components["schemas"]["BetterThanClaim"] | components["schemas"]["MaterialBalanceClaim"] | components["schemas"]["OpenFileClaim"] | components["schemas"]["BishopPairClaim"] | components["schemas"]["DoubledPawnsClaim"] | components["schemas"]["IsolatedPawnClaim"] | components["schemas"]["PassedPawnClaim"];
         LegalMoveClaim: {
             id: string;
             /**
@@ -486,6 +486,68 @@ export interface components {
             type: "better_than";
             move: components["schemas"]["UciMove"];
             than: components["schemas"]["UciMove"];
+        };
+        /** @description Material balance (White minus Black, pawn 100 / minor 300 / rook 500 / queen 900, as in Material.balance_cp) equals `balance_cp`. 0 means material is equal. */
+        MaterialBalanceClaim: {
+            id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "material_balance";
+            balance_cp: number;
+        };
+        /** @description `open_for` null: the file has no pawns at all (an open file). `open_for` a colour: the file has no pawns of that colour but has pawns of the other (semi-open for that side), as in SemiOpenFileFact. */
+        OpenFileClaim: {
+            id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "open_file";
+            file: components["schemas"]["File"];
+            open_for: components["schemas"]["Color"] | null;
+        };
+        /** @description `color` has bishops on both light and dark squares. */
+        BishopPairClaim: {
+            id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "bishop_pair";
+            color: components["schemas"]["Color"];
+        };
+        /** @description `color` has two or more pawns on `file`. */
+        DoubledPawnsClaim: {
+            id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "doubled_pawns";
+            color: components["schemas"]["Color"];
+            file: components["schemas"]["File"];
+        };
+        /** @description There is a pawn on `square` and its side has no pawns on the adjacent files. */
+        IsolatedPawnClaim: {
+            id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "isolated_pawn";
+            square: components["schemas"]["Square"];
+        };
+        /** @description There is a pawn on `square` and no enemy pawn stands in front of it on its own or an adjacent file. */
+        PassedPawnClaim: {
+            id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "passed_pawn";
+            square: components["schemas"]["Square"];
         };
         ClaimResult: {
             id: string;

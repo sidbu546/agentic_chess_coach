@@ -14,7 +14,7 @@ class SchemaVersion(RootModel[str]):
         str,
         Field(
             description='Contract version. Minor bumps may add fields; anything else is a breaking change.',
-            pattern='^0\\.1\\.\\d+$',
+            pattern='^0\\.2\\.\\d+$',
         ),
     ]
 
@@ -423,6 +423,62 @@ class BetterThanClaim(BaseModel):
     than: UciMove
 
 
+class MaterialBalanceClaim(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    type: Literal['material_balance']
+    balance_cp: int
+
+
+class OpenFileClaim(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    type: Literal['open_file']
+    file: File
+    open_for: Color | None
+
+
+class BishopPairClaim(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    type: Literal['bishop_pair']
+    color: Color
+
+
+class DoubledPawnsClaim(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    type: Literal['doubled_pawns']
+    color: Color
+    file: File
+
+
+class IsolatedPawnClaim(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    type: Literal['isolated_pawn']
+    square: Square
+
+
+class PassedPawnClaim(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    type: Literal['passed_pawn']
+    square: Square
+
+
 class Verdict(Enum):
     supported = 'supported'
     refuted = 'refuted'
@@ -638,6 +694,12 @@ class Claim(
         | MateInClaim
         | BestMoveClaim
         | BetterThanClaim
+        | MaterialBalanceClaim
+        | OpenFileClaim
+        | BishopPairClaim
+        | DoubledPawnsClaim
+        | IsolatedPawnClaim
+        | PassedPawnClaim
     ]
 ):
     root: Annotated[
@@ -651,7 +713,13 @@ class Claim(
         | InCheckClaim
         | MateInClaim
         | BestMoveClaim
-        | BetterThanClaim,
+        | BetterThanClaim
+        | MaterialBalanceClaim
+        | OpenFileClaim
+        | BishopPairClaim
+        | DoubledPawnsClaim
+        | IsolatedPawnClaim
+        | PassedPawnClaim,
         Field(
             description='A checkable statement the coach wants to make. `id` is chosen by the caller and echoed back.',
             discriminator='type',
