@@ -281,7 +281,6 @@ function Message({
             >
               <Badge size="xs" variant="light" color={m.tier === "deep" ? "violet" : m.tier === "fallback" ? "orange" : "blue"}>
                 {m.tier} · {m.model}
-                {m.usage && m.usage.cost_usd > 0 ? ` · $${m.usage.cost_usd.toFixed(4)}` : ""}
               </Badge>
             </Tooltip>
           )}
