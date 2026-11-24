@@ -228,14 +228,18 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def pairwise(runs: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
+    """Compares only puzzles both systems actually answered: a failed API call is not a wrong answer."""
     out = []
     for a, b in combinations(runs, 2):
-        sa = {r["id"]: r["grade"]["solved"] for r in runs[a]}
-        sb = {r["id"]: r["grade"]["solved"] for r in runs[b]}
+        sa = {r["id"]: r["grade"]["solved"] for r in runs[a] if not r.get("error")}
+        sb = {r["id"]: r["grade"]["solved"] for r in runs[b] if not r.get("error")}
         ids = sa.keys() & sb.keys()
+        if not ids:
+            continue
         a_only = sum(1 for i in ids if sa[i] and not sb[i])
         b_only = sum(1 for i in ids if sb[i] and not sa[i])
-        out.append({"a": a, "b": b, "a_only": a_only, "b_only": b_only, "p": round(mcnemar_p(a_only, b_only), 4)})
+        out.append({"a": a, "b": b, "n": len(ids), "a_only": a_only, "b_only": b_only,
+                    "p": round(mcnemar_p(a_only, b_only), 4)})
     return out
 
 
@@ -245,14 +249,19 @@ def report(meta: dict[str, Any], summaries: dict[str, dict[str, Any]], pairs: li
     lines = [
         f"# Puzzle solving · {meta['time']}", "",
         f"{meta['puzzles']} Lichess puzzles · graded by python-chess against the known solution · chess API: {meta['chess']}", "",
-        "| System | Solved | 95% CI | First move | Illegal move | Fake mate | $/answer | $/solved | p50 |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| System | Solved | 95% CI | First move | Illegal move | Fake mate | $/answer | $/solved |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
+    failed = {name: s["errors"] for name, s in summaries.items() if s["errors"]}
+    if failed:
+        lines[2:2] = [f"> ⚠ **Not a valid comparison:** API calls failed for "
+                      + ", ".join(f"{k} ({v}/{summaries[k]['n']})" for k, v in failed.items())
+                      + ". Failed calls count as unsolved below; the head-to-head skips them. Fix and re-run.", ""]
     for name, s in summaries.items():
         cps = f"${s['cost_per_solved_usd']:.3f}" if s["cost_per_solved_usd"] is not None else "–"
         lines.append(f"| {name} | {s['solved']}/{s['n']} ({pct(s['accuracy'])}) | {pct(s['ci95'][0])}–{pct(s['ci95'][1])} "
                      f"| {pct(s['first_move'])} | {pct(s['illegal'])} | {pct(s['fake_mate'])} "
-                     f"| ${s['cost_per_answer_usd']:.3f} | {cps} | {s['latency_p50_s']}s |")
+                     f"| ${s['cost_per_answer_usd']:.3f} | {cps} |")
     lines += ["", "## By difficulty (Lichess rating) and type", "",
               "| System | " + " | ".join(bands) + " | Mate | Other |", "| --- |" + " ---: |" * (len(bands) + 2)]
     for name, s in summaries.items():
@@ -260,10 +269,11 @@ def report(meta: dict[str, Any], summaries: dict[str, dict[str, Any]], pairs: li
                      + f" | {s['by_kind'].get('mate', '–')} | {s['by_kind'].get('other', '–')} |")
     if pairs:
         lines += ["", "## Head to head (puzzles only one of the two solved)", "",
-                  "| A | B | only A solved | only B solved | p (McNemar) | Verdict |", "| --- | --- | ---: | ---: | ---: | --- |"]
+                  "| A | B | puzzles both answered | only A solved | only B solved | p (McNemar) | Verdict |",
+                  "| --- | --- | ---: | ---: | ---: | ---: | --- |"]
         for x in pairs:
             verdict = "no significant difference" if x["p"] >= 0.05 else f"**{x['a'] if x['a_only'] > x['b_only'] else x['b']} better**"
-            lines.append(f"| {x['a']} | {x['b']} | {x['a_only']} | {x['b_only']} | {x['p']} | {verdict} |")
+            lines.append(f"| {x['a']} | {x['b']} | {x['n']} | {x['a_only']} | {x['b_only']} | {x['p']} | {verdict} |")
     lines += ["", "Solved = every move of the solver matches the Lichess solution (another mating move also counts). "
               "First move = the key move only. Illegal move / Fake mate = share of answers whose FINAL line contains "
               "an illegal move / a '#' that is not checkmate. p < 0.05 means the difference is unlikely to be luck."]
@@ -271,6 +281,34 @@ def report(meta: dict[str, Any], summaries: dict[str, dict[str, Any]], pairs: li
 
 
 # ---------- main ----------
+
+async def check_keys(paid: list[str], claude_model: str, sol_model: str) -> list[str]:
+    """Free check (model lookup, no tokens) that each provider accepts its key, before anything is spent."""
+    problems = []
+    if any(s.startswith("claude") for s in paid):
+        import anthropic
+
+        try:
+            await anthropic.AsyncAnthropic(max_retries=1).models.retrieve(claude_model)
+        except anthropic.AuthenticationError:
+            problems.append("Anthropic rejected ANTHROPIC_API_KEY (401). Create a new key at console.anthropic.com.")
+        except anthropic.NotFoundError:
+            problems.append(f"Anthropic has no model {claude_model!r} for this key.")
+        except anthropic.APIError as exc:
+            problems.append(f"Anthropic check failed: {exc}")
+    if any(s in ("think64", "sol-image", "sol-fen") for s in paid):
+        import openai
+
+        try:
+            await openai.AsyncOpenAI(max_retries=1).models.retrieve(sol_model)
+        except openai.AuthenticationError:
+            problems.append("OpenAI rejected OPENAI_API_KEY (401).")
+        except openai.NotFoundError:
+            problems.append(f"OpenAI has no model {sol_model!r} for this key.")
+        except openai.APIError as exc:
+            problems.append(f"OpenAI check failed: {exc}")
+    return problems
+
 
 async def run_system(name: str, ask: Callable[[dict[str, Any]], Awaitable[Answer]], puzzles: list[dict[str, Any]],
                      parallel: int) -> list[dict[str, Any]]:
@@ -308,7 +346,7 @@ async def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--parallel", type=int, default=4)
     ap.add_argument("--yes", action="store_true", help="don't ask before spending money")
     args = ap.parse_args(argv)
-    for name in ("httpx", "coach", "anthropic", "openai"):
+    for name in ("httpx", "httpx2", "coach", "anthropic", "openai"):
         logging.getLogger(name).setLevel(logging.WARNING)
 
     data = json.loads((HERE / "puzzles.json").read_text())
@@ -334,6 +372,10 @@ async def main(argv: list[str] | None = None) -> int:
         if not sys.stdin.isatty() or input("Continue? [y/N] ").strip().lower() != "y":
             print("Stopped. Nothing was sent.")
             return 1
+
+    if problems := await check_keys(paid, args.claude_model, args.sol_model):
+        print("Stopped before sending any puzzle:\n  " + "\n  ".join(problems))
+        return 1
 
     httpd = None
     chess_url = args.chess_url

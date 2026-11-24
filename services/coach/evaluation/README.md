@@ -36,6 +36,8 @@ reported separately.
 
 ## Puzzle solving: Think64 vs a general-purpose model
 
+**Results: [puzzles/RESULTS.md](puzzles/RESULTS.md)** (Think64 vs Claude Opus 5.5 on all 104 puzzles).
+
 Answers "is the system better than just asking Claude (or Sol) with a picture of the board?"
 on 104 Lichess puzzles (CC0): 4 rating bands (600–2600) × mate / other, 13 each, only well-tested
 puzzles, at most 3 moves for the solver. The set is fixed in [puzzles/puzzles.json](puzzles/puzzles.json)
