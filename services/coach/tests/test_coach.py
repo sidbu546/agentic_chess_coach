@@ -1,0 +1,514 @@
+from __future__ import annotations
+
+import asyncio
+import json
+from types import SimpleNamespace
+
+import pytest
+from fastapi.testclient import TestClient
+
+from coach.agent import route
+from coach.app import create_app
+from coach.config import Settings, TierConfig
+from coach.llm.base import LLMError, LLMUsage
+from coach.llm.openai_adapter import OpenAIAdapter
+from coach.llm.scripted import ScriptedAdapter
+from coach.pricing import cost_usd
+from coach.prompts import ANSWER_SCHEMA
+from coach.schemas import CoachRequest, PositionRef
+from coach.tools import TOOL_DEFINITIONS, numbered
+
+from .conftest import NIMZO, QueueLLM, answer, claim
+
+
+def settings(url: str) -> Settings:
+    return Settings(
+        chess_api_url=url,
+        llm="scripted",
+        fast=TierConfig("gpt-6.1-sol", "low"),
+        deep=TierConfig("gpt-6.1-sol", "high"),
+    )
+
+
+def ask(url: str, llm, question: str, position: dict | None = None, **extra):
+    with TestClient(create_app(settings(url), llm=llm)) as client:
+        body = {"question": question, "position": position or {"moves": []}, **extra}
+        return client.post("/v1/coach/ask", json=body)
+
+
+# ---------------------------------------------------------------- routing
+
+
+@pytest.mark.parametrize(
+    "question,tier",
+    [
+        ("best move?", "fast"),
+        ("Is my knight hanging?", "fast"),
+        ("Why is Nd5 better than Bxf6 here?", "deep"),
+        ("What's the plan for White?", "deep"),
+        ("Compare e4 and d4", "deep"),
+        ("What happens after Nf3 Nc6 Bb5?", "deep"),
+    ],
+)
+def test_route(question, tier):
+    req = CoachRequest(question=question, position=PositionRef())
+    assert route(req) == tier
+
+
+def test_route_override():
+    req = CoachRequest(question="best move?", position=PositionRef(), depth="deep")
+    assert route(req) == "deep"
+
+
+# ---------------------------------------------------------------- the verify loop
+
+
+def test_supported_claims_pass_through_with_arrows(chess_api_url):
+    llm = QueueLLM([answer(
+        "Your knight on c3 is pinned to the king by the bishop on b4.",
+        [claim("knight on c3 is pinned", "pinned", square="c3", absolute=True)],
+        [{"move": None, "from": "b4", "to": "e1", "color": "red"}, {"move": "a3", "from": None, "to": None, "color": "green"}],
+    )])
+    res = ask(chess_api_url, llm, "Is my knight hanging?", NIMZO)
+    assert res.status_code == 200
+    body = res.json()
+    assert body["claims"][0]["result"]["verdict"] == "supported"
+    assert len(llm.calls) == 1  # nothing to revise
+    # the SAN arrow's squares come from the chess API, not the model
+    assert {"from": "a2", "to": "a3", "color": "green"} in body["annotations"]["arrows"]
+    assert {"from": "b4", "to": "e1", "color": "red"} in body["annotations"]["arrows"]
+    assert body["tier"] == "fast" and "verify" in body["tools_used"]
+    assert body["usage"]["llm_calls"] == 1 and body["usage"]["cost_usd"] > 0
+
+
+def test_refuted_claim_is_sent_back_and_fixed(chess_api_url):
+    llm = QueueLLM([
+        answer("The knight on f3 is pinned.", [claim("knight on f3 is pinned", "pinned", square="f3")]),
+        answer("The knight on c3 is pinned.", [claim("knight on c3 is pinned", "pinned", square="c3")]),
+    ])
+    body = ask(chess_api_url, llm, "What is pinned?", NIMZO).json()
+    assert len(llm.calls) == 2
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "knight on f3 is pinned" in feedback and "refuted" in feedback
+    assert llm.calls[1]["state"] == ["s"]  # the revision continues the same conversation
+    assert body["answer"] == "The knight on c3 is pinned."
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]
+    assert body["usage"]["llm_calls"] == 2
+
+
+def test_persistent_false_claim_falls_back_to_verified_facts(chess_api_url):
+    wrong = answer("Black is in check.", [claim("Black is in check", "in_check", color="black")])
+    llm = QueueLLM([wrong, wrong])
+    body = ask(chess_api_url, llm, "Who is in check?", NIMZO).json()
+    assert body["tier"] == "fallback"
+    assert "Black is in check" not in body["answer"]
+    assert "pinned" in body["answer"]  # the real pin fact from /v1/position
+    assert body["claims"] == []
+
+
+def test_illegal_san_is_refuted_without_reaching_verify(chess_api_url):
+    llm = QueueLLM([
+        answer("Ke2 is legal.", [claim("Ke2 is legal", "legal_move", move="Ke2")]),
+        answer("e4 is a legal first move.", [claim("e4 is legal", "legal_move", move="e4")]),
+    ])
+    body = ask(chess_api_url, llm, "Can I play Ke2?").json()
+    assert "Ke2" in llm.calls[1]["messages"][0]["content"]
+    assert body["claims"][0]["result"]["verdict"] == "supported"
+
+
+def test_engine_claims_on_mock_are_unverifiable_and_revised(chess_api_url):
+    # Away from the fixtures, the mock can't check engine claims; the coach must not state them as fact.
+    pos = {"moves": ["e2e4", "c7c5"]}
+    llm = QueueLLM([
+        answer("Nf3 is best.", [claim("Nf3 is best", "best_move", move="Nf3")]),
+        answer("Nf3 is a natural developing move.", [claim("Nf3 is legal", "legal_move", move="Nf3")]),
+    ])
+    body = ask(chess_api_url, llm, "best move?", pos).json()
+    assert "unverifiable" in llm.calls[1]["messages"][0]["content"]
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]
+
+
+def test_tools_reach_the_chess_api(chess_api_url):
+    llm = QueueLLM(
+        [answer("ok")],
+        tool_calls=[
+            ("analyze_position", {"multipv": 3}),
+            ("compare_moves", {"moves": ["a3", "Qxz9"]}),
+            ("explore_line", {"moves": ["a3", "Bxc3+", "bxc3"]}),
+            ("review_last_move", {}),
+        ],
+    )
+    body = ask(chess_api_url, llm, "Why is a3 good here?", NIMZO).json()
+    analyze, compare, explore, review = llm.tool_results
+    assert analyze["engine"] == "mock" and analyze["engine_note"]  # placeholders are flagged for the model
+    assert compare["illegal"][0]["move"] == "Qxz9" and compare["lines"][0]["move"] == "a3"
+    assert explore["legal"] and explore["line"] == "4. a3 Bxc3+ 5. bxc3"
+    assert "Status:" in explore["resulting_position"]
+    assert review["available"] and review["played"] == "Bb4" and review["played_by"] == "black"
+    assert body["tier"] == "deep"
+    assert set(body["tools_used"]) >= {"position", "analyze", "move", "compare"}
+
+
+def test_start_position_fixture_gives_real_engine_lines(chess_api_url):
+    llm = QueueLLM([answer("ok")], tool_calls=[("analyze_position", {"multipv": 3})])
+    ask(chess_api_url, llm, "best move?")
+    lines = llm.tool_results[0]["lines"]
+    assert [ln["move"] for ln in lines] == ["e4", "d4", "Nf3"]  # Stockfish fixture, example 05
+    assert lines[0]["line"].startswith("1. e4")
+
+
+# ---------------------------------------------------------------- scripted mode (no API key)
+
+
+def test_scripted_mode_runs_end_to_end(chess_api_url):
+    body = ask(chess_api_url, ScriptedAdapter(), "What's going on here?", NIMZO).json()
+    assert "Template answer" in body["answer"]
+    assert "pinned" in body["answer"]
+    verdicts = {c["text"]: c["result"]["verdict"] for c in body["claims"]}
+    assert all(v == "supported" for v in verdicts.values()) and verdicts
+
+
+# ---------------------------------------------------------------- errors
+
+
+def test_bad_position_is_422(chess_api_url):
+    res = ask(chess_api_url, QueueLLM([]), "best move?", {"moves": ["e2e5"]})
+    assert res.status_code == 422
+    assert res.json()["error"]["code"] == "illegal_move_in_history"
+
+
+def test_llm_failure_is_503(chess_api_url):
+    res = ask(chess_api_url, QueueLLM([LLMError("Could not reach OpenAI.")]), "best move?")
+    assert res.status_code == 503
+    assert res.json()["error"]["message"] == "Could not reach OpenAI."
+
+
+def test_chess_api_down_is_503():
+    res = ask("http://127.0.0.1:9", QueueLLM([]), "best move?")
+    assert res.status_code == 503
+
+
+def test_health(chess_api_url):
+    with TestClient(create_app(settings(chess_api_url), llm=ScriptedAdapter())) as client:
+        h = client.get("/v1/health").json()
+    assert h["status"] == "ok" and h["llm"] == "scripted" and h["models"]["deep"] == "gpt-6.1-sol"
+
+
+# ---------------------------------------------------------------- pieces
+
+
+def test_cost_uses_cached_rate():
+    u = LLMUsage(input_tokens=40_000, cached_tokens=30_000, output_tokens=5_000)
+    # 10k uncached x $2 + 30k cached x $0.10 + 5k x $10, per million
+    assert cost_usd("gpt-6.1-sol", u) == pytest.approx(0.02 + 0.003 + 0.05)
+    assert cost_usd("unknown-model", u) == 0.0
+
+
+def test_numbered_lines():
+    assert numbered(["e4", "e5", "Nf3"], 1, True) == "1. e4 e5 2. Nf3"
+    assert numbered(["Bb4", "a3"], 3, False) == "3... Bb4 4. a3"
+
+
+def test_schemas_are_strict():
+    """OpenAI strict mode: every object lists all its properties as required and forbids extras."""
+    def check(s):
+        if s.get("type") == "object" or s.get("type") == ["object"]:
+            assert s["additionalProperties"] is False
+            assert set(s["required"]) == set(s["properties"])
+            for p in s["properties"].values():
+                check(p)
+        if "items" in s:
+            check(s["items"])
+    check(ANSWER_SCHEMA)
+    for t in TOOL_DEFINITIONS:
+        check(t["parameters"])
+
+
+# ---------------------------------------------------------------- OpenAI adapter, with a fake client
+
+
+class FakeResponses:
+    """Simulates responses.create: first a function call, then the final JSON message."""
+
+    def __init__(self, final: dict):
+        self.final = final
+        self.requests: list[dict] = []
+
+    async def create(self, **kwargs):
+        self.requests.append(kwargs)
+        usage = SimpleNamespace(
+            input_tokens=500, output_tokens=100,
+            input_tokens_details=SimpleNamespace(cached_tokens=100),
+            output_tokens_details=SimpleNamespace(reasoning_tokens=60),
+        )
+        if len(self.requests) == 1:
+            call = SimpleNamespace(type="function_call", name="analyze_position", arguments='{"multipv": 2}', call_id="call_1")
+            reasoning = SimpleNamespace(type="reasoning", encrypted_content="xyz")
+            return SimpleNamespace(output=[reasoning, call], output_text="", status="completed", usage=usage)
+        msg = SimpleNamespace(type="message", content=[SimpleNamespace(type="output_text", text=json.dumps(self.final))])
+        return SimpleNamespace(output=[msg], output_text=json.dumps(self.final), status="completed", usage=usage)
+
+
+def test_openai_adapter_tool_loop():
+    asyncio.run(_openai_adapter_tool_loop())
+
+
+async def _openai_adapter_tool_loop():
+    final = answer("e4 is best.")
+    fake = FakeResponses(final)
+    adapter = OpenAIAdapter(client=SimpleNamespace(responses=fake))
+    executed = []
+
+    async def execute(name, args):
+        executed.append((name, args))
+        return {"lines": []}
+
+    result = await adapter.run(
+        model="gpt-6.1-sol", effort="high", system="sys", messages=[{"role": "user", "content": "q"}],
+        tools=TOOL_DEFINITIONS, execute=execute, output_schema=ANSWER_SCHEMA, max_tool_rounds=4,
+    )
+    assert result.output == final
+    assert executed == [("analyze_position", {"multipv": 2})]
+    first, second = fake.requests
+    assert first["reasoning"] == {"effort": "high"} and first["store"] is False
+    assert first["tools"][0]["strict"] is True and first["text"]["format"]["strict"] is True
+    # the reasoning item and the call are replayed in order, followed by the tool output
+    replay = second["input"]
+    assert replay[1].type == "reasoning" and replay[2].type == "function_call"
+    assert replay[3] == {"type": "function_call_output", "call_id": "call_1", "output": json.dumps({"lines": []})}
+    assert result.usage.calls == 2 and result.usage.reasoning_tokens == 120 and result.usage.cached_tokens == 200
+
+
+def test_openai_no_credit_is_reported_as_such():
+    import httpx
+    import openai
+
+    class NoCredit:
+        async def create(self, **kwargs):
+            req = httpx.Request("POST", "https://api.openai.com/v1/responses")
+            body = {"message": "You have no credits remaining.", "type": "insufficient_quota", "code": "credit_balance_exhausted"}
+            raise openai.RateLimitError("429", response=httpx.Response(429, request=req), body=body)
+
+    adapter = OpenAIAdapter(client=SimpleNamespace(responses=NoCredit()))
+
+    async def execute(name, args):
+        return {}
+
+    with pytest.raises(LLMError, match="no credits"):
+        asyncio.run(adapter.run(
+            model="gpt-6.1-sol", effort="low", system="s", messages=[{"role": "user", "content": "q"}],
+            tools=TOOL_DEFINITIONS, execute=execute, output_schema=ANSWER_SCHEMA, max_tool_rounds=2,
+        ))
+
+
+# ---------------------------------------------------------------- v0.2: structural claims, claims after a line
+
+LINE = ["a3", "Bxc3+", "bxc3"]
+
+
+def test_structural_claims_about_the_position_after_a_line(chess_api_url):
+    """The live-test case: what holds after 4. a3 Bxc3+ 5. bxc3 is verified in that position."""
+    llm = QueueLLM([answer(
+        "After 4. a3 Bxc3+ 5. bxc3 White has doubled c-pawns but the bishop pair and a semi-open b-file; material is equal.",
+        [
+            claim("White has doubled c-pawns", "doubled_pawns", color="white", file="c", after=LINE),
+            claim("the bishop pair", "bishop_pair", color="white", after=LINE),
+            claim("a semi-open b-file", "open_file", file="b", open_for="white", after=LINE),
+            claim("material is equal", "material_balance", balance_cp=0, after=LINE),
+            claim("the knight on c3 is pinned", "pinned", square="c3", absolute=True),  # current position
+        ],
+    )])
+    body = ask(chess_api_url, llm, "What happens after a3 Bxc3+ bxc3?", NIMZO).json()
+    assert len(llm.calls) == 1
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"] * 5
+    checked = [c["checked"] for c in body["claims"]]
+    assert checked[0] == "after a3 Bxc3+ bxc3: white has doubled c-pawns"
+    assert checked[2] == "after a3 Bxc3+ bxc3: the b-file is semi-open for white"
+    assert checked[3] == "after a3 Bxc3+ bxc3: material is equal"
+    assert checked[4] == "the piece on c3 is absolutely pinned"
+
+
+def test_false_structural_claim_is_refuted(chess_api_url):
+    llm = QueueLLM([
+        answer("Black keeps the bishop pair.", [claim("Black keeps the bishop pair", "bishop_pair", color="black", after=LINE)]),
+        answer("Black gives up the bishop pair.", []),
+    ])
+    ask(chess_api_url, llm, "What happens after a3 Bxc3+ bxc3?", NIMZO)
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "refuted" in feedback and "after a3 Bxc3+ bxc3: black has the bishop pair" in feedback
+
+
+def test_legal_line_cannot_vouch_for_a_structural_statement(chess_api_url):
+    """The bug from the live test: a legal_line claim attached to 'the bishop pair' must not get a tick."""
+    llm = QueueLLM([
+        answer("White gets the bishop pair.", [claim("but also the bishop pair", "legal_line", moves=LINE)]),
+        answer("White gets the bishop pair.", [claim("the bishop pair", "bishop_pair", color="white", after=LINE)]),
+    ])
+    body = ask(chess_api_url, llm, "What happens after a3 Bxc3+ bxc3?", NIMZO).json()
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "only checks that moves can be played" in feedback
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]
+    assert body["claims"][0]["checked"] == "after a3 Bxc3+ bxc3: white has the bishop pair"
+
+
+def test_plain_legal_line_still_passes(chess_api_url):
+    llm = QueueLLM([answer("You can play 4. a3 Bxc3+ 5. bxc3.", [claim("4. a3 Bxc3+ 5. bxc3", "legal_line", moves=LINE)])])
+    body = ask(chess_api_url, llm, "Can I play a3 here?", NIMZO).json()
+    assert body["claims"][0]["result"]["verdict"] == "supported"
+    assert body["claims"][0]["checked"] == "the moves a3 Bxc3+ bxc3 can be played"
+
+
+def test_illegal_after_line_is_refuted(chess_api_url):
+    llm = QueueLLM([
+        answer("After Nxe5 ...", [claim("after Nxe5", "material_balance", balance_cp=100, after=["Nxe5"])]),
+        answer("ok", []),
+    ])
+    ask(chess_api_url, llm, "What about Nxe5?", NIMZO)
+    assert "the line is illegal at Nxe5" in llm.calls[1]["messages"][0]["content"]
+
+
+def test_service_without_v02_claims_degrades_to_unverifiable(chess_api_url):
+    """An older chess service rejects unknown claim types with 422; only those claims become unverifiable."""
+    from coach.chess_client import ChessApiError, ChessClient
+
+    class OldService(ChessClient):
+        async def verify(self, position, claims, limits):
+            if any(c["type"] == "bishop_pair" for c in claims):
+                raise ChessApiError("invalid_request", "unknown claim type", 422)
+            return await super().verify(position, claims, limits)
+
+    llm = QueueLLM([
+        answer("x", [claim("knight pinned", "pinned", square="c3"), claim("bishop pair", "bishop_pair", color="white")]),
+        answer("x", [claim("knight pinned", "pinned", square="c3")]),
+    ])
+    with TestClient(create_app(settings(chess_api_url), chess=OldService(chess_api_url), llm=llm)) as client:
+        body = client.post("/v1/coach/ask", json={"question": "what's pinned?", "position": NIMZO}).json()
+    first_feedback = llm.calls[1]["messages"][0]["content"]
+    assert "can't check bishop_pair claims" in first_feedback
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported"]
+
+
+START = {"start_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "moves": []}
+SCHOLAR = ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6", "Qxf7"]  # model left off the "#"
+
+
+def test_quick_win_checkmate_is_checked_by_the_rules_engine(chess_api_url):
+    llm = QueueLLM([answer(
+        "I can see a win for White: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
+        [claim("1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#", "legal_line", moves=SCHOLAR),
+         claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)],
+    )])
+    body = ask(chess_api_url, llm, "How can White win in 4 moves?", START).json()
+    assert [c["result"]["verdict"] for c in body["claims"]] == ["supported", "supported"]
+    # The tick shows the API's SAN: the "#" is there because the rules engine says it is mate.
+    assert body["claims"][0]["checked"] == "the moves e4 e5 Bc4 Nc6 Qh5 Nf6 Qxf7# can be played"
+    assert body["claims"][1]["checked"].endswith("Qxf7#: it is checkmate; white wins")
+    assert len(llm.calls) == 1  # nothing to revise
+
+
+def test_claimed_mate_that_is_not_mate_is_refuted(chess_api_url):
+    line = ["e4", "e5", "Bc4", "Nc6", "Qh5", "g6", "Qf3"]
+    llm = QueueLLM([
+        answer("I can see a win for White ...", [claim("mate", "checkmate", color="white", after=line)]),
+        answer("ok", []),
+        answer("ok", []),  # a checkmate-in-N request gets one extra revision round
+    ])
+    ask(chess_api_url, llm, "How can White win in 4 moves?", START)
+    assert "the position is not checkmate" in llm.calls[1]["messages"][0]["content"]
+
+
+def test_fake_check_mark_in_model_san_is_not_shown(chess_api_url):
+    llm = QueueLLM([answer("1.e4#", [claim("1.e4#", "legal_line", moves=["e4#"])])])
+    body = ask(chess_api_url, llm, "Can I play e4?", START).json()
+    assert body["claims"][0]["checked"] == "the moves e4 can be played"
+
+
+def test_prompt_never_tells_the_player_about_the_engine():
+    from coach.prompts import system_prompt
+
+    p = system_prompt("intermediate")
+    assert "isn't connected yet" not in p
+    assert "I can see a win for White:" in p
+
+
+def test_supported_lines_come_back_playable_with_positions(chess_api_url):
+    llm = QueueLLM([answer(
+        "I can see a win for White: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
+        [claim("1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#", "legal_line", moves=SCHOLAR),
+         claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)],
+    )])
+    body = ask(chess_api_url, llm, "How can White win in 4 moves?", START).json()
+    (line,) = body["lines"]
+    assert line["start_fen"].startswith("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w")
+    assert [s["san"] for s in line["steps"]] == ["e4", "e5", "Bc4", "Nc6", "Qh5", "Nf6", "Qxf7#"]
+    assert line["steps"][0]["uci"] == "e2e4" and line["steps"][0]["fen"].startswith("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP")
+    assert (line["steps"][-1]["state"], line["steps"][-1]["winner"]) == ("checkmate", "white")
+
+
+def test_refuted_or_unverifiable_lines_are_not_playable(chess_api_url):
+    llm = QueueLLM([
+        answer("x", [claim("bad line", "legal_line", moves=["e4", "e5", "Ke3", "Ke6"]), claim("odd", "legal_line", moves=["e4", "Qh4"])]),
+        answer("x", []),
+    ])
+    body = ask(chess_api_url, llm, "Show me a line", START).json()
+    assert body["lines"] == []
+
+
+# ---------------------------------------------------------------- checkmate in N moves
+
+
+@pytest.mark.parametrize(
+    "question,stm,expected",
+    [
+        ("What moves should White make from now to checkmate in 4-5 moves?", "white", ("white", 4, 5)),
+        ("How can Black win in 2–3 moves?", "white", ("black", 2, 3)),
+        ("show me a mate in 11 moves", "black", ("black", 10, 11)),
+        ("checkmate in 6 to 7 moves for white", "black", ("white", 6, 7)),
+        ("What mistakes am I making? I want higher chances of winning", "white", None),
+        ("What's the best move?", "white", None),
+        ("now just say the best 2 move for white just one no need for check mate show in animation", "black", None),
+        ("best 3 moves for black, not checkmate in 3 moves", "black", None),
+        ("How do I win within 3 moves as White?", "white", ("white", 2, 3)),
+    ],
+)
+def test_mate_task_parsing(question, stm, expected):
+    from coach.agent import mate_task
+
+    t = mate_task(question, stm)
+    assert (t and (t.side, t.lo, t.hi)) == expected
+
+
+def test_a_line_that_stops_before_mate_is_sent_back(chess_api_url):
+    quiet = answer("Play 1.e4 e5 2.Bc4.", [claim("1.e4 e5 2.Bc4", "legal_line", moves=["e4", "e5", "Bc4"])])
+    mate = answer(
+        "I can see a win for White: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#",
+        [claim("1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6?? 4.Qxf7#", "legal_line", moves=SCHOLAR),
+         claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)],
+    )
+    llm = QueueLLM([quiet, mate])
+    body = ask(chess_api_url, llm, "What moves should White make to checkmate in 4-5 moves?", START).json()
+    assert "Task: give a line that ends in checkmate by white in 4-5 white moves" in llm.calls[0]["messages"][-1]["content"]
+    assert llm.calls[0]["effort"] == "high"  # mate requests use the deep tier
+    feedback = llm.calls[1]["messages"][0]["content"]
+    assert "none of the verified lines in your answer ends in checkmate" in feedback
+    assert body["lines"][0]["steps"][-1]["state"] == "checkmate"
+    assert len(llm.calls) == 2
+
+
+def test_a_mate_outside_the_requested_range_is_sent_back(chess_api_url):
+    mate4 = answer("I can see a win for White: ...", [
+        claim("line", "legal_line", moves=SCHOLAR), claim("4.Qxf7#", "checkmate", color="white", after=SCHOLAR)])
+    llm = QueueLLM([mate4, mate4, mate4])
+    ask(chess_api_url, llm, "How can White checkmate in 6-7 moves?", START)
+    assert "ends in checkmate after 4 white moves, outside the range asked" in llm.calls[1]["messages"][0]["content"]
+    assert len(llm.calls) == 3  # one normal revision + one extra for the mate
+
+
+def test_suggested_moves_are_playable_and_prefixes_are_dropped(chess_api_url):
+    llm = QueueLLM([answer("Play 1.e4, and after 1...e5 2.Nf3.", [
+        claim("1.e4", "legal_move", move="e4"),
+        claim("1.e4 e5 2.Nf3", "legal_line", moves=["e4", "e5", "Nf3"]),
+        claim("1.d4 is fine too", "legal_move", move="d4"),
+    ])])
+    body = ask(chess_api_url, llm, "best 2 moves for white", START).json()
+    assert [[s["san"] for s in l["steps"]] for l in body["lines"]] == [["e4", "e5", "Nf3"], ["d4"]]
