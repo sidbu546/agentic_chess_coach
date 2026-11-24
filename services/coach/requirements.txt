@@ -9,3 +9,6 @@ chess>=1.10
 jsonschema>=4.21
 referencing>=0.35
 PyYAML>=6.0
+# puzzle comparison (evaluation/puzzles): Claude baseline and board pictures
+anthropic>=2.13,<3
+Pillow>=11

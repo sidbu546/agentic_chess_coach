@@ -1,0 +1,3301 @@
+{
+ "meta": {
+  "source": "Lichess puzzle database (CC0), database.lichess.org",
+  "seed": 64,
+  "filters": "NbPlays>=1000, RatingDeviation<=80, Popularity>=85, <=3 solver moves",
+  "count": 104
+ },
+ "puzzles": [
+  {
+   "id": "1fx8b",
+   "fen": "BQb1k3/p2p4/4pq2/2Nn2p1/6p1/6K1/PPP3Pr/3R2R1 b - - 3 28",
+   "side": "black",
+   "last_move": {
+    "uci": "f2g3",
+    "san": "Kg3"
+   },
+   "source_fen": "BQb1k3/p2p4/4pq2/2Nn2p1/6p1/8/PPP2KPr/3R2R1 w - - 2 28",
+   "solution": [
+    "h2h3",
+    "g2h3",
+    "f6f3",
+    "g3h2",
+    "f3h3"
+   ],
+   "solution_san": [
+    "Rh3+",
+    "gxh3",
+    "Qf3+",
+    "Kh2",
+    "Qxh3#"
+   ],
+   "rating": 2093,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "exposedKing",
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/1fx8b"
+  },
+  {
+   "id": "0Ktzy",
+   "fen": "r3r1k1/pp3pp1/2pq3p/3p4/3PN1P1/4Pn1P/PP2NPK1/R2Q1R2 b - - 2 21",
+   "side": "black",
+   "last_move": {
+    "uci": "g1g2",
+    "san": "Kg2"
+   },
+   "source_fen": "r3r1k1/pp3pp1/2pq3p/3p4/3PN1P1/4Pn1P/PP2NP2/R2Q1RK1 w - - 1 21",
+   "solution": [
+    "d6h2",
+    "g2f3",
+    "d5e4"
+   ],
+   "solution_san": [
+    "Qh2+",
+    "Kxf3",
+    "dxe4#"
+   ],
+   "rating": 2027,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0Ktzy"
+  },
+  {
+   "id": "1IyCC",
+   "fen": "5r1k/6pp/p2pQ3/1p6/2n5/P4RNP/1P3PP1/3q2K1 w - - 10 35",
+   "side": "white",
+   "last_move": {
+    "uci": "d4d1",
+    "san": "Qd1+"
+   },
+   "source_fen": "5r1k/6pp/p2pQ3/1p6/2nq4/P4RNP/1P3PP1/6K1 b - - 9 34",
+   "solution": [
+    "g1h2",
+    "d1f3",
+    "g2f3"
+   ],
+   "solution_san": [
+    "Kh2",
+    "Qxf3",
+    "gxf3"
+   ],
+   "rating": 1660,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "defensiveMove",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1IyCC"
+  },
+  {
+   "id": "17Dh2",
+   "fen": "r5k1/ppp1qppp/8/3p1bN1/3n2n1/2P3QN/PP1KB1PP/2R4R b - - 0 19",
+   "side": "black",
+   "last_move": {
+    "uci": "f1e2",
+    "san": "Bxe2"
+   },
+   "source_fen": "r5k1/ppp1qppp/8/3p1bN1/3n2n1/2P3QN/PP1Kr1PP/2R2B1R w - - 1 19",
+   "solution": [
+    "e7e2"
+   ],
+   "solution_san": [
+    "Qxe2#"
+   ],
+   "rating": 947,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn1",
+    "middlegame",
+    "oneMove",
+    "swallowstailMate"
+   ],
+   "url": "https://lichess.org/training/17Dh2"
+  },
+  {
+   "id": "1TG3x",
+   "fen": "r1b1k1nr/pp1p1ppp/2p2q2/4n2Q/3PP3/2N5/PPP3PP/R1B2BKR b kq - 0 8",
+   "side": "black",
+   "last_move": {
+    "uci": "d2d4",
+    "san": "d4"
+   },
+   "source_fen": "r1b1k1nr/pp1p1ppp/2p2q2/4n2Q/4P3/2N5/PPPP2PP/R1B2BKR w kq - 0 8",
+   "solution": [
+    "e5g4",
+    "c1e3",
+    "g4e3"
+   ],
+   "solution_san": [
+    "Ng4",
+    "Be3",
+    "Nxe3"
+   ],
+   "rating": 1965,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1TG3x"
+  },
+  {
+   "id": "2oSzz",
+   "fen": "4r3/6k1/p3Bp1p/1p1RnPp1/1P4r1/P5P1/3K2P1/4R3 w - - 1 41",
+   "side": "white",
+   "last_move": {
+    "uci": "c4g4",
+    "san": "Rg4"
+   },
+   "source_fen": "4r3/6k1/p3Bp1p/1p1RnPp1/1Pr5/P5P1/3K2P1/4R3 b - - 0 40",
+   "solution": [
+    "e1e5",
+    "f6e5",
+    "f5f6",
+    "g7f6",
+    "e6g4"
+   ],
+   "solution_san": [
+    "Rexe5",
+    "fxe5",
+    "f6+",
+    "Kxf6",
+    "Bxg4"
+   ],
+   "rating": 2050,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "discoveredAttack",
+    "endgame",
+    "long",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/2oSzz"
+  },
+  {
+   "id": "0xBOL",
+   "fen": "r4rk1/pp3ppp/8/3B2q1/3P1P1n/2NQ3n/PP3P1P/R4R1K b - - 0 19",
+   "side": "black",
+   "last_move": {
+    "uci": "f3f4",
+    "san": "f4"
+   },
+   "source_fen": "r4rk1/pp3ppp/8/3B2q1/3P3n/2NQ1P1n/PP3P1P/R4R1K w - - 3 19",
+   "solution": [
+    "g5g1",
+    "f1g1",
+    "h3f2"
+   ],
+   "solution_san": [
+    "Qg1+",
+    "Rxg1",
+    "Nxf2#"
+   ],
+   "rating": 1826,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "deflection",
+    "kingsideAttack",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0xBOL"
+  },
+  {
+   "id": "06SuH",
+   "fen": "3R4/5pk1/1p2pN2/2b1P1pp/5P2/1P5P/1r3P2/6K1 w - - 0 39",
+   "side": "white",
+   "last_move": {
+    "uci": "g6g5",
+    "san": "g5"
+   },
+   "source_fen": "3R4/5pk1/1p2pNp1/2b1P2p/5P2/1P5P/1r3P2/6K1 b - - 6 38",
+   "solution": [
+    "d8g8",
+    "g7h6",
+    "f4g5"
+   ],
+   "solution_san": [
+    "Rg8+",
+    "Kh6",
+    "fxg5#"
+   ],
+   "rating": 1461,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/06SuH"
+  },
+  {
+   "id": "1kcrN",
+   "fen": "3r2k1/5p2/3R2pp/2p5/2N2P2/P1b1P2P/P1bN1K2/8 b - - 1 34",
+   "side": "black",
+   "last_move": {
+    "uci": "c6d6",
+    "san": "Rd6"
+   },
+   "source_fen": "3r2k1/5p2/2R3pp/2p5/2N2P2/P1b1P2P/P1bN1K2/8 w - - 0 34",
+   "solution": [
+    "d8d6",
+    "c4d6",
+    "c3d2"
+   ],
+   "solution_san": [
+    "Rxd6",
+    "Nxd6",
+    "Bxd2"
+   ],
+   "rating": 1137,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "capturingDefender",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1kcrN"
+  },
+  {
+   "id": "1I97Z",
+   "fen": "6rk/pp3p1p/2qb1pr1/5N2/1P3P1Q/2P2R2/p5P1/4R2K w - - 4 27",
+   "side": "white",
+   "last_move": {
+    "uci": "a8g8",
+    "san": "Rag8"
+   },
+   "source_fen": "r6k/pp3p1p/2qb1pr1/5N2/1P3P1Q/2P2R2/p5P1/4R2K b - - 3 26",
+   "solution": [
+    "h4h7",
+    "h8h7",
+    "f3h3",
+    "g6h6",
+    "h3h6"
+   ],
+   "solution_san": [
+    "Qxh7+",
+    "Kxh7",
+    "Rh3+",
+    "Rh6",
+    "Rxh6#"
+   ],
+   "rating": 1687,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "kingsideAttack",
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/1I97Z"
+  },
+  {
+   "id": "01VBW",
+   "fen": "2b1rr1k/3q2pB/p1p5/PpPp4/1P1b1Np1/8/2Q2P1P/R4RK1 w - - 0 22",
+   "side": "white",
+   "last_move": {
+    "uci": "f6d4",
+    "san": "Bxd4"
+   },
+   "source_fen": "2b1rr1k/3q2pB/p1p2b2/PpPp4/1P1P1Np1/8/2Q2P1P/R4RK1 b - - 2 21",
+   "solution": [
+    "f4g6",
+    "h8h7",
+    "g6f8",
+    "h7g8",
+    "f8d7"
+   ],
+   "solution_san": [
+    "Ng6+",
+    "Kxh7",
+    "Nxf8+",
+    "Kg8",
+    "Nxd7"
+   ],
+   "rating": 1141,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "discoveredCheck",
+    "doubleCheck",
+    "fork",
+    "long",
+    "middlegame"
+   ],
+   "url": "https://lichess.org/training/01VBW"
+  },
+  {
+   "id": "0SIxa",
+   "fen": "rn3rk1/1p3ppn/2p1p1B1/3p2P1/3P1P2/1Pb1P3/2P4Q/B1KR2NR b - - 0 18",
+   "side": "black",
+   "last_move": {
+    "uci": "b2a1",
+    "san": "Bxa1"
+   },
+   "source_fen": "rn3rk1/1p3ppn/2p1p1B1/3p2P1/3P1P2/1Pb1P3/1BP4Q/q1KR2NR w - - 1 18",
+   "solution": [
+    "a8a1"
+   ],
+   "solution_san": [
+    "Rxa1#"
+   ],
+   "rating": 1026,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn1",
+    "middlegame",
+    "oneMove",
+    "pillsburysMate",
+    "queensideAttack"
+   ],
+   "url": "https://lichess.org/training/0SIxa"
+  },
+  {
+   "id": "2xb9d",
+   "fen": "rnbqk2r/p1p2ppp/4p3/1p6/1bBP1P2/2N2N2/PP3PPP/2RQK2R b Kkq - 0 9",
+   "side": "black",
+   "last_move": {
+    "uci": "f1c4",
+    "san": "Bxc4"
+   },
+   "source_fen": "rnbqk2r/p1p2ppp/4p3/1p6/1bpP1P2/2N2N2/PP3PPP/2RQKB1R w Kkq - 0 9",
+   "solution": [
+    "b4c3",
+    "c1c3",
+    "b5c4"
+   ],
+   "solution_san": [
+    "Bxc3+",
+    "Rxc3",
+    "bxc4"
+   ],
+   "rating": 2146,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "intermezzo",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2xb9d"
+  },
+  {
+   "id": "2a8h1",
+   "fen": "2rk3r/1Qp1n1p1/p5qp/4P3/2BP4/2P5/P1b2PPP/R1B2RK1 b - - 2 17",
+   "side": "black",
+   "last_move": {
+    "uci": "b3c4",
+    "san": "Bc4"
+   },
+   "source_fen": "2rk3r/1Qp1n1p1/p5qp/4P3/3P4/1BP5/P1b2PPP/R1B2RK1 w - - 1 17",
+   "solution": [
+    "c2e4",
+    "b7e4",
+    "g6e4"
+   ],
+   "solution_san": [
+    "Be4",
+    "Qxe4",
+    "Qxe4"
+   ],
+   "rating": 1199,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2a8h1"
+  },
+  {
+   "id": "0pzoZ",
+   "fen": "2krr3/2p4p/p1p3p1/1q3p2/5Q2/P1P1R3/1PP3PP/4RK2 w - - 2 26",
+   "side": "white",
+   "last_move": {
+    "uci": "c5b5",
+    "san": "Qb5+"
+   },
+   "source_fen": "2krr3/2p4p/p1p3p1/2q2p2/5Q2/P1P1R3/1PP3PP/4RK2 b - - 1 25",
+   "solution": [
+    "c3c4",
+    "e8e3",
+    "c4b5",
+    "e3e1",
+    "f1e1"
+   ],
+   "solution_san": [
+    "c4",
+    "Rxe3",
+    "cxb5",
+    "Rxe1+",
+    "Kxe1"
+   ],
+   "rating": 1769,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "defensiveMove",
+    "endgame",
+    "long"
+   ],
+   "url": "https://lichess.org/training/0pzoZ"
+  },
+  {
+   "id": "0CAZh",
+   "fen": "3r3k/4b1p1/5p1p/3Bp3/1p6/2p3P1/5P1P/B2RK3 b - - 1 31",
+   "side": "black",
+   "last_move": {
+    "uci": "b2a1",
+    "san": "Ba1"
+   },
+   "source_fen": "3r3k/4b1p1/5p1p/3Bp3/1p6/2p3P1/1B3P1P/3RK3 w - - 0 31",
+   "solution": [
+    "c3c2",
+    "d1c1",
+    "d8d5"
+   ],
+   "solution_san": [
+    "c2",
+    "Rc1",
+    "Rxd5"
+   ],
+   "rating": 1169,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "advancedPawn",
+    "crushing",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0CAZh"
+  },
+  {
+   "id": "1ghdd",
+   "fen": "1r6/5kpp/4p3/2R5/ppp1P3/2P1KP2/PP4PP/8 b - - 1 30",
+   "side": "black",
+   "last_move": {
+    "uci": "e5c5",
+    "san": "Rc5"
+   },
+   "source_fen": "1r6/5kpp/4p3/4R3/ppp1P3/2P1KP2/PP4PP/8 w - - 0 30",
+   "solution": [
+    "a4a3",
+    "b2a3",
+    "b4b3",
+    "a2b3",
+    "c4b3"
+   ],
+   "solution_san": [
+    "a3",
+    "bxa3",
+    "b3",
+    "axb3",
+    "cxb3"
+   ],
+   "rating": 2034,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "endgame",
+    "long",
+    "rookEndgame"
+   ],
+   "url": "https://lichess.org/training/1ghdd"
+  },
+  {
+   "id": "0uphL",
+   "fen": "r2qk2r/pp1n1ppp/2pbpn2/5bN1/2BP4/2P2Q2/PP3PPP/R1B1K1NR w KQkq - 3 9",
+   "side": "white",
+   "last_move": {
+    "uci": "f8d6",
+    "san": "Bd6"
+   },
+   "source_fen": "r2qkb1r/pp1n1ppp/2p1pn2/5bN1/2BP4/2P2Q2/PP3PPP/R1B1K1NR b KQkq - 2 8",
+   "solution": [
+    "g5f7",
+    "e8f7",
+    "f3f5"
+   ],
+   "solution_san": [
+    "Nxf7",
+    "Kxf7",
+    "Qxf5"
+   ],
+   "rating": 1911,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "attackingF2F7",
+    "master",
+    "opening",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0uphL"
+  },
+  {
+   "id": "1eW8j",
+   "fen": "3r4/5kpp/p1n2p2/1pBp4/2q2P2/2P2Q2/6PP/4R1K1 w - - 1 28",
+   "side": "white",
+   "last_move": {
+    "uci": "a2c4",
+    "san": "Qc4"
+   },
+   "source_fen": "3r4/5kpp/p1n2p2/1pBp4/5P2/2P2Q2/q5PP/4R1K1 b - - 0 27",
+   "solution": [
+    "f3h5",
+    "f7g8",
+    "e1e8",
+    "d8e8",
+    "h5e8"
+   ],
+   "solution_san": [
+    "Qh5+",
+    "Kg8",
+    "Re8+",
+    "Rxe8",
+    "Qxe8#"
+   ],
+   "rating": 1375,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "long",
+    "master",
+    "mate",
+    "mateIn3"
+   ],
+   "url": "https://lichess.org/training/1eW8j"
+  },
+  {
+   "id": "13XJy",
+   "fen": "5rk1/pp4pp/2p3rq/8/4Q3/6Bn/PP2BPK1/3R3R b - - 6 29",
+   "side": "black",
+   "last_move": {
+    "uci": "g1g2",
+    "san": "Kg2"
+   },
+   "source_fen": "5rk1/pp4pp/2p3rq/8/4Q3/6Bn/PP2BP2/3R2KR w - - 5 29",
+   "solution": [
+    "f8f2"
+   ],
+   "solution_san": [
+    "Rxf2#"
+   ],
+   "rating": 1638,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn1",
+    "middlegame",
+    "oneMove",
+    "pin"
+   ],
+   "url": "https://lichess.org/training/13XJy"
+  },
+  {
+   "id": "2vD6e",
+   "fen": "2k5/1p5r/p1p3p1/4Q3/1PR1P2q/P4P2/1B4P1/6K1 b - - 5 33",
+   "side": "black",
+   "last_move": {
+    "uci": "d4e5",
+    "san": "Qe5"
+   },
+   "source_fen": "2k5/1p5r/p1p3p1/8/1PRQP2q/P4P2/1B4P1/6K1 w - - 4 33",
+   "solution": [
+    "h4e1"
+   ],
+   "solution_san": [
+    "Qe1#"
+   ],
+   "rating": 1432,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "master",
+    "mate",
+    "mateIn1",
+    "oneMove"
+   ],
+   "url": "https://lichess.org/training/2vD6e"
+  },
+  {
+   "id": "00TOt",
+   "fen": "5bk1/5ppp/8/8/3p4/8/P1KQq2P/2R5 b - - 3 33",
+   "side": "black",
+   "last_move": {
+    "uci": "a5d2",
+    "san": "Qd2"
+   },
+   "source_fen": "5bk1/5ppp/8/Q7/3p4/8/P1K1q2P/2R5 w - - 2 33",
+   "solution": [
+    "d4d3",
+    "c2c3",
+    "f8b4"
+   ],
+   "solution_san": [
+    "d3+",
+    "Kc3",
+    "Bb4+"
+   ],
+   "rating": 1403,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/00TOt"
+  },
+  {
+   "id": "1o18O",
+   "fen": "3r2k1/1pp3pp/p3p3/4p3/2P3P1/Pq5P/1P2KQ2/R1B4R b - - 2 23",
+   "side": "black",
+   "last_move": {
+    "uci": "d2e2",
+    "san": "Ke2"
+   },
+   "source_fen": "3r2k1/1pp3pp/p3p3/4p3/2P3P1/Pq5P/1P1K1Q2/R1B4R w - - 1 23",
+   "solution": [
+    "b3d3",
+    "e2e1",
+    "d3d1"
+   ],
+   "solution_san": [
+    "Qd3+",
+    "Ke1",
+    "Qd1#"
+   ],
+   "rating": 2009,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "master",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1o18O"
+  },
+  {
+   "id": "2qqyC",
+   "fen": "4r1k1/Q6p/3p2p1/6B1/2P3nq/7P/PP3NKb/R3R3 b - - 0 25",
+   "side": "black",
+   "last_move": {
+    "uci": "e4f2",
+    "san": "Nxf2"
+   },
+   "source_fen": "4r1k1/Q6p/3p2p1/6B1/2P1N1nq/7P/PP3rKb/R3R3 w - - 0 25",
+   "solution": [
+    "h4g3",
+    "g2f1",
+    "g3g1"
+   ],
+   "solution_san": [
+    "Qg3+",
+    "Kf1",
+    "Qg1#"
+   ],
+   "rating": 1721,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2qqyC"
+  },
+  {
+   "id": "1H73s",
+   "fen": "r2q1rk1/3b1ppp/3p1n2/pBb1p3/3nP3/2NP1N1P/1PP2PP1/R1BQR1K1 b - - 0 13",
+   "side": "black",
+   "last_move": {
+    "uci": "c4b5",
+    "san": "Bxb5"
+   },
+   "source_fen": "r2q1rk1/3b1ppp/3p1n2/ppb1p3/2BnP3/2NP1N1P/1PP2PP1/R1BQR1K1 w - - 0 13",
+   "solution": [
+    "d4b5",
+    "c3b5",
+    "d7b5"
+   ],
+   "solution_san": [
+    "Nxb5",
+    "Nxb5",
+    "Bxb5"
+   ],
+   "rating": 1728,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1H73s"
+  },
+  {
+   "id": "08cZX",
+   "fen": "6k1/pp2p2p/3p2p1/8/1P2P3/P2P2qP/r5P1/2R2QK1 w - - 7 31",
+   "side": "white",
+   "last_move": {
+    "uci": "f2a2",
+    "san": "Ra2"
+   },
+   "source_fen": "6k1/pp2p2p/3p2p1/8/1P2P3/P2P2qP/5rP1/2R2QK1 b - - 6 30",
+   "solution": [
+    "c1c8",
+    "g8g7",
+    "f1f8"
+   ],
+   "solution_san": [
+    "Rc8+",
+    "Kg7",
+    "Qf8#"
+   ],
+   "rating": 924,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "dovetailMate",
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/08cZX"
+  },
+  {
+   "id": "0GUoz",
+   "fen": "1r4k1/2Q2pp1/4p1p1/p2p4/2nP3P/2P2P2/qrR1N1PK/2R5 w - - 0 32",
+   "side": "white",
+   "last_move": {
+    "uci": "a3a2",
+    "san": "Qxa2"
+   },
+   "source_fen": "1r4k1/2Q2pp1/4p1p1/p2p4/2nP3P/q1P2P2/PrR1N1PK/2R5 b - - 2 31",
+   "solution": [
+    "c7b8",
+    "b2b8",
+    "c2a2"
+   ],
+   "solution_san": [
+    "Qxb8+",
+    "Rxb8",
+    "Rxa2"
+   ],
+   "rating": 1360,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0GUoz"
+  },
+  {
+   "id": "0pwhq",
+   "fen": "5bk1/5p2/p5p1/7p/3P4/1Q2K1P1/r4P1P/8 b - - 2 40",
+   "side": "black",
+   "last_move": {
+    "uci": "c3b3",
+    "san": "Qb3"
+   },
+   "source_fen": "5bk1/5p2/p5p1/7p/3P4/2Q1K1P1/r4P1P/8 w - - 1 40",
+   "solution": [
+    "a2a3",
+    "b3a3",
+    "f8a3"
+   ],
+   "solution_san": [
+    "Ra3",
+    "Qxa3",
+    "Bxa3"
+   ],
+   "rating": 1019,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0pwhq"
+  },
+  {
+   "id": "18kY3",
+   "fen": "r5rk/pp3p1p/2p2P2/3p2Q1/4P3/7R/PqP3PP/5RK1 w - - 1 22",
+   "side": "white",
+   "last_move": {
+    "uci": "f8g8",
+    "san": "Rg8"
+   },
+   "source_fen": "r4r1k/pp3p1p/2p2P2/3p2Q1/4P3/7R/PqP3PP/5RK1 b - - 0 21",
+   "solution": [
+    "h3h7",
+    "h8h7",
+    "g5h5"
+   ],
+   "solution_san": [
+    "Rxh7+",
+    "Kxh7",
+    "Qh5#"
+   ],
+   "rating": 1155,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "endgame",
+    "kingsideAttack",
+    "mate",
+    "mateIn2",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/18kY3"
+  },
+  {
+   "id": "1NPCZ",
+   "fen": "2b3kr/3qQpp1/5n1p/1p6/8/NBP5/PP3PpK/R3R3 b - - 0 22",
+   "side": "black",
+   "last_move": {
+    "uci": "g1h2",
+    "san": "Kxh2"
+   },
+   "source_fen": "2b3kr/3qQpp1/5n1p/1p6/8/NBP5/PP3Ppb/R3R1K1 w - - 0 22",
+   "solution": [
+    "d7h3",
+    "h2g1",
+    "h3h1"
+   ],
+   "solution_san": [
+    "Qh3+",
+    "Kg1",
+    "Qh1#"
+   ],
+   "rating": 1394,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "master",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1NPCZ"
+  },
+  {
+   "id": "0Emd2",
+   "fen": "2k3nQ/1ppr1R1p/p7/2b5/4P3/3P2Pq/PPP4P/RNB4K b - - 0 16",
+   "side": "black",
+   "last_move": {
+    "uci": "g7h8",
+    "san": "Qxh8"
+   },
+   "source_fen": "2k3nr/1ppr1RQp/p7/2b5/4P3/3P2Pq/PPP4P/RNB4K w - - 1 16",
+   "solution": [
+    "d7f7",
+    "h8g8",
+    "f7f8",
+    "g8f8",
+    "c5f8"
+   ],
+   "solution_san": [
+    "Rxf7",
+    "Qxg8+",
+    "Rf8",
+    "Qxf8+",
+    "Bxf8"
+   ],
+   "rating": 1510,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "long",
+    "middlegame"
+   ],
+   "url": "https://lichess.org/training/0Emd2"
+  },
+  {
+   "id": "2jTLg",
+   "fen": "7r/pp2k3/1bppp3/3P4/4Pp2/PQP2PqP/1P2R1P1/5R1K b - - 0 30",
+   "side": "black",
+   "last_move": {
+    "uci": "d4d5",
+    "san": "d5"
+   },
+   "source_fen": "7r/pp2k3/1bppp3/8/3PPp2/PQP2PqP/1P2R1P1/5R1K w - - 1 30",
+   "solution": [
+    "h8h3",
+    "g2h3",
+    "g3h3",
+    "e2h2",
+    "h3f1"
+   ],
+   "solution_san": [
+    "Rxh3+",
+    "gxh3",
+    "Qxh3+",
+    "Rh2",
+    "Qxf1#"
+   ],
+   "rating": 1134,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "fork",
+    "long",
+    "mate",
+    "mateIn3",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/2jTLg"
+  },
+  {
+   "id": "2i6rT",
+   "fen": "rnbq2r1/pppp1k1p/5b1B/8/8/8/P2N1PPP/R2QR1K1 w - - 2 14",
+   "side": "white",
+   "last_move": {
+    "uci": "e7f6",
+    "san": "Bf6"
+   },
+   "source_fen": "rnbq2r1/ppppbk1p/7B/8/8/8/P2N1PPP/R2QR1K1 b - - 1 13",
+   "solution": [
+    "d1h5",
+    "g8g6",
+    "h5d5"
+   ],
+   "solution_san": [
+    "Qh5+",
+    "Rg6",
+    "Qd5#"
+   ],
+   "rating": 1799,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2i6rT"
+  },
+  {
+   "id": "2FTaP",
+   "fen": "2kr2nQ/1pp2p1p/3b4/p2p3q/6b1/4BNP1/PPP2P1P/RN3RK1 b - - 0 15",
+   "side": "black",
+   "last_move": {
+    "uci": "g2g3",
+    "san": "g3"
+   },
+   "source_fen": "2kr2nQ/1pp2p1p/3b4/p2p3q/6b1/4BN2/PPP2PPP/RN3RK1 w - - 1 15",
+   "solution": [
+    "g4f3",
+    "b1d2",
+    "d6e5",
+    "h8e5",
+    "h5e5"
+   ],
+   "solution_san": [
+    "Bxf3",
+    "Nd2",
+    "Be5",
+    "Qxe5",
+    "Qxe5"
+   ],
+   "rating": 1710,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "hangingPiece",
+    "long",
+    "middlegame",
+    "trappedPiece"
+   ],
+   "url": "https://lichess.org/training/2FTaP"
+  },
+  {
+   "id": "18SQC",
+   "fen": "2kr2nr/np1q2pp/3b1p2/3Npb2/8/3P1N2/PPP1BPPP/R2Q1RK1 w - - 0 12",
+   "side": "white",
+   "last_move": {
+    "uci": "c6a7",
+    "san": "Nxa7"
+   },
+   "source_fen": "2kr2nr/Bp1q2pp/2nb1p2/3Npb2/8/3P1N2/PPP1BPPP/R2Q1RK1 b - - 0 11",
+   "solution": [
+    "d5b6",
+    "c8b8",
+    "b6d7"
+   ],
+   "solution_san": [
+    "Nb6+",
+    "Kb8",
+    "Nxd7+"
+   ],
+   "rating": 874,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "fork",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/18SQC"
+  },
+  {
+   "id": "23BaY",
+   "fen": "1r1qnrk1/6p1/p7/P1p1N1b1/6b1/2PP2p1/2Q4B/R4RK1 w - - 0 27",
+   "side": "white",
+   "last_move": {
+    "uci": "f4g3",
+    "san": "fxg3"
+   },
+   "source_fen": "1r1qnrk1/6p1/p7/P1p1N1b1/5pb1/2PP2P1/2Q4B/R4RK1 b - - 0 26",
+   "solution": [
+    "c2a2",
+    "g8h7",
+    "f1f8"
+   ],
+   "solution_san": [
+    "Qa2+",
+    "Kh7",
+    "Rxf8"
+   ],
+   "rating": 2010,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "deflection",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/23BaY"
+  },
+  {
+   "id": "2PO2n",
+   "fen": "2r3k1/p5pp/5p2/3N4/Q2P4/1P2q3/P4RPP/2r2RK1 b - - 0 23",
+   "side": "black",
+   "last_move": {
+    "uci": "b4d5",
+    "san": "Nxd5"
+   },
+   "source_fen": "2r3k1/p5pp/5p2/3p4/QN1P4/1P2q3/P4RPP/2r2RK1 w - - 4 23",
+   "solution": [
+    "c1f1",
+    "g1f1",
+    "c8c1"
+   ],
+   "solution_san": [
+    "Rxf1+",
+    "Kxf1",
+    "Rc1#"
+   ],
+   "rating": 1120,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2PO2n"
+  },
+  {
+   "id": "2oxze",
+   "fen": "5r1k/p5p1/2p4p/5p2/2P3P1/PP5Q/1B2qbP1/7K w - - 0 37",
+   "side": "white",
+   "last_move": {
+    "uci": "e6e2",
+    "san": "Qxe2"
+   },
+   "source_fen": "5r1k/p5p1/2p1q2p/5p2/2P3P1/PP5Q/1B2RbP1/7K b - - 0 36",
+   "solution": [
+    "h3h6",
+    "h8g8",
+    "h6g7"
+   ],
+   "solution_san": [
+    "Qxh6+",
+    "Kg8",
+    "Qxg7#"
+   ],
+   "rating": 1338,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2oxze"
+  },
+  {
+   "id": "2Lvjz",
+   "fen": "3r2k1/1Q3pp1/p6p/1p1rpBq1/5P2/2P5/PP1R2PP/2KR4 b - - 0 27",
+   "side": "black",
+   "last_move": {
+    "uci": "f3f4",
+    "san": "f4"
+   },
+   "source_fen": "3r2k1/1Q3pp1/p6p/1p1rpBq1/8/2P2P2/PP1R2PP/2KR4 w - - 1 27",
+   "solution": [
+    "g5f4",
+    "b7d5",
+    "d8d5"
+   ],
+   "solution_san": [
+    "Qxf4",
+    "Qxd5",
+    "Rxd5"
+   ],
+   "rating": 1732,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "middlegame",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2Lvjz"
+  },
+  {
+   "id": "0Sgfx",
+   "fen": "r5k1/pp3N2/5npQ/5b2/8/2P1R3/P1q2PPP/3rR1K1 w - - 1 22",
+   "side": "white",
+   "last_move": {
+    "uci": "d8d1",
+    "san": "Rd1"
+   },
+   "source_fen": "r2r2k1/pp3N2/5npQ/5b2/8/2P1R3/P1q2PPP/4R1K1 b - - 0 21",
+   "solution": [
+    "h6h8",
+    "g8f7",
+    "e3e7"
+   ],
+   "solution_san": [
+    "Qh8+",
+    "Kxf7",
+    "Re7#"
+   ],
+   "rating": 1666,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "fork",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0Sgfx"
+  },
+  {
+   "id": "0qsxx",
+   "fen": "2Q5/5kp1/5p1p/p2R4/r2P4/2K3P1/4r2P/8 b - - 0 42",
+   "side": "black",
+   "last_move": {
+    "uci": "c7c8q",
+    "san": "c8=Q"
+   },
+   "source_fen": "8/2P2kp1/5p1p/p2R4/r2P4/2K3P1/4r2P/8 w - - 0 42",
+   "solution": [
+    "a4a3",
+    "c3c4",
+    "e2c2"
+   ],
+   "solution_san": [
+    "Ra3+",
+    "Kc4",
+    "Rc2+"
+   ],
+   "rating": 1289,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "queenRookEndgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0qsxx"
+  },
+  {
+   "id": "2MqV4",
+   "fen": "3r2k1/5p1p/3qpbp1/p7/P1Q2B2/1P3P1P/2P3P1/5RK1 b - - 1 27",
+   "side": "black",
+   "last_move": {
+    "uci": "e3f4",
+    "san": "Bf4"
+   },
+   "source_fen": "3r2k1/5p1p/3qpbp1/p7/P1Q5/1P2BP1P/2P3P1/5RK1 w - - 0 27",
+   "solution": [
+    "f6d4",
+    "g1h1",
+    "d6f4"
+   ],
+   "solution_san": [
+    "Bd4+",
+    "Kh1",
+    "Qxf4"
+   ],
+   "rating": 1177,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "endgame",
+    "interference",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2MqV4"
+  },
+  {
+   "id": "0KT8a",
+   "fen": "rnb1k2r/ppp2ppp/8/2qP4/3Pp1n1/2N3N1/PPP3PP/R1BQ1BKR b kq d3 0 10",
+   "side": "black",
+   "last_move": {
+    "uci": "d2d4",
+    "san": "d4"
+   },
+   "source_fen": "rnb1k2r/ppp2ppp/8/2qP4/4p1n1/2N3N1/PPPP2PP/R1BQ1BKR w kq - 5 10",
+   "solution": [
+    "e4d3",
+    "c1e3",
+    "c5e3"
+   ],
+   "solution_san": [
+    "exd3+",
+    "Be3",
+    "Qxe3#"
+   ],
+   "rating": 1588,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "discoveredAttack",
+    "enPassant",
+    "kingsideAttack",
+    "mate",
+    "mateIn2",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0KT8a"
+  },
+  {
+   "id": "1H4iY",
+   "fen": "5r1k/pp4p1/4Q3/5Rq1/3P2np/2P3PK/PP5b/5R2 b - - 0 40",
+   "side": "black",
+   "last_move": {
+    "uci": "f3f5",
+    "san": "Rxf5"
+   },
+   "source_fen": "5r1k/pp4p1/4Q3/5pq1/3P2np/2P2RPK/PP5b/5R2 w - - 0 40",
+   "solution": [
+    "g4f2",
+    "f1f2",
+    "g5g3"
+   ],
+   "solution_san": [
+    "Nf2+",
+    "R1xf2",
+    "Qxg3#"
+   ],
+   "rating": 1648,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "discoveredAttack",
+    "epauletteMate",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1H4iY"
+  },
+  {
+   "id": "1bZL4",
+   "fen": "r2qk2r/1p3p2/p1n3p1/2p3bp/3pPBn1/P2P2N1/BPP1QP2/R3K2R w KQkq - 2 18",
+   "side": "white",
+   "last_move": {
+    "uci": "h4g5",
+    "san": "Bg5"
+   },
+   "source_fen": "r2qk2r/1p3p2/p1n3p1/2p4p/3pPBnb/P2P2N1/BPP1QP2/R3K2R b KQkq - 1 17",
+   "solution": [
+    "e2g4",
+    "g5f4",
+    "g4f4"
+   ],
+   "solution_san": [
+    "Qxg4",
+    "Bxf4",
+    "Qxf4"
+   ],
+   "rating": 1745,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1bZL4"
+  },
+  {
+   "id": "2hsNC",
+   "fen": "r1n3k1/p4ppp/B1R5/Q2p4/4r3/7q/5P2/2R3K1 w - - 0 41",
+   "side": "white",
+   "last_move": {
+    "uci": "d6c8",
+    "san": "Nxc8"
+   },
+   "source_fen": "r1Q3k1/p4ppp/B1Rn4/Q2p4/4r3/7q/5P2/2R3K1 b - - 0 40",
+   "solution": [
+    "a5d8",
+    "e4e8",
+    "d8e8"
+   ],
+   "solution_san": [
+    "Qd8+",
+    "Re8",
+    "Qxe8#"
+   ],
+   "rating": 1851,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2hsNC"
+  },
+  {
+   "id": "0DONU",
+   "fen": "8/r4pk1/3p1n2/p2PpQ1p/1p2P2P/1B6/PP1q1P2/1KR5 w - - 1 38",
+   "side": "white",
+   "last_move": {
+    "uci": "e1d2",
+    "san": "Qd2"
+   },
+   "source_fen": "8/r4pk1/3p1n2/p2PpQ1p/1p2P2P/1B6/PP3P2/1KR1q3 b - - 0 37",
+   "solution": [
+    "c1g1",
+    "f6g4",
+    "f5h5"
+   ],
+   "solution_san": [
+    "Rg1+",
+    "Ng4",
+    "Qxh5"
+   ],
+   "rating": 2075,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "deflection",
+    "endgame",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0DONU"
+  },
+  {
+   "id": "0zNQF",
+   "fen": "4r1k1/p1p2ppp/2p2q2/2b5/8/2QN4/PP3PPP/R1B1N1K1 b - - 0 17",
+   "side": "black",
+   "last_move": {
+    "uci": "c2c3",
+    "san": "Qxc3"
+   },
+   "source_fen": "4r1k1/p1p2ppp/2p2q2/2b5/8/2nN4/PPQ2PPP/R1B1N1K1 w - - 1 17",
+   "solution": [
+    "c5f2",
+    "g1h1",
+    "f2d4"
+   ],
+   "solution_san": [
+    "Bxf2+",
+    "Kh1",
+    "Bd4"
+   ],
+   "rating": 2399,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "kingsideAttack",
+    "master",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0zNQF"
+  },
+  {
+   "id": "0M9nl",
+   "fen": "b3r3/R6p/5ppk/N7/1nN2P1P/1P1P2P1/P2R3r/6K1 b - - 2 35",
+   "side": "black",
+   "last_move": {
+    "uci": "f2g1",
+    "san": "Kg1"
+   },
+   "source_fen": "b3r3/R6p/5ppk/N7/1nN2P1P/1P1P2P1/P2R1K1r/8 w - - 1 35",
+   "solution": [
+    "e8e1",
+    "g1h2",
+    "e1h1"
+   ],
+   "solution_san": [
+    "Re1+",
+    "Kxh2",
+    "Rh1#"
+   ],
+   "rating": 2084,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "operaMate",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0M9nl"
+  },
+  {
+   "id": "1WqP2",
+   "fen": "6k1/2p2rpp/p1B5/8/3PR1Pq/2P4b/Pr3P1P/R5K1 w - - 0 23",
+   "side": "white",
+   "last_move": {
+    "uci": "f8f7",
+    "san": "Rxf7"
+   },
+   "source_fen": "5rk1/2p2Qpp/p1B5/8/3PR1Pq/2P4b/Pr3P1P/R5K1 b - - 0 22",
+   "solution": [
+    "e4e8",
+    "f7f8",
+    "c6d5",
+    "g8h8",
+    "e8f8"
+   ],
+   "solution_san": [
+    "Re8+",
+    "Rf8",
+    "Bd5+",
+    "Kh8",
+    "Rxf8#"
+   ],
+   "rating": 1132,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "backRankMate",
+    "deflection",
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame"
+   ],
+   "url": "https://lichess.org/training/1WqP2"
+  },
+  {
+   "id": "0xZQW",
+   "fen": "rr4k1/6pp/2p5/2N2p2/1q1P1n2/1pQ2P1P/P5P1/1KR1R3 w - - 0 37",
+   "side": "white",
+   "last_move": {
+    "uci": "c4b3",
+    "san": "cxb3"
+   },
+   "source_fen": "rr4k1/6pp/2p5/2N2p2/1qpP1n2/1PQ2P1P/P5P1/1KR1R3 b - - 5 36",
+   "solution": [
+    "e1e8",
+    "b8e8",
+    "c3b4",
+    "b3a2",
+    "b1a1"
+   ],
+   "solution_san": [
+    "Re8+",
+    "Rxe8",
+    "Qxb4",
+    "bxa2+",
+    "Ka1"
+   ],
+   "rating": 1908,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "deflection",
+    "long",
+    "middlegame"
+   ],
+   "url": "https://lichess.org/training/0xZQW"
+  },
+  {
+   "id": "0B4Va",
+   "fen": "8/p5p1/1pp2k2/4pP1p/1PP1K2P/8/6P1/8 w - - 0 41",
+   "side": "white",
+   "last_move": {
+    "uci": "c7c6",
+    "san": "c6"
+   },
+   "source_fen": "8/p1p3p1/1p3k2/4pP1p/1PP1K2P/8/6P1/8 b - - 0 40",
+   "solution": [
+    "b4b5",
+    "c6c5",
+    "g2g3"
+   ],
+   "solution_san": [
+    "b5",
+    "c5",
+    "g3"
+   ],
+   "rating": 2051,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "defensiveMove",
+    "endgame",
+    "pawnEndgame",
+    "short",
+    "zugzwang"
+   ],
+   "url": "https://lichess.org/training/0B4Va"
+  },
+  {
+   "id": "1A0j0",
+   "fen": "4k3/ppR5/3P2pp/q7/8/PQ2PrPb/1P5P/6K1 w - - 0 35",
+   "side": "white",
+   "last_move": {
+    "uci": "f8e8",
+    "san": "Kxe8"
+   },
+   "source_fen": "4Rk2/ppR5/3P2pp/q7/8/PQ2PrPb/1P5P/6K1 b - - 3 34",
+   "solution": [
+    "b3g8",
+    "f3f8",
+    "c7e7",
+    "e8d8",
+    "g8f8"
+   ],
+   "solution_san": [
+    "Qg8+",
+    "Rf8",
+    "Re7+",
+    "Kd8",
+    "Qxf8#"
+   ],
+   "rating": 2186,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "deflection",
+    "endgame",
+    "exposedKing",
+    "long",
+    "mate",
+    "mateIn3"
+   ],
+   "url": "https://lichess.org/training/1A0j0"
+  },
+  {
+   "id": "0Vrqh",
+   "fen": "8/Rp2Rp1k/8/1p4Qp/6bP/2P1K1P1/3r4/3r4 b - - 8 38",
+   "side": "black",
+   "last_move": {
+    "uci": "f2e3",
+    "san": "Ke3"
+   },
+   "source_fen": "8/Rp2Rp1k/8/1p4Qp/6bP/2P3P1/3r1K2/3r4 w - - 7 38",
+   "solution": [
+    "d2e2",
+    "e3f4",
+    "d1f1"
+   ],
+   "solution_san": [
+    "Re2+",
+    "Kf4",
+    "Rf1#"
+   ],
+   "rating": 1567,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0Vrqh"
+  },
+  {
+   "id": "2LFDM",
+   "fen": "2r5/4np1k/3p2p1/q2P2p1/p3P1PP/r1BK4/8/2R4R w - - 0 33",
+   "side": "white",
+   "last_move": {
+    "uci": "h6g5",
+    "san": "hxg5"
+   },
+   "source_fen": "2r5/4np1k/3p2pp/q2P2N1/p3P1PP/r1BK4/8/2R4R b - - 4 32",
+   "solution": [
+    "h4g5",
+    "h7g8",
+    "h1h8"
+   ],
+   "solution_san": [
+    "hxg5+",
+    "Kg8",
+    "Rh8#"
+   ],
+   "rating": 938,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "discoveredAttack",
+    "discoveredCheck",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "operaMate",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2LFDM"
+  },
+  {
+   "id": "187QS",
+   "fen": "1r6/1p4pk/p2p2Np/2n2Qq1/4p3/8/P5PP/5R1K w - - 10 31",
+   "side": "white",
+   "last_move": {
+    "uci": "e3g5",
+    "san": "Qg5"
+   },
+   "source_fen": "1r6/1p4pk/p2p2Np/2n2Q2/4p3/4q3/P5PP/5R1K b - - 9 30",
+   "solution": [
+    "g6f8",
+    "h7h8",
+    "f5h7"
+   ],
+   "solution_san": [
+    "Nf8+",
+    "Kh8",
+    "Qh7#"
+   ],
+   "rating": 1181,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "discoveredCheck",
+    "doubleCheck",
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/187QS"
+  },
+  {
+   "id": "0ogLu",
+   "fen": "5r1k/1p2Q1pp/8/3N4/8/8/PP1n1qPP/6RK b - - 4 28",
+   "side": "black",
+   "last_move": {
+    "uci": "e6e7",
+    "san": "Qe7"
+   },
+   "source_fen": "5r1k/1p4pp/4Q3/3N4/8/8/PP1n1qPP/6RK w - - 3 28",
+   "solution": [
+    "f2g1",
+    "h1g1",
+    "f8f1"
+   ],
+   "solution_san": [
+    "Qxg1+",
+    "Kxg1",
+    "Rf1#"
+   ],
+   "rating": 1410,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "endgame",
+    "mate",
+    "mateIn2",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0ogLu"
+  },
+  {
+   "id": "0ZRbc",
+   "fen": "3R1rk1/1Q1P2p1/4R3/p3N1qb/8/P4pp1/1PB2PP1/6K1 b - - 0 40",
+   "side": "black",
+   "last_move": {
+    "uci": "c8d8",
+    "san": "Rxd8"
+   },
+   "source_fen": "2Rr1rk1/1Q1P2p1/4R3/p3N1qb/8/P4pp1/1PB2PP1/6K1 w - - 0 40",
+   "solution": [
+    "g5c1",
+    "c2d1",
+    "c1d1"
+   ],
+   "solution_san": [
+    "Qc1+",
+    "Bd1",
+    "Qxd1#"
+   ],
+   "rating": 2004,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "fork",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0ZRbc"
+  },
+  {
+   "id": "1ag66",
+   "fen": "8/p2kb3/3q2P1/3Q1p1p/5P2/1P5P/P7/1K6 w - - 1 47",
+   "side": "white",
+   "last_move": {
+    "uci": "a6d6",
+    "san": "Qd6"
+   },
+   "source_fen": "8/p2kb3/q5P1/3Q1p1p/5P2/1P5P/P7/1K6 b - - 0 46",
+   "solution": [
+    "d5d6",
+    "e7d6",
+    "g6g7"
+   ],
+   "solution_san": [
+    "Qxd6+",
+    "Bxd6",
+    "g7"
+   ],
+   "rating": 1668,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "advancedPawn",
+    "advantage",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1ag66"
+  },
+  {
+   "id": "0935z",
+   "fen": "2k5/1p4R1/1pPp1B2/1P3p1p/3KpP1P/r7/r7/2R5 b - - 4 34",
+   "side": "black",
+   "last_move": {
+    "uci": "e3d4",
+    "san": "Kd4"
+   },
+   "source_fen": "2k5/1p4R1/1pPp1B2/1P3p1p/4pP1P/r3K3/r7/2R5 w - - 3 34",
+   "solution": [
+    "a3d3",
+    "d4c4",
+    "a2a4"
+   ],
+   "solution_san": [
+    "Rd3+",
+    "Kc4",
+    "Ra4#"
+   ],
+   "rating": 2088,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0935z"
+  },
+  {
+   "id": "1XDhT",
+   "fen": "8/5p1Q/1p2bkp1/p1b5/5P2/7P/5qP1/3R3K w - - 3 45",
+   "side": "white",
+   "last_move": {
+    "uci": "e7f6",
+    "san": "Kf6"
+   },
+   "source_fen": "8/4kp1Q/1p2b1p1/p1b5/5P2/7P/5qP1/3R3K b - - 2 44",
+   "solution": [
+    "h7h8",
+    "f6e7",
+    "h8d8"
+   ],
+   "solution_san": [
+    "Qh8+",
+    "Ke7",
+    "Qd8#"
+   ],
+   "rating": 1237,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1XDhT"
+  },
+  {
+   "id": "0qgHr",
+   "fen": "1Q6/7p/1pb1p3/2p2p2/4k3/6P1/5PKP/3q1B2 w - - 7 47",
+   "side": "white",
+   "last_move": {
+    "uci": "d7c6",
+    "san": "Bc6"
+   },
+   "source_fen": "1Q6/3b3p/1p2p3/2p2p2/4k3/6P1/5PKP/3q1B2 b - - 6 46",
+   "solution": [
+    "b8f4",
+    "e4d5",
+    "f1c4"
+   ],
+   "solution_san": [
+    "Qf4+",
+    "Kd5",
+    "Bc4#"
+   ],
+   "rating": 1199,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0qgHr"
+  },
+  {
+   "id": "08vvu",
+   "fen": "r6r/1ppR3p/p3q3/5kp1/3Q4/2P4P/PP4P1/7K w - - 2 32",
+   "side": "white",
+   "last_move": {
+    "uci": "f6f5",
+    "san": "Kf5"
+   },
+   "source_fen": "r6r/1ppR3p/p3qk2/6p1/3Q4/2P4P/PP4P1/7K b - - 1 31",
+   "solution": [
+    "g2g4",
+    "f5g6",
+    "d4g7"
+   ],
+   "solution_san": [
+    "g4+",
+    "Kg6",
+    "Qg7#"
+   ],
+   "rating": 2025,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/08vvu"
+  },
+  {
+   "id": "1xmR5",
+   "fen": "2r2rk1/p3bppp/8/1p1pq3/1N2n3/PP3B1P/2PQ1PP1/R4RK1 w - - 2 20",
+   "side": "white",
+   "last_move": {
+    "uci": "f6e4",
+    "san": "Ne4"
+   },
+   "source_fen": "2r2rk1/p3bppp/5n2/1p1pq3/1N6/PP3B1P/2PQ1PP1/R4RK1 b - - 1 19",
+   "solution": [
+    "d2d5",
+    "e7d6",
+    "d5e5"
+   ],
+   "solution_san": [
+    "Qxd5",
+    "Bd6",
+    "Qxe5"
+   ],
+   "rating": 2220,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1xmR5"
+  },
+  {
+   "id": "16UUe",
+   "fen": "5rk1/pQ4pp/5p2/4p3/8/3P4/PPr2P1q/R4KN1 w - - 1 23",
+   "side": "white",
+   "last_move": {
+    "uci": "c8c2",
+    "san": "Rc2"
+   },
+   "source_fen": "2r2rk1/pQ4pp/5p2/4p3/8/3P4/PP3P1q/R4KN1 b - - 0 22",
+   "solution": [
+    "b7b3",
+    "g8h8",
+    "b3c2"
+   ],
+   "solution_san": [
+    "Qb3+",
+    "Kh8",
+    "Qxc2"
+   ],
+   "rating": 1321,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "endgame",
+    "fork",
+    "short"
+   ],
+   "url": "https://lichess.org/training/16UUe"
+  },
+  {
+   "id": "0vnjb",
+   "fen": "3r4/p2k1pQp/2p5/3bB3/4p3/8/2q2PPP/3R2K1 w - - 0 23",
+   "side": "white",
+   "last_move": {
+    "uci": "a2c2",
+    "san": "Qxc2"
+   },
+   "source_fen": "3r4/p2k1pQp/2p5/3bB3/4p3/8/q1P2PPP/3R2K1 b - - 1 22",
+   "solution": [
+    "g7f7",
+    "d7c8",
+    "f7c7"
+   ],
+   "solution_san": [
+    "Qxf7+",
+    "Kc8",
+    "Qc7#"
+   ],
+   "rating": 1770,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "pin",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0vnjb"
+  },
+  {
+   "id": "060S6",
+   "fen": "r1b2rk1/pp1qnpp1/2pb3p/4p1N1/4N3/4P3/PPQP1PPP/R1B1K2R w KQ - 0 14",
+   "side": "white",
+   "last_move": {
+    "uci": "h7h6",
+    "san": "h6"
+   },
+   "source_fen": "r1b2rk1/pp1qnppp/2pb4/4p1N1/4N3/4P3/PPQP1PPP/R1B1K2R b KQ - 7 13",
+   "solution": [
+    "e4f6",
+    "g7f6",
+    "c2h7"
+   ],
+   "solution_san": [
+    "Nf6+",
+    "gxf6",
+    "Qh7#"
+   ],
+   "rating": 907,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "clearance",
+    "kingsideAttack",
+    "mate",
+    "mateIn2",
+    "opening",
+    "sacrifice",
+    "short"
+   ],
+   "url": "https://lichess.org/training/060S6"
+  },
+  {
+   "id": "18l3K",
+   "fen": "2r4k/5R1p/Q5p1/2b5/8/4q1P1/4n1BP/R6K b - - 0 29",
+   "side": "black",
+   "last_move": {
+    "uci": "f1f7",
+    "san": "Rxf7"
+   },
+   "source_fen": "2r4k/5b1p/Q5p1/2b5/8/4q1P1/4n1BP/R4R1K w - - 0 29",
+   "solution": [
+    "e2g3",
+    "h2g3",
+    "e3h6",
+    "g2h3",
+    "h6h3"
+   ],
+   "solution_san": [
+    "Nxg3+",
+    "hxg3",
+    "Qh6+",
+    "Bh3",
+    "Qxh3#"
+   ],
+   "rating": 1521,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/18l3K"
+  },
+  {
+   "id": "1wlYt",
+   "fen": "r3q3/p2r2pk/1pp3Np/3bP2P/4Q1p1/P7/1PP5/1K3R1R w - - 1 26",
+   "side": "white",
+   "last_move": {
+    "uci": "e6d5",
+    "san": "Bd5"
+   },
+   "source_fen": "r3q3/p2r2pk/1pp1b1Np/4P2P/4Q1p1/P7/1PP5/1K3R1R b - - 0 25",
+   "solution": [
+    "g6f8",
+    "h7g8",
+    "e4h7"
+   ],
+   "solution_san": [
+    "Nf8+",
+    "Kg8",
+    "Qh7#"
+   ],
+   "rating": 1397,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "discoveredCheck",
+    "doubleCheck",
+    "fork",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1wlYt"
+  },
+  {
+   "id": "09Xzd",
+   "fen": "1r4k1/p2b2pp/4pr2/2pP1p2/3Pn2q/2PBP3/P1Q2PPP/R1B2RK1 b - - 0 17",
+   "side": "black",
+   "last_move": {
+    "uci": "c4d5",
+    "san": "cxd5"
+   },
+   "source_fen": "1r4k1/p2b2pp/4pr2/2pp1p2/2PPn2q/2PBP3/P1Q2PPP/R1B2RK1 w - - 2 17",
+   "solution": [
+    "f6h6",
+    "h2h3",
+    "e4g5",
+    "f2f4",
+    "g5h3"
+   ],
+   "solution_san": [
+    "Rh6",
+    "h3",
+    "Ng5",
+    "f4",
+    "Nxh3+"
+   ],
+   "rating": 2349,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "long",
+    "middlegame",
+    "quietMove"
+   ],
+   "url": "https://lichess.org/training/09Xzd"
+  },
+  {
+   "id": "2XLQ3",
+   "fen": "r4rk1/6pp/p2p1p2/2p4q/1pPNPPn1/1P2B3/P1B2P1P/3Q2RK b - - 0 23",
+   "side": "black",
+   "last_move": {
+    "uci": "f3d4",
+    "san": "Nxd4"
+   },
+   "source_fen": "r4rk1/6pp/p2p1p2/2p4q/1pPnPPn1/1P2BN2/P1B2P1P/3Q2RK w - - 2 23",
+   "solution": [
+    "h5h2"
+   ],
+   "solution_san": [
+    "Qxh2#"
+   ],
+   "rating": 1025,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "kingsideAttack",
+    "mate",
+    "mateIn1",
+    "middlegame",
+    "oneMove"
+   ],
+   "url": "https://lichess.org/training/2XLQ3"
+  },
+  {
+   "id": "079AP",
+   "fen": "6k1/3r2pp/1BRP1p2/p7/8/8/1q3PPP/5BK1 w - - 2 36",
+   "side": "white",
+   "last_move": {
+    "uci": "d8d7",
+    "san": "Rd7"
+   },
+   "source_fen": "3r2k1/6pp/1BRP1p2/p7/8/8/1q3PPP/5BK1 b - - 1 35",
+   "solution": [
+    "f1c4",
+    "g8f8",
+    "c6c8",
+    "d7d8",
+    "c8d8"
+   ],
+   "solution_san": [
+    "Bc4+",
+    "Kf8",
+    "Rc8+",
+    "Rd8",
+    "Rxd8#"
+   ],
+   "rating": 1710,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "long",
+    "master",
+    "mate",
+    "mateIn3",
+    "pillsburysMate"
+   ],
+   "url": "https://lichess.org/training/079AP"
+  },
+  {
+   "id": "1yVFN",
+   "fen": "r3r1k1/3nBpb1/p2p2pp/qp1P1P2/7Q/8/PPP3PP/1K1R1B1R b - - 2 20",
+   "side": "black",
+   "last_move": {
+    "uci": "e4h4",
+    "san": "Qh4"
+   },
+   "source_fen": "r3r1k1/3nBpb1/p2p2pp/qp1P1P2/4Q3/8/PPP3PP/1K1R1B1R w - - 1 20",
+   "solution": [
+    "g6g5",
+    "e7g5",
+    "h6g5"
+   ],
+   "solution_san": [
+    "g5",
+    "Bxg5",
+    "hxg5"
+   ],
+   "rating": 1608,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "master",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1yVFN"
+  },
+  {
+   "id": "254Kv",
+   "fen": "6k1/r4p2/8/2PR1P2/3bP3/1K1B4/r7/3R4 b - - 0 43",
+   "side": "black",
+   "last_move": {
+    "uci": "b4c5",
+    "san": "bxc5"
+   },
+   "source_fen": "6k1/r4p2/8/2pR1P2/1P1bP3/1K1B4/r7/3R4 w - - 0 43",
+   "solution": [
+    "a2b2",
+    "b3c4",
+    "a7a4"
+   ],
+   "solution_san": [
+    "Rb2+",
+    "Kc4",
+    "Ra4#"
+   ],
+   "rating": 1580,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "endgame",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/254Kv"
+  },
+  {
+   "id": "0eu2y",
+   "fen": "r3k1nr/4pp1p/p1nP2p1/8/1pb1PP2/2N1BN1P/1qPK4/3RQB1R b kq - 0 17",
+   "side": "black",
+   "last_move": {
+    "uci": "e2c3",
+    "san": "Nxc3"
+   },
+   "source_fen": "r3k1nr/4pp1p/p1nP2p1/8/1pb1PP2/2b1BN1P/1qPKN3/3RQB1R w kq - 1 17",
+   "solution": [
+    "b4c3"
+   ],
+   "solution_san": [
+    "bxc3#"
+   ],
+   "rating": 1625,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn1",
+    "middlegame",
+    "oneMove"
+   ],
+   "url": "https://lichess.org/training/0eu2y"
+  },
+  {
+   "id": "1lpPR",
+   "fen": "5rk1/6np/p2b2p1/1p1pR3/6P1/2PQ3R/PP3qNP/2B4K b - - 0 30",
+   "side": "black",
+   "last_move": {
+    "uci": "e1e5",
+    "san": "Rxe5"
+   },
+   "source_fen": "5rk1/6np/p2b2p1/1p1pr3/6P1/2PQ3R/PP3qNP/2B1R2K w - - 0 30",
+   "solution": [
+    "f2f1",
+    "d3f1",
+    "f8f1"
+   ],
+   "solution_san": [
+    "Qf1+",
+    "Qxf1",
+    "Rxf1#"
+   ],
+   "rating": 1369,
+   "band": "1200-1600",
+   "kind": "mate",
+   "themes": [
+    "backRankMate",
+    "fork",
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/1lpPR"
+  },
+  {
+   "id": "0nvPY",
+   "fen": "8/8/p5pp/1p6/1P2kP1P/P5K1/8/8 w - - 2 43",
+   "side": "white",
+   "last_move": {
+    "uci": "f5e4",
+    "san": "Ke4"
+   },
+   "source_fen": "8/8/p5pp/1p3k2/1P3P1P/P5K1/8/8 b - - 1 42",
+   "solution": [
+    "g3g4",
+    "e4e3",
+    "f4f5",
+    "g6f5",
+    "g4f5"
+   ],
+   "solution_san": [
+    "Kg4",
+    "Ke3",
+    "f5",
+    "gxf5+",
+    "Kxf5"
+   ],
+   "rating": 1628,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "long",
+    "pawnEndgame",
+    "zugzwang"
+   ],
+   "url": "https://lichess.org/training/0nvPY"
+  },
+  {
+   "id": "0wNSw",
+   "fen": "r1b1k2r/ppp1n1pp/2n1pq2/2b5/3p1P2/2PP1N2/PP2B1PP/RNBQ1RK1 b kq - 3 9",
+   "side": "black",
+   "last_move": {
+    "uci": "e1g1",
+    "san": "O-O"
+   },
+   "source_fen": "r1b1k2r/ppp1n1pp/2n1pq2/2b5/3p1P2/2PP1N2/PP2B1PP/RNBQK2R w KQkq - 2 9",
+   "solution": [
+    "d4c3",
+    "g1h1",
+    "c3b2"
+   ],
+   "solution_san": [
+    "dxc3+",
+    "Kh1",
+    "cxb2"
+   ],
+   "rating": 1102,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "advancedPawn",
+    "crushing",
+    "discoveredAttack",
+    "discoveredCheck",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0wNSw"
+  },
+  {
+   "id": "0lhTb",
+   "fen": "r1q2rk1/p3Qpbp/1n1p2p1/4P3/3P1P2/4B2P/PPP3P1/2KR1B1R b - - 0 14",
+   "side": "black",
+   "last_move": {
+    "uci": "b7e7",
+    "san": "Qxe7"
+   },
+   "source_fen": "r1q2rk1/pQ2ppbp/1n1p2p1/4P3/3P1P2/4B2P/PPP3P1/2KR1B1R w - - 1 14",
+   "solution": [
+    "b6d5",
+    "e7d6",
+    "d5e3"
+   ],
+   "solution_san": [
+    "Nd5",
+    "Qxd6",
+    "Nxe3"
+   ],
+   "rating": 1288,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "fork",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0lhTb"
+  },
+  {
+   "id": "2aohA",
+   "fen": "4r2k/p4p1n/6q1/2pp4/4pr1N/2P1P2Q/PP4PP/6K1 w - - 0 35",
+   "side": "white",
+   "last_move": {
+    "uci": "f6f4",
+    "san": "Rxf4"
+   },
+   "source_fen": "4r2k/p4p1n/5rq1/2pp4/4pR1N/2P1P2Q/PP4PP/6K1 b - - 9 34",
+   "solution": [
+    "h4g6",
+    "f7g6",
+    "e3f4"
+   ],
+   "solution_san": [
+    "Nxg6+",
+    "fxg6",
+    "exf4"
+   ],
+   "rating": 1133,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "endgame",
+    "intermezzo",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2aohA"
+  },
+  {
+   "id": "055jM",
+   "fen": "r4k1r/ppqb2pp/4p1B1/3pP3/8/3Q2B1/P1P2PP1/bN3K1R w - - 0 18",
+   "side": "white",
+   "last_move": {
+    "uci": "c3a1",
+    "san": "Bxa1"
+   },
+   "source_fen": "r4k1r/ppqb2pp/4p1B1/3pP3/8/2bQ2B1/P1P2PP1/RN3K1R b - - 6 17",
+   "solution": [
+    "d3f3",
+    "f8e7",
+    "g3h4"
+   ],
+   "solution_san": [
+    "Qf3+",
+    "Ke7",
+    "Bh4#"
+   ],
+   "rating": 2047,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/055jM"
+  },
+  {
+   "id": "2kpuW",
+   "fen": "1rn1r1kb/1bqp3p/p1n2Bp1/1p2p3/4N3/3PQN2/PPP1BPPP/R4RK1 b - - 5 19",
+   "side": "black",
+   "last_move": {
+    "uci": "h4f6",
+    "san": "Bf6"
+   },
+   "source_fen": "1rn1r1kb/1bqp3p/p1n3p1/1p2p3/4N2B/3PQN2/PPP1BPPP/R4RK1 w - - 4 19",
+   "solution": [
+    "d7d5",
+    "f6h8",
+    "d5e4"
+   ],
+   "solution_san": [
+    "d5",
+    "Bxh8",
+    "dxe4"
+   ],
+   "rating": 2098,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2kpuW"
+  },
+  {
+   "id": "308w0",
+   "fen": "3Q4/pp6/2p2p2/1k2b1p1/1P3p2/P1P1qP1B/1K4P1/8 w - - 11 41",
+   "side": "white",
+   "last_move": {
+    "uci": "b6b5",
+    "san": "Kb5"
+   },
+   "source_fen": "3Q4/pp6/1kp2p2/4b1p1/1P3p2/P1P1qP1B/1K4P1/8 b - - 10 40",
+   "solution": [
+    "a3a4",
+    "b5a4",
+    "d8a5"
+   ],
+   "solution_san": [
+    "a4+",
+    "Kxa4",
+    "Qa5#"
+   ],
+   "rating": 2255,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "endgame",
+    "master",
+    "mate",
+    "mateIn2",
+    "short"
+   ],
+   "url": "https://lichess.org/training/308w0"
+  },
+  {
+   "id": "0iXeQ",
+   "fen": "r5k1/pp2Rr1p/3Q2p1/2p2q2/2P5/2N5/PP3PPP/4R1K1 b - - 0 18",
+   "side": "black",
+   "last_move": {
+    "uci": "d4d6",
+    "san": "Qxd6"
+   },
+   "source_fen": "r5k1/pp2Rr1p/3p2p1/2p2q2/2PQ4/2N5/PP3PPP/4R1K1 w - - 0 18",
+   "solution": [
+    "f5f2",
+    "g1h1",
+    "f2f1",
+    "e1f1",
+    "f7f1"
+   ],
+   "solution_san": [
+    "Qxf2+",
+    "Kh1",
+    "Qf1+",
+    "Rxf1",
+    "Rxf1#"
+   ],
+   "rating": 1038,
+   "band": "600-1200",
+   "kind": "mate",
+   "themes": [
+    "backRankMate",
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/0iXeQ"
+  },
+  {
+   "id": "1BGz2",
+   "fen": "1k6/p1p2r2/6pB/2P1Q2p/3nP3/3P4/PP3qPP/6RK b - - 0 26",
+   "side": "black",
+   "last_move": {
+    "uci": "d5e5",
+    "san": "Qxe5"
+   },
+   "source_fen": "1k6/p1p2r2/6pB/2PQp2p/3nP3/3P4/PP3qPP/6RK w - - 5 26",
+   "solution": [
+    "f2g1",
+    "h1g1",
+    "d4e2",
+    "g1h1",
+    "f7f1"
+   ],
+   "solution_san": [
+    "Qxg1+",
+    "Kxg1",
+    "Ne2+",
+    "Kh1",
+    "Rf1#"
+   ],
+   "rating": 1711,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "backRankMate",
+    "endgame",
+    "long",
+    "mate",
+    "mateIn3",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/1BGz2"
+  },
+  {
+   "id": "2MhAi",
+   "fen": "8/1p5p/p5pk/2P1Qbq1/2B2n2/1P4PP/P4P2/2R3K1 b - - 0 30",
+   "side": "black",
+   "last_move": {
+    "uci": "g2g3",
+    "san": "g3"
+   },
+   "source_fen": "8/1p5p/p5pk/2P1Qbq1/2B2n2/1P5P/P4PP1/2R3K1 w - - 1 30",
+   "solution": [
+    "f4h3",
+    "g1g2",
+    "g5c1"
+   ],
+   "solution_san": [
+    "Nxh3+",
+    "Kg2",
+    "Qxc1"
+   ],
+   "rating": 1444,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "discoveredAttack",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2MhAi"
+  },
+  {
+   "id": "0jswR",
+   "fen": "r1bqk2r/pp2bppp/2n2n2/2p1p3/2B1P3/2N3N1/PPPP2PP/R1BQ1RK1 b kq - 5 8",
+   "side": "black",
+   "last_move": {
+    "uci": "e1g1",
+    "san": "O-O"
+   },
+   "source_fen": "r1bqk2r/pp2bppp/2n2n2/2p1p3/2B1P3/2N3N1/PPPP2PP/R1BQK2R w KQkq - 4 8",
+   "solution": [
+    "d8d4",
+    "g1h1",
+    "d4c4"
+   ],
+   "solution_san": [
+    "Qd4+",
+    "Kh1",
+    "Qxc4"
+   ],
+   "rating": 1144,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "fork",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0jswR"
+  },
+  {
+   "id": "2GBlz",
+   "fen": "7k/6p1/P6p/5Q2/4n1P1/5p1P/4rP1K/8 b - - 0 47",
+   "side": "black",
+   "last_move": {
+    "uci": "a5a6",
+    "san": "a6"
+   },
+   "source_fen": "7k/6p1/7p/P4Q2/4n1P1/5p1P/4rP1K/8 w - - 7 47",
+   "solution": [
+    "e2f2",
+    "h2g1",
+    "f2g2",
+    "g1f1",
+    "e4g3"
+   ],
+   "solution_san": [
+    "Rxf2+",
+    "Kg1",
+    "Rg2+",
+    "Kf1",
+    "Ng3+"
+   ],
+   "rating": 1582,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "long"
+   ],
+   "url": "https://lichess.org/training/2GBlz"
+  },
+  {
+   "id": "10r69",
+   "fen": "3r1rk1/ppp2ppp/q7/n3N3/7Q/1B6/PPP3PP/5RK1 w - - 1 19",
+   "side": "white",
+   "last_move": {
+    "uci": "g6a6",
+    "san": "Qa6"
+   },
+   "source_fen": "3r1rk1/ppp2ppp/6q1/n3N3/7Q/1B6/PPP3PP/5RK1 b - - 0 18",
+   "solution": [
+    "b3f7",
+    "g8h8",
+    "e5g6",
+    "a6g6",
+    "f7g6"
+   ],
+   "solution_san": [
+    "Bxf7+",
+    "Kh8",
+    "Ng6+",
+    "Qxg6",
+    "Bxg6"
+   ],
+   "rating": 1499,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "kingsideAttack",
+    "long",
+    "middlegame",
+    "pin"
+   ],
+   "url": "https://lichess.org/training/10r69"
+  },
+  {
+   "id": "12mli",
+   "fen": "r1bqr1k1/ppp2pp1/3p4/4n2Q/2P5/1P2P3/PB3PPP/RN3RK1 b - - 3 14",
+   "side": "black",
+   "last_move": {
+    "uci": "e1g1",
+    "san": "O-O"
+   },
+   "source_fen": "r1bqr1k1/ppp2pp1/3p4/4n2Q/2P5/1P2P3/PB3PPP/RN2K2R w KQ - 2 14",
+   "solution": [
+    "c8g4",
+    "h5g4",
+    "e5g4"
+   ],
+   "solution_san": [
+    "Bg4",
+    "Qxg4",
+    "Nxg4"
+   ],
+   "rating": 1369,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "middlegame",
+    "short",
+    "trappedPiece"
+   ],
+   "url": "https://lichess.org/training/12mli"
+  },
+  {
+   "id": "0HeCz",
+   "fen": "8/2r4p/p5p1/2BK4/8/1PP3kP/8/8 w - - 3 43",
+   "side": "white",
+   "last_move": {
+    "uci": "f3g3",
+    "san": "Kg3"
+   },
+   "source_fen": "8/2r4p/p5p1/2BK4/8/1PP2k1P/8/8 b - - 2 42",
+   "solution": [
+    "c5d6",
+    "g3h4",
+    "d6c7"
+   ],
+   "solution_san": [
+    "Bd6+",
+    "Kh4",
+    "Bxc7"
+   ],
+   "rating": 892,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "fork",
+    "master",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0HeCz"
+  },
+  {
+   "id": "2gMLw",
+   "fen": "r3k1nr/pp1b1ppp/2n1p3/qB1P4/8/2b2N2/P2B1PPP/2RQK2R w Kkq - 0 12",
+   "side": "white",
+   "last_move": {
+    "uci": "b4c3",
+    "san": "Bxc3"
+   },
+   "source_fen": "r3k1nr/pp1b1ppp/2n1p3/qB1P4/1b6/2N2N2/P2B1PPP/2RQK2R b Kkq - 0 11",
+   "solution": [
+    "d2c3",
+    "a5b5",
+    "d5c6"
+   ],
+   "solution_san": [
+    "Bxc3",
+    "Qxb5",
+    "dxc6"
+   ],
+   "rating": 2334,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "opening",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2gMLw"
+  },
+  {
+   "id": "0Oib2",
+   "fen": "6r1/ppq2p1k/8/5R2/1B1NP1r1/8/P5p1/R2Q2K1 b - - 0 30",
+   "side": "black",
+   "last_move": {
+    "uci": "f2f5",
+    "san": "Rxf5"
+   },
+   "source_fen": "6r1/ppq2p1k/8/5b2/1B1NP1r1/8/P4Rp1/R2Q2K1 w - - 0 30",
+   "solution": [
+    "c7h2",
+    "g1h2",
+    "g2g1q",
+    "d1g1",
+    "g4h4"
+   ],
+   "solution_san": [
+    "Qh2+",
+    "Kxh2",
+    "g1=Q+",
+    "Qxg1",
+    "Rh4#"
+   ],
+   "rating": 2163,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "advancedPawn",
+    "attraction",
+    "exposedKing",
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame",
+    "promotion",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/0Oib2"
+  },
+  {
+   "id": "1UCqx",
+   "fen": "r1b1kbnr/1p3ppp/p1n1p3/3pP3/3p1B2/P1N2N2/1qP2PPP/R2QKB1R w KQkq - 0 10",
+   "side": "white",
+   "last_move": {
+    "uci": "b4b2",
+    "san": "Qxb2"
+   },
+   "source_fen": "r1b1kbnr/1p3ppp/p1n1p3/3pP3/1q1p1B2/P1N2N2/1PP2PPP/R2QKB1R b KQkq - 0 9",
+   "solution": [
+    "c3a4",
+    "b2a1",
+    "d1a1"
+   ],
+   "solution_san": [
+    "Na4",
+    "Qxa1",
+    "Qxa1"
+   ],
+   "rating": 1365,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "opening",
+    "short",
+    "trappedPiece"
+   ],
+   "url": "https://lichess.org/training/1UCqx"
+  },
+  {
+   "id": "2WkMG",
+   "fen": "8/8/8/4N2p/5K1P/r4PP1/6k1/8 b - - 0 80",
+   "side": "black",
+   "last_move": {
+    "uci": "f2f3",
+    "san": "f3"
+   },
+   "source_fen": "8/8/8/4N2p/5K1P/r5P1/5Pk1/8 w - - 4 80",
+   "solution": [
+    "a3a4",
+    "f4f5",
+    "g2g3"
+   ],
+   "solution_san": [
+    "Ra4+",
+    "Kf5",
+    "Kxg3"
+   ],
+   "rating": 1570,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "deflection",
+    "endgame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2WkMG"
+  },
+  {
+   "id": "2PF66",
+   "fen": "rn3bQ1/1pqk4/5p2/8/p6r/P6P/1PP2PP1/1K2R3 w - - 4 27",
+   "side": "white",
+   "last_move": {
+    "uci": "e8d7",
+    "san": "Kd7"
+   },
+   "source_fen": "rn2kbQ1/1pq5/5p2/8/p6r/P6P/1PP2PP1/1K2R3 b - - 3 26",
+   "solution": [
+    "g8e6",
+    "d7d8",
+    "e6e8"
+   ],
+   "solution_san": [
+    "Qe6+",
+    "Kd8",
+    "Qe8#"
+   ],
+   "rating": 1793,
+   "band": "1600-2000",
+   "kind": "mate",
+   "themes": [
+    "mate",
+    "mateIn2",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/2PF66"
+  },
+  {
+   "id": "0MxPc",
+   "fen": "8/8/6p1/r2pk3/PN6/7P/4K1P1/8 w - - 1 47",
+   "side": "white",
+   "last_move": {
+    "uci": "f6e5",
+    "san": "Ke5"
+   },
+   "source_fen": "8/8/5kp1/r2p4/PN6/7P/4K1P1/8 b - - 0 46",
+   "solution": [
+    "b4c6",
+    "e5e4",
+    "c6a5"
+   ],
+   "solution_san": [
+    "Nc6+",
+    "Ke4",
+    "Nxa5"
+   ],
+   "rating": 904,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "endgame",
+    "fork",
+    "master",
+    "masterVsMaster",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0MxPc"
+  },
+  {
+   "id": "1suGA",
+   "fen": "6k1/p4q1p/1b2b1pB/1P1rQp2/P3p3/6PP/5PK1/2R5 w - - 5 34",
+   "side": "white",
+   "last_move": {
+    "uci": "d8d5",
+    "san": "Rd5"
+   },
+   "source_fen": "3r2k1/p4q1p/1b2b1pB/1P2Qp2/P3p3/6PP/5PK1/2R5 b - - 4 33",
+   "solution": [
+    "e5d5",
+    "e6d5",
+    "c1c8",
+    "f7e8",
+    "c8e8"
+   ],
+   "solution_san": [
+    "Qxd5",
+    "Bxd5",
+    "Rc8+",
+    "Qe8",
+    "Rxe8+"
+   ],
+   "rating": 2018,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "long",
+    "middlegame",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/1suGA"
+  },
+  {
+   "id": "1EXkd",
+   "fen": "8/5k2/6p1/2K5/2P5/3p2bp/8/6R1 w - - 0 54",
+   "side": "white",
+   "last_move": {
+    "uci": "h4h3",
+    "san": "h3"
+   },
+   "source_fen": "8/5k2/6p1/2K5/2P4p/3p2b1/8/6R1 b - - 0 53",
+   "solution": [
+    "g1g3",
+    "h3h2",
+    "g3f3",
+    "f7e6",
+    "f3f1"
+   ],
+   "solution_san": [
+    "Rxg3",
+    "h2",
+    "Rf3+",
+    "Ke6",
+    "Rf1"
+   ],
+   "rating": 2082,
+   "band": "2000-2600",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "defensiveMove",
+    "endgame",
+    "hangingPiece",
+    "long"
+   ],
+   "url": "https://lichess.org/training/1EXkd"
+  },
+  {
+   "id": "0S1It",
+   "fen": "r1b2rk1/pppp1ppp/6q1/3N4/4P3/P4P1P/1PPb1P1K/R2Q1R2 w - - 0 15",
+   "side": "white",
+   "last_move": {
+    "uci": "a5d2",
+    "san": "Bxd2"
+   },
+   "source_fen": "r1b2rk1/pppp1ppp/6q1/b2N4/4P3/P4P1P/1PPB1P1K/R2Q1R2 b - - 2 14",
+   "solution": [
+    "d5e7",
+    "g8h8",
+    "e7g6"
+   ],
+   "solution_san": [
+    "Ne7+",
+    "Kh8",
+    "Nxg6+"
+   ],
+   "rating": 1174,
+   "band": "600-1200",
+   "kind": "other",
+   "themes": [
+    "crushing",
+    "fork",
+    "middlegame",
+    "short"
+   ],
+   "url": "https://lichess.org/training/0S1It"
+  },
+  {
+   "id": "2n66p",
+   "fen": "r4r1k/pp3pb1/4p3/2p4p/P1B1P1pK/1QPP1qB1/1P3P1N/R6R b - - 1 24",
+   "side": "black",
+   "last_move": {
+    "uci": "h3h4",
+    "san": "Kh4"
+   },
+   "source_fen": "r4r1k/pp3pb1/4p3/2p4p/P1B1P1p1/1QPP1qBK/1P3P1N/R6R w - - 0 24",
+   "solution": [
+    "f3f6",
+    "h4h5",
+    "f6g6",
+    "h5h4",
+    "g7f6"
+   ],
+   "solution_san": [
+    "Qf6+",
+    "Kxh5",
+    "Qg6+",
+    "Kh4",
+    "Bf6#"
+   ],
+   "rating": 2173,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "long",
+    "mate",
+    "mateIn3",
+    "middlegame"
+   ],
+   "url": "https://lichess.org/training/2n66p"
+  },
+  {
+   "id": "1kzm2",
+   "fen": "rn1qk1nr/pbp1b1pp/1p2pp2/4N1B1/2PP3P/2N5/PP3PP1/R2QKB1R w KQkq - 0 10",
+   "side": "white",
+   "last_move": {
+    "uci": "f7f6",
+    "san": "f6"
+   },
+   "source_fen": "rn1qk1nr/pbp1bppp/1p2p3/4N1B1/2PP3P/2N5/PP3PP1/R2QKB1R b KQkq - 0 9",
+   "solution": [
+    "d1h5",
+    "g7g6",
+    "e5g6",
+    "h7g6",
+    "h5h8"
+   ],
+   "solution_san": [
+    "Qh5+",
+    "g6",
+    "Nxg6",
+    "hxg6",
+    "Qxh8"
+   ],
+   "rating": 1459,
+   "band": "1200-1600",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "long",
+    "opening",
+    "pin",
+    "trappedPiece"
+   ],
+   "url": "https://lichess.org/training/1kzm2"
+  },
+  {
+   "id": "1O6O1",
+   "fen": "6k1/1p3pp1/4p2p/1r1n3q/8/3Q1NP1/rP4PP/1K1RR3 w - - 0 33",
+   "side": "white",
+   "last_move": {
+    "uci": "a8a2",
+    "san": "Rxa2"
+   },
+   "source_fen": "r5k1/1p3pp1/4p2p/1r1n3q/8/3Q1NP1/PP4PP/1K1RR3 b - - 3 32",
+   "solution": [
+    "d3b5",
+    "d5c3",
+    "b2c3",
+    "h5b5",
+    "b1a2"
+   ],
+   "solution_san": [
+    "Qxb5",
+    "Nc3+",
+    "bxc3",
+    "Qxb5+",
+    "Kxa2"
+   ],
+   "rating": 1617,
+   "band": "1600-2000",
+   "kind": "other",
+   "themes": [
+    "advantage",
+    "hangingPiece",
+    "long",
+    "middlegame"
+   ],
+   "url": "https://lichess.org/training/1O6O1"
+  },
+  {
+   "id": "2uHeH",
+   "fen": "8/pb2r2Q/1p5p/4qppk/2p2R2/4P1RP/P5P1/6K1 w - - 0 36",
+   "side": "white",
+   "last_move": {
+    "uci": "g7g5",
+    "san": "g5"
+   },
+   "source_fen": "8/pb2r1pQ/1p5p/4qp1k/2p2R2/4P1RP/P5P1/6K1 b - - 1 35",
+   "solution": [
+    "f4h4",
+    "h5h4",
+    "h7h6",
+    "h4g3",
+    "h6g5"
+   ],
+   "solution_san": [
+    "Rh4+",
+    "Kxh4",
+    "Qxh6+",
+    "Kxg3",
+    "Qxg5#"
+   ],
+   "rating": 2058,
+   "band": "2000-2600",
+   "kind": "mate",
+   "themes": [
+    "attraction",
+    "deflection",
+    "endgame",
+    "long",
+    "mate",
+    "mateIn3",
+    "sacrifice"
+   ],
+   "url": "https://lichess.org/training/2uHeH"
+  }
+ ]
+}

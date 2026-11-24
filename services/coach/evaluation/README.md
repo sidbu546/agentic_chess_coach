@@ -34,6 +34,44 @@ Each category is the share of its checks that passed; **Overall** is the mean of
 Cost per answer is the coach's real token usage priced by `coach/pricing.py`; the judge's cost is
 reported separately.
 
+## Puzzle solving: Think64 vs a general-purpose model
+
+Answers "is the system better than just asking Claude (or Sol) with a picture of the board?"
+on 104 Lichess puzzles (CC0): 4 rating bands (600–2600) × mate / other, 13 each, only well-tested
+puzzles, at most 3 moves for the solver. The set is fixed in [puzzles/puzzles.json](puzzles/puzzles.json)
+and can be rebuilt with `puzzles/build_set.py`.
+
+```bash
+python -m evaluation.puzzles.run --systems oracle,random            # free: checks the grader (100% / ~1%)
+python -m evaluation.puzzles.run --limit 10                          # small paid pilot; asks first
+python -m evaluation.puzzles.run                                     # all 104 puzzles, default systems
+python -m evaluation.puzzles.run --systems think64,claude-image --only 1fx8b,0Ktzy
+```
+
+| System | What it gets |
+| --- | --- |
+| `think64` | The coach as the web app calls it: GPT-6.1 Sol deep tier, chess tools, claim checking |
+| `claude-image` | Claude Opus 5.5 (high effort) and a picture of the board, as a player would upload it |
+| `claude-fen` | Claude Opus 5.5 and the position as FEN text (so misreading the picture is not the only reason it fails) |
+| `sol-fen`, `sol-image` | GPT-6.1 Sol alone, same effort: the same model as Think64 without the system around it |
+
+Every system gets the same question and must end with `FINAL: <moves in SAN>`. **python-chess grades
+it against the stored solution** — neither system nor any model judges:
+
+- **Solved**: every one of the solver's moves matches the solution (another mating move also counts, as on Lichess)
+- **First move**: the key move only, the usual one-move puzzle benchmark
+- **Illegal move / Fake mate**: the FINAL line contains an illegal move / a `#` that is not checkmate
+
+The report gives accuracy with a 95% confidence interval, the results by rating band and by type,
+$/answer and $/solved, and a **head-to-head** for every pair of systems: the puzzles only one of the
+two solved, with an exact McNemar test (p < 0.05 = the difference is unlikely to be luck).
+Default run ≈ $25–30 (Claude ~$0.10, Think64 and Sol ~$0.03–0.04 per puzzle); `--limit` runs fewer.
+Needs `OPENAI_API_KEY` (Think64, Sol) and `ANTHROPIC_API_KEY` (Claude) in your terminal.
+
+Without Stockfish (today), Think64 can prove a line is legal and that a mate is a mate, but not that
+a move is the best: expect the clearest gains on mate puzzles and on illegal / fake-mate answers.
+Re-run with `--chess-url` once the real chess service is up to measure the full system.
+
 ## Notes
 
 - With the mock chess API, engine data is fake, so engine-backed claims come back unverifiable and
